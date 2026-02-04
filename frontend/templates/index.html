@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Premium E-Commerce Store - Quality Products Delivered Fast">
+    <meta name="keywords" content="ecommerce, shopping, products, online store">
+    <meta name="author" content="E-Commerce Store">
+    <meta property="og:title" content="Premium E-Commerce Store">
+    <meta property="og:description" content="Discover quality products at great prices">
+    <meta property="og:type" content="website">
+    
+    <title>Premium E-Commerce Store - Shop Now</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛍️</text></svg>">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-brand">
+                <h1 class="logo">🛍️ ShopHub</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home" class="nav-link">Home</a></li>
+                <li><a href="#products" class="nav-link">Products</a></li>
+                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
+                <li><a href="#cart" class="nav-link cart-link" id="cartToggle">🛒 Cart <span class="cart-count" id="cartCount">0</span></a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="container hero-grid">
+            <div class="hero-content">
+                <span class="hero-eyebrow">Curated drops, bold prices</span>
+                <h1>Welcome to ShopHub</h1>
+                <p>Discover standout picks across tech, fashion, and home with fast delivery.</p>
+                <div class="hero-actions">
+                    <button class="btn btn-primary" onclick="scrollToProducts()">Shop Now</button>
+                    <button class="btn btn-ghost" onclick="scrollToProducts()">Explore Trends</button>
+                </div>
+                <div class="hero-stats">
+                    <div>
+                        <strong>12K+</strong>
+                        <span>Happy Customers</span>
+                    </div>
+                    <div>
+                        <strong>2-Day</strong>
+                        <span>Delivery</span>
+                    </div>
+                    <div>
+                        <strong>Top</strong>
+                        <span>Quality Picks</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="hero-card">
+                    <img src="{{ url_for('static', filename='images/smartwatch.svg') }}" alt="Smartwatch">
+                    <div>
+                        <p>Smartwatch</p>
+                        <span>New arrivals</span>
+                    </div>
+                </div>
+                <div class="hero-card hero-card-secondary">
+                    <img src="{{ url_for('static', filename='images/wireless_headphones.svg') }}" alt="Wireless headphones">
+                    <div>
+                        <p>Wireless Audio</p>
+                        <span>Studio clarity</span>
+                    </div>
+                </div>
+                <div class="hero-orbit"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="products" class="products-section">
+        <div class="container">
+            <h2 class="section-title">Featured Products</h2>
+            <div class="filters">
+                <input type="text" id="searchInput" class="search-input" placeholder="Search products...">
+                <select id="categoryFilter" class="category-filter">
+                    <option value="">All Categories</option>
+                    <option value="Electronics">Electronics</option>
+                    <option value="Fashion">Fashion</option>
+                    <option value="Home">Home & Garden</option>
+                    <option value="Books">Books</option>
+                </select>
+            </div>
+            <div class="products-grid" id="productsGrid">
+                {%- if products is defined and products|length > 0 -%}
+                    {%- for product in products -%}
+                    <div class="product-card" data-product-name="{{ product.name | e }}" data-product-category="{{ product.category or '' }}">
+                        <div class="product-media">
+                            <span class="product-tag">{{ product.category or 'General' }}</span>
+                            <img src="{{ product.image_url or ('https://via.placeholder.com/280x200?text=' + product.name|urlencode) }}"
+                                 alt="{{ product.name }}" class="product-image" data-fallback="true">
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-name">{{ product.name }}</h3>
+                            <p class="product-description">{{ product.description[:100] }}{% if product.description|length > 100 %}...{% endif %}</p>
+                            <div class="product-footer">
+                                <span class="product-price">${{ '%.2f'|format(product.price) }}</span>
+                                <button class="add-to-cart-btn"
+                                        onclick="addToCart({{ product.id }}, '{{ product.name | replace("'", "\'") }}', {{ product.price }})"
+                                        {{ 'disabled' if product.stock == 0 else '' }}>
+                                    {{ 'Add to Cart' if product.stock > 0 else 'Out of Stock' }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {%- endfor -%}
+                {%- else -%}
+                    <!-- Products will be populated by JS if API is available -->
+                    <p style="grid-column: 1/-1; text-align: center; color: #999;">No products found.</p>
+                {%- endif -%}
+            </div>
+        </div>
+    </section>
+
+    <!-- Shopping Cart Sidebar -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h2>Shopping Cart</h2>
+            <button class="close-btn" id="closeCart">&times;</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <!-- Cart items loaded dynamically -->
+        </div>
+        <div class="cart-summary">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span class="total-price" id="totalPrice">$0.00</span>
+            </div>
+            <button class="btn btn-primary" id="checkoutBtn" onclick="goToCheckout()">Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div class="modal" id="checkoutModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Order Checkout</h2>
+                <button class="close-btn" id="closeCheckout">&times;</button>
+            </div>
+            <form id="checkoutForm" class="checkout-form">
+                <div class="form-group">
+                    <label for="customerName">Full Name *</label>
+                    <input type="text" id="customerName" required>
+                </div>
+                <div class="form-group">
+                    <label for="customerEmail">Email Address *</label>
+                    <input type="email" id="customerEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="customerPhone">Phone Number *</label>
+                    <input type="tel" id="customerPhone" required>
+                </div>
+                <div class="order-summary">
+                    <h3>Order Summary</h3>
+                    <div id="orderItems"><!-- Items will be listed here --></div>
+                    <div class="order-total">
+                        <strong>Total: <span id="orderTotal">$0.00</span></strong>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Place Order</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal" id="successModal">
+        <div class="modal-content success-modal">
+            <div class="success-icon">✓</div>
+            <h2>Order Placed Successfully!</h2>
+            <p id="orderMessage"></p>
+            <p class="order-number">Order Number: <strong id="orderNumber"></strong></p>
+            <p class="confirmation-text">We will contact you shortly at the provided phone number and email to confirm payment details.</p>
+            <button class="btn btn-primary" onclick="closeSuccessModal()">Continue Shopping</button>
+        </div>
+    </div>
+
+    <!-- About Section -->
+    <section id="about" class="about-section">
+        <div class="container">
+            <h2 class="section-title">About ShopHub</h2>
+            <p>We are committed to providing you with quality products and exceptional customer service. Our mission is to make online shopping easy, affordable, and enjoyable.</p>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section">
+        <div class="container">
+            <h2 class="section-title">Contact Us</h2>
+            <div class="contact-info">
+                <div class="contact-card">
+                    <h3>📧 Email</h3>
+                    <p>support@shophub.com</p>
+                </div>
+                <div class="contact-card">
+                    <h3>📞 Phone</h3>
+                    <p>+1 (555) 123-4567</p>
+                </div>
+                <div class="contact-card">
+                    <h3>📍 Location</h3>
+                    <p>123 Commerce Street, City, State 12345</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 ShopHub. All rights reserved. | <a href="#privacy">Privacy Policy</a> | <a href="#terms">Terms of Service</a></p>
+        </div>
+    </footer>
+
+    <!-- Overlay for modals -->
+    <div class="overlay" id="overlay"></div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
