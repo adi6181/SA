@@ -2,21 +2,64 @@ import os
 from uuid import uuid4
 from flask import Blueprint, current_app, jsonify, request, url_for
 from werkzeug.utils import secure_filename
+from sqlalchemy import or_
 from app import db
-from app.models import Product, Cart, CartItem, Order, OrderItem
+from app.models import Product, ProductImage, Cart, CartItem, Order, OrderItem
 from app.services import send_order_alert_to_admin, send_order_confirmation_to_customer, generate_order_number
 
 # Blueprint for products
 products_bp = Blueprint('products', __name__)
 
+
+def require_admin_key():
+    """Optional admin key gate for privileged product image uploads."""
+    configured_key = current_app.config.get('ADMIN_UPLOAD_KEY')
+    if configured_key and request.headers.get('X-Admin-Key') != configured_key:
+        return jsonify({'error': 'Unauthorized'}), 403
+    return None
+
+
+def save_upload(file_storage):
+    original_name = secure_filename(file_storage.filename) or f'image-{uuid4().hex}'
+    name_root, extension = os.path.splitext(original_name)
+    stored_name = f"{name_root or 'image'}-{uuid4().hex}{extension}"
+    upload_path = os.path.join(current_app.config['UPLOAD_FOLDER'], stored_name)
+    file_storage.save(upload_path)
+    return url_for('static', filename=f'uploads/{stored_name}')
+
 @products_bp.route('/', methods=['GET'])
 def get_products():
-    """Get all products with optional category filter"""
+    """Get products with optional filtering/search/sorting"""
     category = request.args.get('category')
+    search = request.args.get('q')
+    sort = request.args.get('sort', 'newest')
+    limit = request.args.get('limit', type=int)
     query = Product.query
     
     if category:
         query = query.filter_by(category=category)
+
+    if search:
+        search_like = f"%{search}%"
+        query = query.filter(
+            or_(
+                Product.name.ilike(search_like),
+                Product.description.ilike(search_like),
+                Product.category.ilike(search_like)
+            )
+        )
+
+    if sort == 'price_asc':
+        query = query.order_by(Product.price.asc())
+    elif sort == 'price_desc':
+        query = query.order_by(Product.price.desc())
+    elif sort == 'name_asc':
+        query = query.order_by(Product.name.asc())
+    else:
+        query = query.order_by(Product.created_at.desc())
+
+    if limit:
+        query = query.limit(limit)
     
     products = query.all()
     return jsonify([product.to_dict() for product in products]), 200
@@ -36,14 +79,20 @@ def create_product():
     data = data or {}
 
     image_url = data.get('image_url')
-    image_file = request.files.get('image') or request.files.get('image_file')
-    if image_file and image_file.filename:
-        original_name = secure_filename(image_file.filename) or f'image-{uuid4().hex}'
-        name_root, extension = os.path.splitext(original_name)
-        stored_name = f"{name_root or 'image'}-{uuid4().hex}{extension}"
-        upload_path = os.path.join(current_app.config['UPLOAD_FOLDER'], stored_name)
-        image_file.save(upload_path)
-        image_url = url_for('static', filename=f'uploads/{stored_name}')
+    image_files = [file for file in request.files.getlist('images') if file and file.filename]
+    single_image = request.files.get('image') or request.files.get('image_file')
+    if single_image and single_image.filename:
+        image_files.insert(0, single_image)
+    single_image = request.files.get('image') or request.files.get('image_file')
+    if single_image and single_image.filename:
+        image_files.insert(0, single_image)
+
+    uploaded_urls = []
+    for image_file in image_files:
+        uploaded_urls.append(save_upload(image_file))
+
+    if uploaded_urls:
+        image_url = uploaded_urls[0]
     
     try:
         price = float(data.get('price', 0))
@@ -62,8 +111,51 @@ def create_product():
     
     db.session.add(product)
     db.session.commit()
+
+    if uploaded_urls:
+        product_images = [
+            ProductImage(product_id=product.id, image_url=url, sort_order=index)
+            for index, url in enumerate(uploaded_urls)
+        ]
+        db.session.add_all(product_images)
+        db.session.commit()
     
     return jsonify(product.to_dict()), 201
+
+
+@products_bp.route('/<int:product_id>/images', methods=['POST'])
+def upload_product_images(product_id):
+    """Upload multiple images for an existing product."""
+    auth_error = require_admin_key()
+    if auth_error:
+        return auth_error
+
+    product = Product.query.get(product_id)
+    if not product:
+        return jsonify({'error': 'Product not found'}), 404
+
+    image_files = [file for file in request.files.getlist('images') if file and file.filename]
+    if not image_files:
+        return jsonify({'error': 'No images provided'}), 400
+
+    current_count = len(product.images)
+    uploaded_urls = []
+    for index, image_file in enumerate(image_files):
+        image_url = save_upload(image_file)
+        uploaded_urls.append(image_url)
+        db.session.add(
+            ProductImage(
+                product_id=product.id,
+                image_url=image_url,
+                sort_order=current_count + index
+            )
+        )
+
+    if not product.image_url and uploaded_urls:
+        product.image_url = uploaded_urls[0]
+
+    db.session.commit()
+    return jsonify(product.to_dict()), 200
 
 # Blueprint for cart
 cart_bp = Blueprint('cart', __name__)

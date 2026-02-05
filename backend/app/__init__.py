@@ -25,6 +25,7 @@ def create_app():
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key')
     app.config['UPLOAD_FOLDER'] = os.path.join(STATIC_DIR, 'uploads')
     app.config['MAX_CONTENT_LENGTH'] = None
+    app.config['ADMIN_UPLOAD_KEY'] = os.getenv('ADMIN_UPLOAD_KEY')
     
     # Mail Configuration
     app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')

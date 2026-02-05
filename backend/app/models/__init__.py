@@ -11,19 +11,41 @@ class Product(db.Model):
     image_url = db.Column(db.String(500))
     stock = db.Column(db.Integer, default=0)
     category = db.Column(db.String(100), index=True)
+    images = db.relationship(
+        'ProductImage',
+        backref='product',
+        lazy=True,
+        cascade='all, delete-orphan',
+        order_by='ProductImage.sort_order.asc()'
+    )
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     def to_dict(self):
+        image_urls = [img.image_url for img in self.images] if self.images else []
+        if self.image_url and self.image_url not in image_urls:
+            image_urls.insert(0, self.image_url)
+
         return {
             'id': self.id,
             'name': self.name,
             'description': self.description,
             'price': self.price,
             'image_url': self.image_url,
+            'image_urls': image_urls,
             'stock': self.stock,
             'category': self.category
         }
+
+
+class ProductImage(db.Model):
+    __tablename__ = 'product_images'
+
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False, index=True)
+    image_url = db.Column(db.String(500), nullable=False)
+    sort_order = db.Column(db.Integer, default=0)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 class Cart(db.Model):
     __tablename__ = 'carts'
