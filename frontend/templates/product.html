@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} | ShopHub Affiliate{% endblock %}
+
+{% block content %}
+<section class="product-detail">
+    <div class="container product-detail-grid">
+        <div class="product-detail-media">
+            {% set primary_image = (product.image_urls[0] if product.image_urls and product.image_urls|length > 0 else (product.image_url or '')) %}
+            <img src="{{ primary_image }}" alt="{{ product.name }}">
+        </div>
+        <div class="product-detail-info">
+            <h1>{{ product.name }}</h1>
+            <p class="product-detail-price">${{ '%.2f'|format(product.price) }}</p>
+            {% if product.rating %}
+            <p class="product-rating">Rating: {{ '%.1f'|format(product.rating) }} / 5 ({{ product.review_count or 0 }} reviews)</p>
+            {% endif %}
+            <p>{{ product.description }}</p>
+            <div class="product-detail-actions">
+                <a class="affiliate-btn" href="{{ product.affiliate_url or '#' }}" target="_blank" rel="noopener">Buy on {{ product.merchant or 'Merchant' }}</a>
+                {% if product.is_deal and product.deal_price %}
+                <span class="deal-badge">Deal: ${{ '%.2f'|format(product.deal_price) }}</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

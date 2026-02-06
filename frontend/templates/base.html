@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ShopHub - Affiliate product discovery and reviews.">
+    <title>{% block title %}ShopHub Affiliate{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="background-slider" aria-hidden="true">
+        <div class="background-slide slide-one"></div>
+        <div class="background-slide slide-two"></div>
+        <div class="background-slide slide-three"></div>
+        <div class="background-slide slide-four"></div>
+    </div>
+
+    <div class="utility-strip">
+        Discover top affiliate picks and deals.
+        <a href="/deals">Deals</a> |
+        <a href="/reviews">Reviews</a>
+    </div>
+
+    <nav class="navbar">
+        <div class="container navbar-inner">
+            <a href="/" class="logo">ShopHub</a>
+            <ul class="nav-menu main-tabs">
+                <li><a href="/category/Electronics" class="nav-link">Electronics</a></li>
+                <li><a href="/category/Fashion" class="nav-link">Fashion</a></li>
+                <li><a href="/category/Home" class="nav-link">Home</a></li>
+                <li><a href="/category/Books" class="nav-link">Books</a></li>
+                <li><a href="/deals" class="nav-link">Deals</a></li>
+                <li><a href="/reviews" class="nav-link">Reviews</a></li>
+            </ul>
+            <ul class="nav-menu nav-menu-right">
+                <li><a href="/" class="nav-link">Home</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    {% block content %}{% endblock %}
+
+    <section id="contact" class="contact-section">
+        <div class="container contact-grid">
+            <div class="contact-card">
+                <h3>Email</h3>
+                <p>support@shophub.com</p>
+            </div>
+            <div class="contact-card">
+                <h3>Phone</h3>
+                <p>+1 (555) 123-4567</p>
+            </div>
+            <div class="contact-card">
+                <h3>Affiliate Disclosure</h3>
+                <p>We may earn a commission when you buy via our links.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 ShopHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

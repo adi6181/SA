@@ -20,7 +20,14 @@ with app.app_context():
             price=199.99,
             image_url="/static/images/wireless_headphones.svg",
             stock=50,
-            category="Electronics"
+            category="Electronics",
+            affiliate_url="https://www.amazon.com/",
+            merchant="Amazon",
+            rating=4.6,
+            review_count=1842,
+            is_deal=True,
+            deal_price=179.99,
+            original_price=199.99
         ),
         Product(
             name="Premium Smartwatch",
@@ -28,7 +35,11 @@ with app.app_context():
             price=299.99,
             image_url="/static/images/smartwatch.svg",
             stock=35,
-            category="Electronics"
+            category="Electronics",
+            affiliate_url="https://www.amazon.com/",
+            merchant="Amazon",
+            rating=4.4,
+            review_count=935
         ),
         Product(
             name="Wireless Speaker",
@@ -36,7 +47,11 @@ with app.app_context():
             price=79.99,
             image_url="/static/images/wireless_speaker.svg",
             stock=100,
-            category="Electronics"
+            category="Electronics",
+            affiliate_url="https://www.amazon.com/",
+            merchant="Amazon",
+            rating=4.5,
+            review_count=1260
         ),
         Product(
             name="USB-C Cable (2-Pack)",
@@ -44,7 +59,14 @@ with app.app_context():
             price=19.99,
             image_url="/static/images/usb_c_cable.svg",
             stock=200,
-            category="Electronics"
+            category="Electronics",
+            affiliate_url="https://www.amazon.com/",
+            merchant="Amazon",
+            rating=4.3,
+            review_count=860,
+            is_deal=True,
+            deal_price=14.99,
+            original_price=19.99
         ),
         Product(
             name="Classic T-Shirt",
@@ -52,7 +74,11 @@ with app.app_context():
             price=24.99,
             image_url="/static/images/tshirt.svg",
             stock=150,
-            category="Fashion"
+            category="Fashion",
+            affiliate_url="https://www.shareasale.com/",
+            merchant="ShareASale",
+            rating=4.2,
+            review_count=412
         ),
         Product(
             name="Denim Jeans",
@@ -60,7 +86,11 @@ with app.app_context():
             price=59.99,
             image_url="/static/images/denim_jeans.svg",
             stock=80,
-            category="Fashion"
+            category="Fashion",
+            affiliate_url="https://www.shareasale.com/",
+            merchant="ShareASale",
+            rating=4.1,
+            review_count=268
         ),
         Product(
             name="Running Shoes",
@@ -68,7 +98,14 @@ with app.app_context():
             price=89.99,
             image_url="/static/images/running_shoes.svg",
             stock=60,
-            category="Fashion"
+            category="Fashion",
+            affiliate_url="https://www.amazon.com/",
+            merchant="Amazon",
+            rating=4.5,
+            review_count=1421,
+            is_deal=True,
+            deal_price=74.99,
+            original_price=89.99
         ),
         Product(
             name="Winter Jacket",
@@ -76,7 +113,11 @@ with app.app_context():
             price=129.99,
             image_url="/static/images/winter_jacket.svg",
             stock=40,
-            category="Fashion"
+            category="Fashion",
+            affiliate_url="https://www.shareasale.com/",
+            merchant="ShareASale",
+            rating=4.4,
+            review_count=522
         ),
         Product(
             name="Garden Tool Set",
@@ -84,7 +125,11 @@ with app.app_context():
             price=49.99,
             image_url="/static/images/garden_tool_set.svg",
             stock=45,
-            category="Home"
+            category="Home",
+            affiliate_url="https://www.amazon.com/",
+            merchant="Amazon",
+            rating=4.3,
+            review_count=338
         ),
         Product(
             name="LED Desk Lamp",
@@ -92,7 +137,11 @@ with app.app_context():
             price=34.99,
             image_url="/static/images/led_desk_lamp.svg",
             stock=70,
-            category="Home"
+            category="Home",
+            affiliate_url="https://www.amazon.com/",
+            merchant="Amazon",
+            rating=4.4,
+            review_count=904
         ),
         Product(
             name="Python Programming Guide",
@@ -100,7 +149,11 @@ with app.app_context():
             price=29.99,
             image_url="/static/images/python_programming_guide.svg",
             stock=55,
-            category="Books"
+            category="Books",
+            affiliate_url="https://www.amazon.com/",
+            merchant="Amazon",
+            rating=4.7,
+            review_count=511
         ),
         Product(
             name="Web Development Handbook",
@@ -108,7 +161,11 @@ with app.app_context():
             price=39.99,
             image_url="/static/images/web_development_handbook.svg",
             stock=40,
-            category="Books"
+            category="Books",
+            affiliate_url="https://www.amazon.com/",
+            merchant="Amazon",
+            rating=4.6,
+            review_count=633
         ),
     ]
     
@@ -118,4 +175,3 @@ with app.app_context():
     
     db.session.commit()
     print(f"✓ Successfully added {len(products)} sample products!")
-

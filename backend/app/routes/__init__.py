@@ -4,8 +4,7 @@ from flask import Blueprint, current_app, jsonify, request, url_for
 from werkzeug.utils import secure_filename
 from sqlalchemy import or_
 from app import db
-from app.models import Product, ProductImage, Cart, CartItem, Order, OrderItem
-from app.services import send_order_alert_to_admin, send_order_confirmation_to_customer, generate_order_number
+from app.models import Product, ProductImage
 
 # Blueprint for products
 products_bp = Blueprint('products', __name__)
@@ -34,10 +33,18 @@ def get_products():
     search = request.args.get('q')
     sort = request.args.get('sort', 'newest')
     limit = request.args.get('limit', type=int)
+    merchant = request.args.get('merchant')
+    deals = request.args.get('deals')
     query = Product.query
     
     if category:
         query = query.filter_by(category=category)
+
+    if merchant:
+        query = query.filter_by(merchant=merchant)
+
+    if deals in {'1', 'true', 'yes'}:
+        query = query.filter_by(is_deal=True)
 
     if search:
         search_like = f"%{search}%"
@@ -83,9 +90,6 @@ def create_product():
     single_image = request.files.get('image') or request.files.get('image_file')
     if single_image and single_image.filename:
         image_files.insert(0, single_image)
-    single_image = request.files.get('image') or request.files.get('image_file')
-    if single_image and single_image.filename:
-        image_files.insert(0, single_image)
 
     uploaded_urls = []
     for image_file in image_files:
@@ -94,11 +98,28 @@ def create_product():
     if uploaded_urls:
         image_url = uploaded_urls[0]
     
-    try:
-        price = float(data.get('price', 0))
-        stock = int(data.get('stock', 0))
-    except (TypeError, ValueError):
-        return jsonify({'error': 'Invalid price or stock value'}), 400
+    def parse_float(value):
+        try:
+            return float(value) if value is not None and value != '' else None
+        except (TypeError, ValueError):
+            return None
+
+    def parse_int(value):
+        try:
+            return int(value) if value is not None and value != '' else None
+        except (TypeError, ValueError):
+            return None
+
+    def parse_bool(value):
+        if value is None:
+            return False
+        return str(value).strip().lower() in {'1', 'true', 'yes', 'y', 'on'}
+
+    price = parse_float(data.get('price'))
+    if price is None:
+        return jsonify({'error': 'Invalid price value'}), 400
+
+    stock = parse_int(data.get('stock', 0)) or 0
 
     product = Product(
         name=data.get('name'),
@@ -106,7 +127,14 @@ def create_product():
         price=price,
         image_url=image_url,
         stock=stock,
-        category=data.get('category')
+        category=data.get('category'),
+        affiliate_url=data.get('affiliate_url'),
+        merchant=data.get('merchant'),
+        rating=parse_float(data.get('rating')),
+        review_count=parse_int(data.get('review_count')),
+        is_deal=parse_bool(data.get('is_deal')),
+        deal_price=parse_float(data.get('deal_price')),
+        original_price=parse_float(data.get('original_price'))
     )
     
     db.session.add(product)
@@ -156,142 +184,3 @@ def upload_product_images(product_id):
 
     db.session.commit()
     return jsonify(product.to_dict()), 200
-
-# Blueprint for cart
-cart_bp = Blueprint('cart', __name__)
-
-@cart_bp.route('/<session_id>', methods=['GET'])
-def get_cart(session_id):
-    """Get cart for session"""
-    cart = Cart.query.filter_by(session_id=session_id).first()
-    
-    if not cart:
-        cart = Cart(session_id=session_id)
-        db.session.add(cart)
-        db.session.commit()
-    
-    return jsonify(cart.to_dict()), 200
-
-@cart_bp.route('/<session_id>/add', methods=['POST'])
-def add_to_cart(session_id):
-    """Add product to cart"""
-    data = request.get_json()
-    product_id = data.get('product_id')
-    quantity = data.get('quantity', 1)
-    
-    product = Product.query.get(product_id)
-    if not product:
-        return jsonify({'error': 'Product not found'}), 404
-    
-    cart = Cart.query.filter_by(session_id=session_id).first()
-    if not cart:
-        cart = Cart(session_id=session_id)
-        db.session.add(cart)
-        db.session.flush()
-    
-    cart_item = CartItem.query.filter_by(cart_id=cart.id, product_id=product_id).first()
-    
-    if cart_item:
-        cart_item.quantity += quantity
-    else:
-        cart_item = CartItem(cart_id=cart.id, product_id=product_id, quantity=quantity)
-        db.session.add(cart_item)
-    
-    db.session.commit()
-    return jsonify(cart.to_dict()), 200
-
-@cart_bp.route('/<session_id>/remove/<int:item_id>', methods=['DELETE'])
-def remove_from_cart(session_id, item_id):
-    """Remove item from cart"""
-    cart = Cart.query.filter_by(session_id=session_id).first()
-    if not cart:
-        return jsonify({'error': 'Cart not found'}), 404
-    
-    cart_item = CartItem.query.filter_by(id=item_id, cart_id=cart.id).first()
-    if not cart_item:
-        return jsonify({'error': 'Item not found'}), 404
-    
-    db.session.delete(cart_item)
-    db.session.commit()
-    return jsonify(cart.to_dict()), 200
-
-@cart_bp.route('/<session_id>/clear', methods=['DELETE'])
-def clear_cart(session_id):
-    """Clear entire cart"""
-    cart = Cart.query.filter_by(session_id=session_id).first()
-    if cart:
-        CartItem.query.filter_by(cart_id=cart.id).delete()
-        db.session.commit()
-    return jsonify({'message': 'Cart cleared'}), 200
-
-# Blueprint for orders
-orders_bp = Blueprint('orders', __name__)
-
-@orders_bp.route('/', methods=['POST'])
-def create_order():
-    """Create order from cart"""
-    data = request.get_json()
-    session_id = data.get('session_id')
-    
-    cart = Cart.query.filter_by(session_id=session_id).first()
-    if not cart or not cart.items:
-        return jsonify({'error': 'Cart is empty'}), 400
-    
-    total_amount = sum(item.product.price * item.quantity for item in cart.items)
-    
-    order = Order(
-        order_number=generate_order_number(),
-        customer_name=data.get('customer_name'),
-        customer_email=data.get('customer_email'),
-        customer_phone=data.get('customer_phone'),
-        total_amount=total_amount,
-        status='pending',
-        payment_status='awaiting'
-    )
-    
-    for cart_item in cart.items:
-        order_item = OrderItem(
-            product_name=cart_item.product.name,
-            product_id=cart_item.product.id,
-            quantity=cart_item.quantity,
-            price=cart_item.product.price
-        )
-        order.items.append(order_item)
-    
-    db.session.add(order)
-    db.session.commit()
-    
-    # Send emails
-    send_order_alert_to_admin(order)
-    send_order_confirmation_to_customer(order)
-    
-    # Clear cart
-    CartItem.query.filter_by(cart_id=cart.id).delete()
-    db.session.commit()
-    
-    return jsonify(order.to_dict()), 201
-
-@orders_bp.route('/<order_number>', methods=['GET'])
-def get_order(order_number):
-    """Get order details"""
-    order = Order.query.filter_by(order_number=order_number).first()
-    if not order:
-        return jsonify({'error': 'Order not found'}), 404
-    return jsonify(order.to_dict()), 200
-
-@orders_bp.route('/<int:order_id>/status', methods=['PATCH'])
-def update_order_status(order_id):
-    """Update order status (admin)"""
-    data = request.get_json()
-    order = Order.query.get(order_id)
-    
-    if not order:
-        return jsonify({'error': 'Order not found'}), 404
-    
-    if 'status' in data:
-        order.status = data['status']
-    if 'payment_status' in data:
-        order.payment_status = data['payment_status']
-    
-    db.session.commit()
-    return jsonify(order.to_dict()), 200

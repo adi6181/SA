@@ -11,6 +11,13 @@ class Product(db.Model):
     image_url = db.Column(db.String(500))
     stock = db.Column(db.Integer, default=0)
     category = db.Column(db.String(100), index=True)
+    affiliate_url = db.Column(db.String(1000))
+    merchant = db.Column(db.String(50))
+    rating = db.Column(db.Float)
+    review_count = db.Column(db.Integer)
+    is_deal = db.Column(db.Boolean, default=False)
+    deal_price = db.Column(db.Float)
+    original_price = db.Column(db.Float)
     images = db.relationship(
         'ProductImage',
         backref='product',
@@ -34,7 +41,14 @@ class Product(db.Model):
             'image_url': self.image_url,
             'image_urls': image_urls,
             'stock': self.stock,
-            'category': self.category
+            'category': self.category,
+            'affiliate_url': self.affiliate_url,
+            'merchant': self.merchant,
+            'rating': self.rating,
+            'review_count': self.review_count,
+            'is_deal': self.is_deal,
+            'deal_price': self.deal_price,
+            'original_price': self.original_price
         }
 
 

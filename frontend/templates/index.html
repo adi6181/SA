@@ -1,384 +1,91 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="ShopHub - Comfort-first essentials and everyday products with modern shopping experience.">
-    <title>ShopHub | Everyday Comfort Store</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
-    <div class="background-slider" aria-hidden="true">
-        <div class="background-slide slide-one"></div>
-        <div class="background-slide slide-two"></div>
-        <div class="background-slide slide-three"></div>
-        <div class="background-slide slide-four"></div>
+{% extends "base.html" %}
+
+{% block title %}ShopHub Affiliate | Home{% endblock %}
+
+{% block content %}
+<header class="hero">
+    <div class="container hero-layout">
+        <div class="hero-copy">
+            <p class="hero-overline">Affiliate Picks</p>
+            <h1>Find top‑rated products, reviews, and deals in one place.</h1>
+            <p>We curate products from Amazon and ShareASale so you can buy directly from trusted stores.</p>
+            <div class="hero-actions">
+                <a class="btn btn-primary" href="/deals">Browse Deals</a>
+                <a class="btn btn-outline" href="/reviews">Read Reviews</a>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="hero-card">
+                <img src="{{ url_for('static', filename='images/running_shoes.svg') }}" alt="featured product">
+                <span>Top Rated</span>
+            </div>
+            <div class="hero-card secondary">
+                <img src="{{ url_for('static', filename='images/wireless_headphones.svg') }}" alt="featured product">
+                <span>Best Deals</span>
+            </div>
+        </div>
     </div>
-    <div class="utility-strip">
-        Shop New Arrivals.
-        <a href="#products">Shop Men</a> |
-        <a href="#products">Shop Women</a>
+</header>
+
+<section class="collections-strip">
+    <div class="container collections-grid">
+        <button class="collection-chip active" data-category="">Shop All</button>
+        <button class="collection-chip" data-category="Electronics">Electronics</button>
+        <button class="collection-chip" data-category="Fashion">Fashion</button>
+        <button class="collection-chip" data-category="Home">Home</button>
+        <button class="collection-chip" data-category="Books">Books</button>
     </div>
+</section>
 
-    <nav class="navbar">
-        <div class="container navbar-inner">
-            <a href="#home" class="logo">ShopHub</a>
-            <ul class="nav-menu main-tabs">
-                <li><a href="#products" class="nav-link active" data-shop-story="men" id="menNavTab">Men</a></li>
-                <li><a href="#products" class="nav-link" data-shop-story="women" id="womenNavTab">Women</a></li>
-                <li><a href="#products" class="nav-link nav-category" data-nav-category="">Shop All</a></li>
-                <li><a href="#products" class="nav-link nav-category" data-nav-category="Electronics">Electronics</a></li>
-                <li><a href="#products" class="nav-link nav-category" data-nav-category="Fashion">Fashion</a></li>
-                <li><a href="#products" class="nav-link nav-category" data-nav-category="Home">Home</a></li>
-                <li><a href="#products" class="nav-link nav-category" data-nav-category="Books">Books</a></li>
-                <li><a href="#products" class="nav-link">Sale</a></li>
-            </ul>
-            <ul class="nav-menu nav-menu-right">
-                <li><a href="#about" class="nav-link">About</a></li>
-                <li><a href="#contact" class="nav-link">Help</a></li>
-                <li><a href="#contact" class="nav-link">?</a></li>
-                <li><a href="#cart" class="cart-link" id="cartToggle">Cart <span class="cart-count" id="cartCount">0</span></a></li>
-            </ul>
+<section id="products" class="products-section">
+    <div class="container">
+        <div class="products-header">
+            <h2>Featured Picks</h2>
+            <p>Curated affiliate products with trusted merchants.</p>
         </div>
-    </nav>
-
-    <section class="men-category-panel" id="menCategoryPanel">
-        <div class="container">
-            <div class="men-subtabs">
-                <button class="men-subtab active">Shoes</button>
-                <button class="men-subtab">Socks & Apparel</button>
-                <button class="men-subtab">Sale</button>
-            </div>
-            <div class="men-category-grid">
-                <div class="men-rail">
-                    <a href="#products" data-men-filter="Fashion">DASHER NZ COLLECTION</a>
-                    <a href="#products" data-men-filter="Fashion">TERRALUX COLLECTION</a>
-                    <a href="#products" data-men-filter="Fashion">VARSITY COLLECTION</a>
-                    <a href="#products" data-men-filter="">NEW ARRIVALS</a>
-                    <a href="#products" data-men-filter="">BESTSELLERS</a>
-                    <a href="#products" data-men-filter="">$100 AND UNDER</a>
-                </div>
-
-                <div class="men-links">
-                    <h4>MEN'S SHOES</h4>
-                    <a href="#products" data-men-filter="">Shop All</a>
-                    <a href="#products" data-men-filter="Fashion">Sneakers</a>
-                    <a href="#products" data-men-filter="Fashion">All-Weather</a>
-                    <a href="#products" data-men-filter="Fashion">Slip Ons</a>
-                    <a href="#products" data-men-filter="Fashion">High Tops</a>
-                    <a href="#products" data-men-filter="Fashion">Sandals</a>
-                </div>
-
-                <div class="men-links">
-                    <h4>CUSTOMER FAVORITES</h4>
-                    <a href="#products" data-men-filter="Fashion">Tree Runner NZ</a>
-                    <a href="#products" data-men-filter="Fashion">The Original Tree Runner</a>
-                    <a href="#products" data-men-filter="Fashion">Varsity</a>
-                    <a href="#products" data-men-filter="Fashion">Dasher NZ</a>
-                    <a href="#products" data-men-filter="Fashion">Wool Cruiser</a>
-                </div>
-
-                <div class="men-links">
-                    <h4>TOP ADD-ONS</h4>
-                    <a href="#products" data-men-filter="Fashion">Socks</a>
-                    <a href="#products" data-men-filter="Fashion">Apparel</a>
-                    <a href="#products" data-men-filter="Fashion">Bags</a>
-                    <a href="#products" data-men-filter="">Gift Cards</a>
-                </div>
-
-                <div class="men-media">
-                    <article class="men-media-card large">
-                        <img src="{{ url_for('static', filename='images/running_shoes.svg') }}" alt="Dasher NZ Collection">
-                        <span>DASHER NZ COLLECTION</span>
-                    </article>
-                    <article class="men-media-card">
-                        <img src="{{ url_for('static', filename='images/wireless_headphones.svg') }}" alt="Varsity Collection">
-                        <span>VARSITY COLLECTION</span>
-                    </article>
-                    <article class="men-media-card">
-                        <img src="{{ url_for('static', filename='images/winter_jacket.svg') }}" alt="Men New Arrivals">
-                        <span>MEN'S NEW ARRIVALS</span>
-                    </article>
-                </div>
-            </div>
+        <div class="filters">
+            <input type="text" id="searchInput" class="search-input" placeholder="Search products...">
+            <select id="categoryFilter" class="category-filter">
+                <option value="">All Categories</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Fashion">Fashion</option>
+                <option value="Home">Home</option>
+                <option value="Books">Books</option>
+            </select>
+            <select id="sortFilter" class="category-filter">
+                <option value="newest">Newest</option>
+                <option value="price_asc">Price: Low to High</option>
+                <option value="price_desc">Price: High to Low</option>
+                <option value="name_asc">Name: A-Z</option>
+            </select>
         </div>
-    </section>
-
-    <section class="women-category-panel" id="womenCategoryPanel">
-        <div class="container">
-            <div class="women-subtabs">
-                <button class="women-subtab active">Shoes</button>
-                <button class="women-subtab">Socks & Apparel</button>
-                <button class="women-subtab">Sale</button>
-            </div>
-            <div class="women-category-grid">
-                <div class="women-rail">
-                    <a href="#products" data-women-filter="Fashion">DASHER NZ COLLECTION</a>
-                    <a href="#products" data-women-filter="Fashion">TERRALUX COLLECTION</a>
-                    <a href="#products" data-women-filter="Fashion">VARSITY COLLECTION</a>
-                    <a href="#products" data-women-filter="">NEW ARRIVALS</a>
-                    <a href="#products" data-women-filter="">BESTSELLERS</a>
-                    <a href="#products" data-women-filter="">$100 AND UNDER</a>
-                </div>
-
-                <div class="women-links">
-                    <h4>WOMEN'S SHOES</h4>
-                    <a href="#products" data-women-filter="">Shop All</a>
-                    <a href="#products" data-women-filter="Fashion">Sneakers</a>
-                    <a href="#products" data-women-filter="Fashion">Flats</a>
-                    <a href="#products" data-women-filter="Fashion">Slip Ons</a>
-                    <a href="#products" data-women-filter="Fashion">All-Weather</a>
-                    <a href="#products" data-women-filter="Fashion">High Tops</a>
-                    <a href="#products" data-women-filter="Fashion">Sandals</a>
-                </div>
-
-
-                <div class="women-links">
-                    <h4>FAVORITE ADD-ONS</h4>
-                    <a href="#products" data-women-filter="Fashion">Socks</a>
-                    <a href="#products" data-women-filter="Fashion">Apparel</a>
-                    <a href="#products" data-women-filter="Fashion">Bags</a>
-                    <a href="#products" data-women-filter="">Gift Cards</a>
-                </div>
-
-                <div class="women-media">
-                    <article class="women-media-card large">
-                        <img src="{{ url_for('static', filename='images/running_shoes.svg') }}" alt="Dasher NZ Collection">
-                        <span>DASHER NZ COLLECTION</span>
-                    </article>
-                    <article class="women-media-card">
-                        <img src="{{ url_for('static', filename='images/denim_jeans.svg') }}" alt="Varsity Collection">
-                        <span>VARSITY COLLECTION</span>
-                    </article>
-                    <article class="women-media-card">
-                        <img src="{{ url_for('static', filename='images/tshirt.svg') }}" alt="Women New Arrivals">
-                        <span>WOMEN'S NEW ARRIVALS</span>
-                    </article>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="story-stage-wrap">
-        <div class="container">
-            <div class="shop-story-stage" id="shopStoryStage">
-                <div class="shop-character man" id="shopMan">
-                    <div class="avatar">
-                        <span class="head"></span>
-                        <span class="torso"></span>
-                        <span class="legs"></span>
+        <div class="products-grid" id="productsGrid">
+            {%- if products is defined and products|length > 0 -%}
+                {%- for product in products -%}
+                {% set primary_image = (product.image_urls[0] if product.image_urls and product.image_urls|length > 0 else (product.image_url or '')) %}
+                <div class="product-card"
+                    data-product-id="{{ product.id }}"
+                    data-product-name="{{ product.name | e }}"
+                    data-product-category="{{ product.category or '' }}"
+                    data-image-urls='{{ product.image_urls | tojson if product.image_urls is defined else "[]" }}'>
+                    <div class="product-media">
+                        <span class="product-tag">{{ product.category or 'General' }}</span>
+                        <img src="{{ primary_image }}" alt="{{ product.name }}" class="product-image" data-image-index="0">
                     </div>
-                    <span>Men</span>
-                </div>
-                <div class="shop-character woman" id="shopWoman">
-                    <div class="avatar">
-                        <span class="head"></span>
-                        <span class="torso"></span>
-                        <span class="legs"></span>
-                    </div>
-                    <span>Woman</span>
-                </div>
-                <div class="shop-wallet" id="shopWallet">👛</div>
-                <p class="shop-story-message" id="shopStoryMessage">Pick Men or Women to start the fun shopping animation.</p>
-            </div>
-        </div>
-    </section>
-
-    <header id="home" class="hero">
-        <div class="container hero-layout">
-            <div class="hero-copy">
-                <p class="hero-overline">Made for better mornings</p>
-                <h1>Simple, comfortable products for every day life.</h1>
-                <p>Shop premium essentials designed for comfort, durability, and clean style.</p>
-                <div class="hero-actions">
-                    <button class="btn btn-primary" onclick="scrollToProducts()">Shop Best Sellers</button>
-                    <a class="btn btn-outline" href="#about">Learn More</a>
-                </div>
-            </div>
-            <div class="hero-visual">
-                <div class="hero-card">
-                    <img src="{{ url_for('static', filename='images/running_shoes.svg') }}" alt="featured product">
-                    <span>Best Seller</span>
-                </div>
-                <div class="hero-card secondary">
-                    <img src="{{ url_for('static', filename='images/wireless_headphones.svg') }}" alt="featured product">
-                    <span>New Arrival</span>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <section class="collections-strip">
-        <div class="container collections-grid">
-            <button class="collection-chip active" data-category="">Shop All</button>
-            <button class="collection-chip" data-category="Electronics">Electronics</button>
-            <button class="collection-chip" data-category="Fashion">Fashion</button>
-            <button class="collection-chip" data-category="Home">Home</button>
-            <button class="collection-chip" data-category="Books">Books</button>
-        </div>
-    </section>
-
-
-    <section id="products" class="products-section">
-        <div class="container">
-            <div class="products-header">
-                <h2>Best Sellers</h2>
-                <p>Discover products customers keep coming back for.</p>
-            </div>
-            <div class="filters">
-                <input type="text" id="searchInput" class="search-input" placeholder="Search products...">
-                <select id="categoryFilter" class="category-filter">
-                    <option value="">All Categories</option>
-                    <option value="Electronics">Electronics</option>
-                    <option value="Fashion">Fashion</option>
-                    <option value="Home">Home</option>
-                    <option value="Books">Books</option>
-                </select>
-                <select id="sortFilter" class="category-filter">
-                    <option value="newest">Newest</option>
-                    <option value="price_asc">Price: Low to High</option>
-                    <option value="price_desc">Price: High to Low</option>
-                    <option value="name_asc">Name: A-Z</option>
-                </select>
-            </div>
-            <div class="products-grid" id="productsGrid">
-                {%- if products is defined and products|length > 0 -%}
-                    {%- for product in products -%}
-                    {% set primary_image = (product.image_urls[0] if product.image_urls and product.image_urls|length > 0 else (product.image_url or '')) %}
-                    <div class="product-card"
-                        data-product-id="{{ product.id }}"
-                        data-product-name="{{ product.name | e }}"
-                        data-product-category="{{ product.category or '' }}"
-                        data-image-urls='{{ product.image_urls | tojson if product.image_urls is defined else "[]" }}'>
-                        <div class="product-media">
-                            <span class="product-tag">{{ product.category or 'General' }}</span>
-                            <img src="{{ primary_image }}" alt="{{ product.name }}" class="product-image" data-image-index="0">
-                        </div>
-                        <div class="product-info">
-                            <h3 class="product-name">{{ product.name }}</h3>
-                            <p class="product-description">{{ product.description[:100] }}{% if product.description|length > 100 %}...{% endif %}</p>
-                            <div class="product-footer">
-                                <span class="product-price">${{ '%.2f'|format(product.price) }}</span>
-                                <button class="add-to-cart-btn"
-                                        onclick="addToCart({{ product.id }}, '{{ product.name | replace("'", "\\'") }}', {{ product.price }})"
-                                        {{ 'disabled' if product.stock == 0 else '' }}>
-                                    {{ 'Add to Cart' if product.stock > 0 else 'Out of Stock' }}
-                                </button>
-                            </div>
+                    <div class="product-info">
+                        <h3 class="product-name">{{ product.name }}</h3>
+                        <p class="product-description">{{ product.description[:100] }}{% if product.description|length > 100 %}...{% endif %}</p>
+                        <div class="product-footer">
+                            <span class="product-price">${{ '%.2f'|format(product.price) }}</span>
+                            <a class="affiliate-btn" href="{{ product.affiliate_url or '#' }}" target="_blank" rel="noopener">Shop Now</a>
                         </div>
                     </div>
-                    {%- endfor -%}
-                {%- else -%}
-                    <p class="empty-products">No products found.</p>
-                {%- endif -%}
-            </div>
-        </div>
-    </section>
-
-    <section id="about" class="story-section">
-        <div class="container story-grid">
-            <div>
-                <h2>Designed with better materials.</h2>
-                <p>From product selection to packaging, we focus on thoughtful choices that feel good to use and better for everyday life.</p>
-            </div>
-            <div class="story-points">
-                <article>
-                    <h3>Comfort First</h3>
-                    <p>Every product in our catalog is selected for function and comfort.</p>
-                </article>
-                <article>
-                    <h3>Durable Picks</h3>
-                    <p>Built for repeat use and long-term value in your routine.</p>
-                </article>
-                <article>
-                    <h3>Responsible Choices</h3>
-                    <p>We prefer materials and brands with sustainable practices.</p>
-                </article>
-            </div>
-        </div>
-    </section>
-
-    <section id="contact" class="contact-section">
-        <div class="container contact-grid">
-            <div class="contact-card">
-                <h3>Email</h3>
-                <p>support@shophub.com</p>
-            </div>
-            <div class="contact-card">
-                <h3>Phone</h3>
-                <p>+1 (555) 123-4567</p>
-            </div>
-            <div class="contact-card">
-                <h3>Address</h3>
-                <p>123 Commerce Street, City, State</p>
-            </div>
-        </div>
-    </section>
-
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; 2026 ShopHub. All rights reserved.</p>
-        </div>
-    </footer>
-
-    <div class="cart-sidebar" id="cartSidebar">
-        <div class="cart-header">
-            <h2>Your Cart</h2>
-            <button class="close-btn" id="closeCart">&times;</button>
-        </div>
-        <div class="cart-items" id="cartItems"></div>
-        <div class="cart-summary">
-            <div class="cart-total">
-                <span>Total</span>
-                <span class="total-price" id="totalPrice">$0.00</span>
-            </div>
-            <button class="btn btn-primary btn-block" onclick="goToCheckout()">Checkout</button>
+                </div>
+                {%- endfor -%}
+            {%- else -%}
+                <p class="empty-products">No products found.</p>
+            {%- endif -%}
         </div>
     </div>
-
-    <div class="modal" id="checkoutModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Checkout</h2>
-                <button class="close-btn" id="closeCheckout">&times;</button>
-            </div>
-            <form id="checkoutForm" class="checkout-form">
-                <div class="form-group">
-                    <label for="customerName">Full Name *</label>
-                    <input type="text" id="customerName" required>
-                </div>
-                <div class="form-group">
-                    <label for="customerEmail">Email *</label>
-                    <input type="email" id="customerEmail" required>
-                </div>
-                <div class="form-group">
-                    <label for="customerPhone">Phone *</label>
-                    <input type="tel" id="customerPhone" required>
-                </div>
-                <div class="order-summary">
-                    <h3>Order Summary</h3>
-                    <div id="orderItems"></div>
-                    <div class="order-total">
-                        <strong>Total: <span id="orderTotal">$0.00</span></strong>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary btn-block">Place Order</button>
-            </form>
-        </div>
-    </div>
-
-    <div class="modal" id="successModal">
-        <div class="modal-content success-modal">
-            <div class="success-icon">✓</div>
-            <h2>Order Placed Successfully</h2>
-            <p id="orderMessage"></p>
-            <p class="order-number">Order Number: <strong id="orderNumber"></strong></p>
-            <button class="btn btn-primary" onclick="closeSuccessModal()">Continue Shopping</button>
-        </div>
-    </div>
-
-    <div class="overlay" id="overlay"></div>
-
-    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
-</body>
-</html>
+</section>
+{% endblock %}
