@@ -8,12 +8,17 @@ from app.models import Product, ProductImage
 
 # Blueprint for products
 products_bp = Blueprint('products', __name__)
+admin_bp = Blueprint('admin', __name__)
 
+def get_admin_key():
+    return current_app.config.get('ADMIN_DASHBOARD_KEY') or current_app.config.get('ADMIN_UPLOAD_KEY')
 
 def require_admin_key():
-    """Optional admin key gate for privileged product image uploads."""
-    configured_key = current_app.config.get('ADMIN_UPLOAD_KEY')
-    if configured_key and request.headers.get('X-Admin-Key') != configured_key:
+    """Admin key gate for privileged operations."""
+    configured_key = get_admin_key()
+    if not configured_key:
+        return jsonify({'error': 'Admin key not configured'}), 403
+    if request.headers.get('X-Admin-Key') != configured_key:
         return jsonify({'error': 'Unauthorized'}), 403
     return None
 
@@ -25,6 +30,36 @@ def save_upload(file_storage):
     upload_path = os.path.join(current_app.config['UPLOAD_FOLDER'], stored_name)
     file_storage.save(upload_path)
     return url_for('static', filename=f'uploads/{stored_name}')
+
+def parse_float(value):
+    try:
+        return float(value) if value is not None and value != '' else None
+    except (TypeError, ValueError):
+        return None
+
+def parse_int(value):
+    try:
+        return int(value) if value is not None and value != '' else None
+    except (TypeError, ValueError):
+        return None
+
+def parse_bool(value):
+    if value is None:
+        return False
+    return str(value).strip().lower() in {'1', 'true', 'yes', 'y', 'on'}
+
+@admin_bp.route('/login', methods=['POST'])
+def admin_login():
+    data = request.get_json(silent=True) if request.is_json else request.form.to_dict()
+    data = data or {}
+    provided_key = data.get('key')
+    configured_key = get_admin_key()
+
+    if not configured_key:
+        return jsonify({'error': 'Admin key not configured'}), 403
+    if not provided_key or provided_key != configured_key:
+        return jsonify({'error': 'Invalid admin key'}), 401
+    return jsonify({'ok': True}), 200
 
 @products_bp.route('/', methods=['GET'])
 def get_products():
@@ -82,6 +117,10 @@ def get_product(product_id):
 @products_bp.route('/', methods=['POST'])
 def create_product():
     """Create a new product (admin)"""
+    auth_error = require_admin_key()
+    if auth_error:
+        return auth_error
+
     data = request.get_json(silent=True) if request.is_json else request.form.to_dict()
     data = data or {}
 
@@ -98,32 +137,20 @@ def create_product():
     if uploaded_urls:
         image_url = uploaded_urls[0]
     
-    def parse_float(value):
-        try:
-            return float(value) if value is not None and value != '' else None
-        except (TypeError, ValueError):
-            return None
-
-    def parse_int(value):
-        try:
-            return int(value) if value is not None and value != '' else None
-        except (TypeError, ValueError):
-            return None
-
-    def parse_bool(value):
-        if value is None:
-            return False
-        return str(value).strip().lower() in {'1', 'true', 'yes', 'y', 'on'}
-
     price = parse_float(data.get('price'))
     if price is None:
         return jsonify({'error': 'Invalid price value'}), 400
 
     stock = parse_int(data.get('stock', 0)) or 0
 
+    name = data.get('name')
+    description = data.get('description')
+    if not name or not description:
+        return jsonify({'error': 'Name and description are required'}), 400
+
     product = Product(
-        name=data.get('name'),
-        description=data.get('description'),
+        name=name,
+        description=description,
         price=price,
         image_url=image_url,
         stock=stock,
@@ -184,3 +211,74 @@ def upload_product_images(product_id):
 
     db.session.commit()
     return jsonify(product.to_dict()), 200
+
+@products_bp.route('/<int:product_id>', methods=['PUT', 'PATCH'])
+def update_product(product_id):
+    """Update an existing product (admin)."""
+    auth_error = require_admin_key()
+    if auth_error:
+        return auth_error
+
+    product = Product.query.get(product_id)
+    if not product:
+        return jsonify({'error': 'Product not found'}), 404
+
+    data = request.get_json(silent=True) if request.is_json else request.form.to_dict()
+    data = data or {}
+
+    if 'name' in data:
+        product.name = data.get('name') or product.name
+    if 'description' in data:
+        product.description = data.get('description') or product.description
+    if 'price' in data:
+        price = parse_float(data.get('price'))
+        if price is None:
+            return jsonify({'error': 'Invalid price value'}), 400
+        product.price = price
+    if 'stock' in data:
+        stock = parse_int(data.get('stock'))
+        if stock is None:
+            return jsonify({'error': 'Invalid stock value'}), 400
+        product.stock = stock
+    if 'category' in data:
+        product.category = data.get('category')
+    if 'affiliate_url' in data:
+        product.affiliate_url = data.get('affiliate_url')
+    if 'merchant' in data:
+        product.merchant = data.get('merchant')
+    if 'rating' in data:
+        product.rating = parse_float(data.get('rating'))
+    if 'review_count' in data:
+        product.review_count = parse_int(data.get('review_count'))
+    if 'is_deal' in data:
+        product.is_deal = parse_bool(data.get('is_deal'))
+    if 'deal_price' in data:
+        product.deal_price = parse_float(data.get('deal_price'))
+    if 'original_price' in data:
+        product.original_price = parse_float(data.get('original_price'))
+    if 'image_url' in data:
+        product.image_url = data.get('image_url')
+    if 'image_urls' in data and isinstance(data.get('image_urls'), list):
+        product.images.clear()
+        for index, url in enumerate([u for u in data.get('image_urls') if u]):
+            db.session.add(ProductImage(product_id=product.id, image_url=url, sort_order=index))
+        if data.get('image_urls'):
+            product.image_url = data.get('image_urls')[0]
+
+    db.session.commit()
+    return jsonify(product.to_dict()), 200
+
+@products_bp.route('/<int:product_id>', methods=['DELETE'])
+def delete_product(product_id):
+    """Delete a product (admin)."""
+    auth_error = require_admin_key()
+    if auth_error:
+        return auth_error
+
+    product = Product.query.get(product_id)
+    if not product:
+        return jsonify({'error': 'Product not found'}), 404
+
+    db.session.delete(product)
+    db.session.commit()
+    return jsonify({'ok': True}), 200

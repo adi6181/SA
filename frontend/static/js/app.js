@@ -84,6 +84,7 @@ function isAdminMode() {
     return localStorage.getItem(ADMIN_MODE_KEY) === 'true';
 }
 
+
 async function loadProducts() {
     try {
         const search = document.getElementById('searchInput')?.value.trim();

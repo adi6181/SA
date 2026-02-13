@@ -1,5 +1,17 @@
 # Deployment Guide for ShopHub E-Commerce Platform
 
+## Portfolio Summary (Interview-Ready)
+- Project: ShopHub E-Commerce Platform
+- Role: Full-stack (Flask backend + vanilla JS frontend)
+- Highlights: Product catalog, cart, order management, email notifications, REST API, responsive UI
+- Tech Stack: Python, Flask, SQLAlchemy, SQLite, HTML, CSS, JavaScript
+
+## Website Images
+![Homepage](Images/Web%20Template.png)
+![Categories](Images/Categories%20.png)
+![Men Collection](Images/Men.png)
+![Women Collection](Images/Women.png)
+
 ## 🚀 Deploying to Production
 
 This guide covers deploying ShopHub to various platforms.

@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import os
@@ -25,6 +25,7 @@ def create_app():
     app.config['UPLOAD_FOLDER'] = os.path.join(STATIC_DIR, 'uploads')
     app.config['MAX_CONTENT_LENGTH'] = None
     app.config['ADMIN_UPLOAD_KEY'] = os.getenv('ADMIN_UPLOAD_KEY')
+    app.config['ADMIN_DASHBOARD_KEY'] = os.getenv('ADMIN_DASHBOARD_KEY') or app.config['ADMIN_UPLOAD_KEY']
     
     # Initialize extensions
     db.init_app(app)
@@ -33,8 +34,13 @@ def create_app():
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     
     # Register blueprints
-    from app.routes import products_bp
+    from app.routes import products_bp, admin_bp
     app.register_blueprint(products_bp, url_prefix='/api/products')
+    app.register_blueprint(admin_bp, url_prefix='/api/admin')
+
+    @app.route('/admin')
+    def admin_dashboard():
+        return render_template('admin.html')
     
     # Create database tables
     with app.app_context():

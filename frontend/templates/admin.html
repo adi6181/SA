@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopHub Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body>
+    <div class="admin-shell">
+        <header class="admin-header">
+            <div>
+                <h1>ShopHub Admin</h1>
+                <p>Manage products and keep your catalog fresh.</p>
+            </div>
+            <a class="admin-link" href="/">Back to Store</a>
+        </header>
+
+        <section class="admin-card" id="loginPanel">
+            <h2>Admin Login</h2>
+            <p>Enter your admin key to unlock product management.</p>
+            <div class="admin-row">
+                <input type="password" id="adminKeyInput" placeholder="Admin key">
+                <button id="adminLoginBtn">Unlock</button>
+            </div>
+            <p class="admin-message" id="loginMessage"></p>
+        </section>
+
+        <section class="admin-grid hidden" id="dashboardPanel">
+            <div class="admin-card">
+                <h2 id="formTitle">Create Product</h2>
+                <form id="productForm">
+                    <input type="hidden" id="productId">
+                    <label>Product Name</label>
+                    <input type="text" id="name" required>
+
+                    <label>Description</label>
+                    <textarea id="description" rows="4" required></textarea>
+
+                    <div class="admin-two">
+                        <div>
+                            <label>Price</label>
+                            <input type="number" id="price" step="0.01" required>
+                        </div>
+                        <div>
+                            <label>Stock</label>
+                            <input type="number" id="stock" min="0" value="0">
+                        </div>
+                    </div>
+
+                    <div class="admin-two">
+                        <div>
+                            <label>Category</label>
+                            <input type="text" id="category" placeholder="Electronics">
+                        </div>
+                        <div>
+                            <label>Merchant</label>
+                            <input type="text" id="merchant" placeholder="Amazon">
+                        </div>
+                    </div>
+
+                    <label>Affiliate URL</label>
+                    <input type="url" id="affiliate_url" placeholder="https://">
+
+                    <label>Main Image URL</label>
+                    <input type="url" id="image_url" placeholder="https://">
+
+                    <label>Gallery Image URLs (comma separated)</label>
+                    <input type="text" id="image_urls" placeholder="https://image1.jpg, https://image2.jpg">
+
+                    <div class="admin-two">
+                        <div>
+                            <label>Rating</label>
+                            <input type="number" id="rating" step="0.1" min="0" max="5">
+                        </div>
+                        <div>
+                            <label>Review Count</label>
+                            <input type="number" id="review_count" min="0">
+                        </div>
+                    </div>
+
+                    <div class="admin-two">
+                        <div>
+                            <label>Deal Price</label>
+                            <input type="number" id="deal_price" step="0.01">
+                        </div>
+                        <div>
+                            <label>Original Price</label>
+                            <input type="number" id="original_price" step="0.01">
+                        </div>
+                    </div>
+
+                    <label class="checkbox">
+                        <input type="checkbox" id="is_deal">
+                        Featured Deal
+                    </label>
+
+                    <div class="admin-actions">
+                        <button type="submit" id="saveBtn">Save Product</button>
+                        <button type="button" id="resetBtn" class="secondary">Reset</button>
+                    </div>
+                    <p class="admin-message" id="formMessage"></p>
+                </form>
+            </div>
+
+            <div class="admin-card">
+                <div class="admin-list-header">
+                    <h2>Products</h2>
+                    <button id="refreshBtn" class="secondary">Refresh</button>
+                </div>
+                <div class="admin-list" id="productsList"></div>
+            </div>
+        </section>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+</body>
+</html>
