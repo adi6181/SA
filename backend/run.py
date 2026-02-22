@@ -130,6 +130,11 @@ def signup_page():
     return render_template('signup.html')
 
 
+@app.route('/support', methods=['GET'])
+def support_page():
+    return render_template('support.html')
+
+
 @app.route('/reset-password', methods=['GET'])
 def reset_password_page():
     token = request.args.get('token', '').strip()

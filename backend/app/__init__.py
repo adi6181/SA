@@ -50,9 +50,10 @@ def create_app():
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     
     # Register blueprints
-    from app.routes import products_bp, admin_bp
+    from app.routes import products_bp, admin_bp, support_bp
     app.register_blueprint(products_bp, url_prefix='/api/products')
     app.register_blueprint(admin_bp, url_prefix='/api/admin')
+    app.register_blueprint(support_bp, url_prefix='/api/support')
 
     @app.route('/admin')
     def admin_dashboard():

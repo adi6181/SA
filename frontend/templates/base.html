@@ -29,6 +29,7 @@
             <ul class="nav-menu nav-menu-right">
                 <li><a href="/" class="nav-link">Home</a></li>
                 <li><a href="#contact" class="nav-link">Contact</a></li>
+                <li><a href="/support" class="nav-link">Support</a></li>
                 <li><a href="/login" class="auth-link auth-link-login">Login</a></li>
                 <li><a href="/signup" class="auth-link auth-link-signup">Sign Up</a></li>
                 <li><a href="/admin" class="nav-link">Admin</a></li>
@@ -39,20 +40,54 @@
     {% block content %}{% endblock %}
 
     <section id="contact" class="contact-section">
-        <div class="container contact-grid">
-            <div class="contact-card">
-                <h3>Email</h3>
-                <p>support@shophub.com</p>
+        <div class="container support-grid">
+            <div class="contact-card support-card">
+                <h3>Contact Support</h3>
+                <p>Create a ticket and our team will respond.</p>
+                <form id="contactSupportForm" class="support-form">
+                    <input id="supportName" type="text" placeholder="Your name" required>
+                    <input id="supportEmail" type="email" placeholder="Your email" required>
+                    <input id="supportSubject" type="text" placeholder="Subject" required>
+                    <textarea id="supportMessage" rows="4" placeholder="Describe your issue" required></textarea>
+                    <button type="submit" class="btn btn-primary">Create Ticket</button>
+                    <p id="supportFormMessage" class="modal-message"></p>
+                </form>
             </div>
-            <div class="contact-card">
-                <h3>Phone</h3>
-                <p>+1 (555) 123-4567</p>
-            </div>
-            <div class="contact-card">
-                <h3>Affiliate Disclosure</h3>
-                <p>We may earn a commission when you buy via our links.</p>
+
+            <div class="contact-card support-card">
+                <h3>Ticket Lookup</h3>
+                <form id="ticketLookupForm" class="support-form">
+                    <input id="lookupTicketNumber" type="text" placeholder="Ticket number (TKT-...)" required>
+                    <input id="lookupEmail" type="email" placeholder="Your email" required>
+                    <button type="submit" class="btn btn-outline">Check Ticket</button>
+                </form>
+                <p id="ticketLookupMessage" class="modal-message"></p>
+                <h3 class="faq-title">Quick FAQs</h3>
+                <ul id="faqListCompact" class="faq-list"></ul>
             </div>
         </div>
+    </section>
+
+    <button type="button" id="supportChatToggle" class="support-chat-toggle" aria-label="Open support chatbot" title="Support chatbot">
+        <span class="chatbot-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" role="img" focusable="false">
+                <path d="M12 2c4.96 0 9 3.58 9 8 0 2.39-1.2 4.53-3.1 6v4l-3.03-2.07A10.8 10.8 0 0 1 12 18c-4.96 0-9-3.58-9-8s4.04-8 9-8zm-4 7a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm8 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm-4 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/>
+            </svg>
+        </span>
+    </button>
+    <section id="supportChatPanel" class="support-chat-panel" aria-hidden="true">
+        <div class="support-chat-header">
+            <h3>FAQ Assistant</h3>
+            <button type="button" id="supportChatClose">×</button>
+        </div>
+        <div id="supportChatMessages" class="support-chat-messages">
+            <p class="support-chat-bot">Hi, ask me about shipping, tracking, returns, account help, or reviews.</p>
+        </div>
+        <div id="supportChatSuggestions" class="support-chat-suggestions"></div>
+        <form id="supportChatForm" class="support-chat-form">
+            <input id="supportChatInput" type="text" placeholder="Ask a support question..." required>
+            <button type="submit">Send</button>
+        </form>
     </section>
 
     <footer class="footer">
@@ -62,6 +97,7 @@
     </footer>
 
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/support.js') }}"></script>
     {% block extra_scripts %}{% endblock %}
 </body>
 </html>

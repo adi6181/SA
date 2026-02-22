@@ -4,11 +4,16 @@ const ADMIN_API_KEY_STORAGE = 'adminImageUploadKey';
 
 let productsCache = [];
 let filterDebounceTimer = null;
+const filterState = {
+    dealsOnly: false,
+    minRating: null
+};
 
 document.addEventListener('DOMContentLoaded', () => {
     bootstrapAdminMode();
     setupEventListeners();
     setupProductPopupNavigation();
+    updateQuickChipStates();
     loadProducts();
     applyProductImageFallbacks();
     setupScrollAnimations();
@@ -18,6 +23,7 @@ function setupEventListeners() {
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
         searchInput.addEventListener('input', () => {
+            loadSearchSuggestions(searchInput.value.trim());
             clearTimeout(filterDebounceTimer);
             filterDebounceTimer = setTimeout(loadProducts, 250);
         });
@@ -34,6 +40,22 @@ function setupEventListeners() {
     const sortFilter = document.getElementById('sortFilter');
     if (sortFilter) {
         sortFilter.addEventListener('change', loadProducts);
+    }
+
+    const minPriceFilter = document.getElementById('minPriceFilter');
+    if (minPriceFilter) {
+        minPriceFilter.addEventListener('input', () => {
+            clearTimeout(filterDebounceTimer);
+            filterDebounceTimer = setTimeout(loadProducts, 300);
+        });
+    }
+
+    const maxPriceFilter = document.getElementById('maxPriceFilter');
+    if (maxPriceFilter) {
+        maxPriceFilter.addEventListener('input', () => {
+            clearTimeout(filterDebounceTimer);
+            filterDebounceTimer = setTimeout(loadProducts, 300);
+        });
     }
 
     document.querySelectorAll('.collection-chip').forEach((chip) => {
@@ -69,6 +91,29 @@ function setupEventListeners() {
             playShopStory(mode);
         });
     });
+
+    document.querySelectorAll('.quick-chip').forEach((chip) => {
+        chip.addEventListener('click', () => {
+            const chipType = chip.dataset.filterChip;
+            if (chipType === 'deals') {
+                filterState.dealsOnly = !filterState.dealsOnly;
+            } else if (chipType === 'rating') {
+                filterState.minRating = filterState.minRating ? null : 4;
+            }
+            updateQuickChipStates();
+            loadProducts();
+        });
+    });
+
+    const activeFilters = document.getElementById('activeFilters');
+    if (activeFilters) {
+        activeFilters.addEventListener('click', (event) => {
+            const removeKey = event.target.closest('[data-remove-filter]')?.dataset.removeFilter;
+            if (!removeKey) return;
+            clearFilter(removeKey);
+            loadProducts();
+        });
+    }
 }
 
 function setupProductPopupNavigation() {
@@ -110,14 +155,16 @@ function isAdminMode() {
 
 async function loadProducts() {
     try {
-        const search = document.getElementById('searchInput')?.value.trim();
-        const category = document.getElementById('categoryFilter')?.value;
-        const sort = document.getElementById('sortFilter')?.value;
+        const filters = getCurrentFilters();
 
         const params = new URLSearchParams();
-        if (search) params.set('q', search);
-        if (category) params.set('category', category);
-        if (sort) params.set('sort', sort);
+        if (filters.search) params.set('q', filters.search);
+        if (filters.category) params.set('category', filters.category);
+        if (filters.sort) params.set('sort', filters.sort);
+        if (filters.minPrice) params.set('min_price', filters.minPrice);
+        if (filters.maxPrice) params.set('max_price', filters.maxPrice);
+        if (filters.dealsOnly) params.set('deals', 'true');
+        if (filters.minRating) params.set('min_rating', String(filters.minRating));
 
         const query = params.toString() ? `?${params.toString()}` : '';
         const response = await fetch(`${API_BASE_URL}/products/${query}`);
@@ -126,11 +173,138 @@ async function loadProducts() {
         productsCache = products;
         storeCachedProducts(products);
         displayProducts(products);
+        renderActiveFilters(filters);
     } catch (error) {
         console.error('Error loading products:', error);
         const fallbackProducts = getCachedProducts();
         productsCache = fallbackProducts;
         displayProducts(fallbackProducts);
+        renderActiveFilters(getCurrentFilters());
+    }
+}
+
+function getCurrentFilters() {
+    return {
+        search: document.getElementById('searchInput')?.value.trim() || '',
+        category: document.getElementById('categoryFilter')?.value || '',
+        sort: document.getElementById('sortFilter')?.value || 'newest',
+        minPrice: document.getElementById('minPriceFilter')?.value || '',
+        maxPrice: document.getElementById('maxPriceFilter')?.value || '',
+        dealsOnly: filterState.dealsOnly,
+        minRating: filterState.minRating
+    };
+}
+
+function updateQuickChipStates() {
+    document.querySelectorAll('.quick-chip').forEach((chip) => {
+        const chipType = chip.dataset.filterChip;
+        if (chipType === 'deals') {
+            chip.classList.toggle('active', filterState.dealsOnly);
+        } else if (chipType === 'rating') {
+            chip.classList.toggle('active', Boolean(filterState.minRating));
+        }
+    });
+}
+
+function renderActiveFilters(filters) {
+    const activeFilters = document.getElementById('activeFilters');
+    if (!activeFilters) return;
+
+    const chips = [];
+    if (filters.search) chips.push({ key: 'search', label: `Search: ${filters.search}` });
+    if (filters.category) chips.push({ key: 'category', label: `Category: ${filters.category}` });
+    if (filters.minPrice) chips.push({ key: 'minPrice', label: `Min $${filters.minPrice}` });
+    if (filters.maxPrice) chips.push({ key: 'maxPrice', label: `Max $${filters.maxPrice}` });
+    if (filters.dealsOnly) chips.push({ key: 'deals', label: 'Deals only' });
+    if (filters.minRating) chips.push({ key: 'rating', label: `${filters.minRating}+ rated` });
+    if (filters.sort && filters.sort !== 'newest') {
+        const sortLabelMap = {
+            price_asc: 'Sort: Price low-high',
+            price_desc: 'Sort: Price high-low',
+            name_asc: 'Sort: Name A-Z',
+            rating_desc: 'Sort: Top rated',
+            popular_desc: 'Sort: Most reviewed',
+            deals_desc: 'Sort: Best deals'
+        };
+        chips.push({ key: 'sort', label: sortLabelMap[filters.sort] || 'Sort applied' });
+    }
+
+    if (!chips.length) {
+        activeFilters.innerHTML = '';
+        return;
+    }
+
+    const html = chips.map((chip) => (
+        `<button type="button" class="active-chip" data-remove-filter="${chip.key}">${chip.label} ×</button>`
+    )).join('');
+    activeFilters.innerHTML = `${html}<button type="button" class="active-chip clear-all" data-remove-filter="all">Clear all</button>`;
+}
+
+function clearFilter(filterKey) {
+    if (filterKey === 'all') {
+        const searchInput = document.getElementById('searchInput');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const sortFilter = document.getElementById('sortFilter');
+        const minPriceFilter = document.getElementById('minPriceFilter');
+        const maxPriceFilter = document.getElementById('maxPriceFilter');
+        if (searchInput) searchInput.value = '';
+        if (categoryFilter) categoryFilter.value = '';
+        if (sortFilter) sortFilter.value = 'newest';
+        if (minPriceFilter) minPriceFilter.value = '';
+        if (maxPriceFilter) maxPriceFilter.value = '';
+        filterState.dealsOnly = false;
+        filterState.minRating = null;
+        syncCollectionChip('');
+        updateQuickChipStates();
+        return;
+    }
+
+    if (filterKey === 'search') {
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) searchInput.value = '';
+    } else if (filterKey === 'category') {
+        const categoryFilter = document.getElementById('categoryFilter');
+        if (categoryFilter) categoryFilter.value = '';
+        syncCollectionChip('');
+    } else if (filterKey === 'minPrice') {
+        const minPriceFilter = document.getElementById('minPriceFilter');
+        if (minPriceFilter) minPriceFilter.value = '';
+    } else if (filterKey === 'maxPrice') {
+        const maxPriceFilter = document.getElementById('maxPriceFilter');
+        if (maxPriceFilter) maxPriceFilter.value = '';
+    } else if (filterKey === 'deals') {
+        filterState.dealsOnly = false;
+        updateQuickChipStates();
+    } else if (filterKey === 'rating') {
+        filterState.minRating = null;
+        updateQuickChipStates();
+    } else if (filterKey === 'sort') {
+        const sortFilter = document.getElementById('sortFilter');
+        if (sortFilter) sortFilter.value = 'newest';
+    }
+}
+
+async function loadSearchSuggestions(query) {
+    const datalist = document.getElementById('searchSuggestions');
+    if (!datalist) return;
+
+    if (!query || query.length < 2) {
+        datalist.innerHTML = '';
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/products/suggestions?q=${encodeURIComponent(query)}&limit=8`);
+        if (!response.ok) return;
+        const suggestions = await response.json();
+        datalist.innerHTML = '';
+        (suggestions || []).forEach((item) => {
+            const option = document.createElement('option');
+            option.value = item;
+            datalist.appendChild(option);
+        });
+    } catch (_error) {
+        // Ignore autocomplete failures silently.
     }
 }
 

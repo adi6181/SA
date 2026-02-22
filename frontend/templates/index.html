@@ -44,7 +44,8 @@
             <p>Curated affiliate products with trusted merchants.</p>
         </div>
         <div class="filters">
-            <input type="text" id="searchInput" class="search-input" placeholder="Search products...">
+            <input type="text" id="searchInput" class="search-input" list="searchSuggestions" placeholder="Search products...">
+            <datalist id="searchSuggestions"></datalist>
             <select id="categoryFilter" class="category-filter">
                 <option value="">All Categories</option>
                 <option value="Electronics">Electronics</option>
@@ -57,8 +58,18 @@
                 <option value="price_asc">Price: Low to High</option>
                 <option value="price_desc">Price: High to Low</option>
                 <option value="name_asc">Name: A-Z</option>
+                <option value="rating_desc">Top Rated</option>
+                <option value="popular_desc">Most Reviewed</option>
+                <option value="deals_desc">Best Deals</option>
             </select>
+            <input type="number" id="minPriceFilter" class="category-filter" min="0" step="0.01" placeholder="Min price">
+            <input type="number" id="maxPriceFilter" class="category-filter" min="0" step="0.01" placeholder="Max price">
         </div>
+        <div class="quick-filters">
+            <button type="button" class="quick-chip" data-filter-chip="deals">Deals Only</button>
+            <button type="button" class="quick-chip" data-filter-chip="rating">4+ Rated</button>
+        </div>
+        <div class="active-filters" id="activeFilters"></div>
         <div class="products-grid" id="productsGrid">
             {%- if products is defined and products|length > 0 -%}
                 {%- for product in products -%}

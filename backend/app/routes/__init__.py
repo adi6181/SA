@@ -2,18 +2,53 @@ import os
 import json
 import re
 import mimetypes
+from difflib import SequenceMatcher
 from uuid import uuid4
 from flask import Blueprint, current_app, jsonify, request, url_for
 from werkzeug.utils import secure_filename
-from sqlalchemy import or_
+from sqlalchemy import or_, func
 from urllib.parse import urlparse, urlsplit
 import requests
 from app import db
-from app.models import Product, ProductImage
+from app.models import Product, ProductImage, Review, ReviewHelpfulVote, Order, OrderItem, SupportTicket
 
 # Blueprint for products
 products_bp = Blueprint('products', __name__)
 admin_bp = Blueprint('admin', __name__)
+support_bp = Blueprint('support', __name__)
+
+FAQ_KB = [
+    {
+        'id': 'shipping_time',
+        'question': 'How long does shipping take?',
+        'answer': 'Shipping time depends on the merchant. Most orders arrive in 3-7 business days after confirmation.',
+        'keywords': ['shipping', 'delivery', 'arrive', 'when', 'time']
+    },
+    {
+        'id': 'order_tracking',
+        'question': 'How can I track my order?',
+        'answer': 'Use your order number in your merchant order tracking page. You can also contact support with your ticket number.',
+        'keywords': ['track', 'tracking', 'order status', 'where is my order']
+    },
+    {
+        'id': 'returns_refunds',
+        'question': 'How do returns/refunds work?',
+        'answer': 'Returns and refunds are handled by the merchant where you purchased the item. Review merchant return policies before purchase.',
+        'keywords': ['return', 'refund', 'exchange', 'cancel']
+    },
+    {
+        'id': 'account_help',
+        'question': 'I forgot my password. What should I do?',
+        'answer': 'Use the Forgot Password option on the Login page. We will send you a password reset link.',
+        'keywords': ['forgot password', 'reset password', 'login help']
+    },
+    {
+        'id': 'review_moderation',
+        'question': 'Why is my review not visible?',
+        'answer': 'New reviews go through moderation before being published. Approved reviews appear on the product page.',
+        'keywords': ['review', 'moderation', 'not visible', 'pending']
+    }
+]
 
 def get_admin_key():
     return current_app.config.get('ADMIN_DASHBOARD_KEY') or current_app.config.get('ADMIN_UPLOAD_KEY')
@@ -26,6 +61,13 @@ def require_admin_key():
     if request.headers.get('X-Admin-Key') != configured_key:
         return jsonify({'error': 'Unauthorized'}), 403
     return None
+
+
+def is_admin_authorized():
+    configured_key = get_admin_key()
+    if not configured_key:
+        return False
+    return request.headers.get('X-Admin-Key') == configured_key
 
 
 def save_upload(file_storage):
@@ -72,6 +114,127 @@ def normalize_image_urls(raw_value):
         return [url.strip() for url in stripped.split(',') if url.strip()]
 
     return []
+
+
+def fuzzy_score(query_text, product):
+    query = (query_text or '').strip().lower()
+    if not query:
+        return 0.0
+
+    name = (product.name or '').lower()
+    category = (product.category or '').lower()
+    description = (product.description or '').lower()
+    haystack = f"{name} {category} {description}"
+
+    if query in haystack:
+        return 1.0
+
+    tokens = re.findall(r'[a-z0-9]+', haystack)
+    best_ratio = 0.0
+    for token in tokens:
+        ratio = SequenceMatcher(None, query, token).ratio()
+        if ratio > best_ratio:
+            best_ratio = ratio
+    name_ratio = SequenceMatcher(None, query, name).ratio() if name else 0.0
+    return max(best_ratio, name_ratio)
+
+
+def sort_products_in_memory(products, sort_key):
+    if sort_key == 'price_asc':
+        return sorted(products, key=lambda item: (item.price if item.price is not None else float('inf')))
+    if sort_key == 'price_desc':
+        return sorted(products, key=lambda item: (item.price if item.price is not None else 0), reverse=True)
+    if sort_key == 'name_asc':
+        return sorted(products, key=lambda item: (item.name or '').lower())
+    if sort_key == 'rating_desc':
+        return sorted(products, key=lambda item: (item.rating if item.rating is not None else -1), reverse=True)
+    if sort_key == 'popular_desc':
+        return sorted(products, key=lambda item: (item.review_count if item.review_count is not None else -1), reverse=True)
+    if sort_key == 'deals_desc':
+        return sorted(
+            products,
+            key=lambda item: (
+                ((item.original_price or item.price or 0) - (item.deal_price or item.price or 0)),
+                item.review_count or 0
+            ),
+            reverse=True
+        )
+    return sorted(products, key=lambda item: item.created_at, reverse=True)
+
+
+def recompute_product_review_stats(product_id):
+    avg_rating, approved_count = db.session.query(
+        func.avg(Review.rating),
+        func.count(Review.id)
+    ).filter(
+        Review.product_id == product_id,
+        Review.moderation_status == 'approved'
+    ).first()
+
+    product = Product.query.get(product_id)
+    if not product:
+        return
+
+    product.rating = round(float(avg_rating), 1) if avg_rating is not None else None
+    product.review_count = int(approved_count or 0)
+    db.session.commit()
+
+
+def has_verified_purchase(reviewer_email, product_id, order_number=None):
+    email = (reviewer_email or '').strip().lower()
+    if not email:
+        return False
+
+    query = db.session.query(Order.id).join(
+        OrderItem, OrderItem.order_id == Order.id
+    ).filter(
+        Order.customer_email == email,
+        OrderItem.product_id == product_id
+    )
+
+    if order_number:
+        query = query.filter(Order.order_number == order_number)
+
+    return db.session.query(query.exists()).scalar()
+
+
+def review_voter_token():
+    explicit = (request.headers.get('X-Voter-Token') or '').strip()
+    if explicit:
+        return explicit[:255]
+    ip = (request.remote_addr or '0.0.0.0').strip()
+    user_agent = (request.headers.get('User-Agent') or 'unknown').strip()
+    return f'{ip}:{user_agent}'[:255]
+
+
+def normalize_text(value):
+    return (value or '').strip().lower()
+
+
+def assistant_reply(user_message):
+    message = normalize_text(user_message)
+    if not message:
+        return None, []
+
+    ranked = []
+    for item in FAQ_KB:
+        score = 0
+        for keyword in item['keywords']:
+            if keyword in message:
+                score += 2
+        score += SequenceMatcher(None, message, item['question'].lower()).ratio()
+        ranked.append((score, item))
+
+    ranked.sort(key=lambda pair: pair[0], reverse=True)
+    top = [item for score, item in ranked if score >= 1.2][:3]
+    if not top:
+        return (
+            'I can help with shipping, tracking, returns, account access, and reviews. '
+            'Please share your issue and we can open a support ticket.',
+            []
+        )
+
+    return top[0]['answer'], [{'id': item['id'], 'question': item['question']} for item in top[1:3]]
 
 
 def extract_meta_value(html, keys):
@@ -270,6 +433,113 @@ def admin_login():
     return jsonify({'ok': True}), 200
 
 
+@support_bp.route('/faqs', methods=['GET'])
+def support_faqs():
+    return jsonify([{'id': item['id'], 'question': item['question'], 'answer': item['answer']} for item in FAQ_KB]), 200
+
+
+@support_bp.route('/assistant', methods=['POST'])
+def support_assistant():
+    data = request.get_json(silent=True) or {}
+    message = (data.get('message') or '').strip()
+    if not message:
+        return jsonify({'error': 'Message is required'}), 400
+
+    answer, suggestions = assistant_reply(message)
+    return jsonify({
+        'ok': True,
+        'answer': answer,
+        'suggestions': suggestions
+    }), 200
+
+
+@support_bp.route('/contact', methods=['POST'])
+def create_support_ticket():
+    data = request.get_json(silent=True) if request.is_json else request.form.to_dict()
+    data = data or {}
+
+    name = (data.get('name') or '').strip()
+    email = (data.get('email') or '').strip().lower()
+    subject = (data.get('subject') or '').strip()
+    message = (data.get('message') or '').strip()
+    channel = (data.get('channel') or 'contact_form').strip().lower()
+
+    if not name:
+        return jsonify({'error': 'Name is required'}), 400
+    if not email or '@' not in email:
+        return jsonify({'error': 'Valid email is required'}), 400
+    if not subject:
+        return jsonify({'error': 'Subject is required'}), 400
+    if not message:
+        return jsonify({'error': 'Message is required'}), 400
+
+    assistant_answer, _ = assistant_reply(message)
+    ticket = SupportTicket(
+        customer_name=name,
+        customer_email=email,
+        subject=subject,
+        message=message,
+        channel=channel,
+        assistant_suggestion=assistant_answer
+    )
+    db.session.add(ticket)
+    db.session.commit()
+
+    return jsonify({
+        'ok': True,
+        'message': 'Support ticket created successfully.',
+        'ticket': ticket.to_dict()
+    }), 201
+
+
+@support_bp.route('/tickets/<string:ticket_number>', methods=['GET'])
+def get_support_ticket(ticket_number):
+    ticket = SupportTicket.query.filter_by(ticket_number=ticket_number).first()
+    if not ticket:
+        return jsonify({'error': 'Ticket not found'}), 404
+
+    if not is_admin_authorized():
+        email = (request.args.get('email') or '').strip().lower()
+        if not email or email != (ticket.customer_email or '').lower():
+            return jsonify({'error': 'Email mismatch for ticket lookup'}), 403
+
+    return jsonify(ticket.to_dict()), 200
+
+
+@admin_bp.route('/support/tickets', methods=['GET'])
+def admin_support_tickets():
+    auth_error = require_admin_key()
+    if auth_error:
+        return auth_error
+
+    status = (request.args.get('status') or '').strip().lower()
+    query = SupportTicket.query
+    if status in {'open', 'in_progress', 'resolved', 'closed'}:
+        query = query.filter_by(status=status)
+    tickets = query.order_by(SupportTicket.created_at.desc()).limit(200).all()
+    return jsonify([ticket.to_dict() for ticket in tickets]), 200
+
+
+@admin_bp.route('/support/tickets/<int:ticket_id>/status', methods=['POST'])
+def admin_update_ticket_status(ticket_id):
+    auth_error = require_admin_key()
+    if auth_error:
+        return auth_error
+
+    ticket = SupportTicket.query.get(ticket_id)
+    if not ticket:
+        return jsonify({'error': 'Ticket not found'}), 404
+
+    data = request.get_json(silent=True) or {}
+    next_status = (data.get('status') or '').strip().lower()
+    if next_status not in {'open', 'in_progress', 'resolved', 'closed'}:
+        return jsonify({'error': 'Invalid status'}), 400
+
+    ticket.status = next_status
+    db.session.commit()
+    return jsonify({'ok': True, 'ticket': ticket.to_dict()}), 200
+
+
 @admin_bp.route('/import-url', methods=['POST'])
 def import_product_from_url():
     auth_error = require_admin_key()
@@ -341,6 +611,9 @@ def get_products():
     limit = request.args.get('limit', type=int)
     merchant = request.args.get('merchant')
     deals = request.args.get('deals')
+    min_price = request.args.get('min_price', type=float)
+    max_price = request.args.get('max_price', type=float)
+    min_rating = request.args.get('min_rating', type=float)
     query = Product.query
     
     if category:
@@ -352,6 +625,16 @@ def get_products():
     if deals in {'1', 'true', 'yes'}:
         query = query.filter_by(is_deal=True)
 
+    if min_price is not None:
+        query = query.filter(Product.price >= min_price)
+
+    if max_price is not None:
+        query = query.filter(Product.price <= max_price)
+
+    if min_rating is not None:
+        query = query.filter(Product.rating >= min_rating)
+
+    search_fallback = False
     if search:
         search_like = f"%{search}%"
         query = query.filter(
@@ -361,21 +644,94 @@ def get_products():
                 Product.category.ilike(search_like)
             )
         )
+        matched_count = query.count()
+        search_fallback = matched_count == 0
 
-    if sort == 'price_asc':
-        query = query.order_by(Product.price.asc())
-    elif sort == 'price_desc':
-        query = query.order_by(Product.price.desc())
-    elif sort == 'name_asc':
-        query = query.order_by(Product.name.asc())
+    if search_fallback:
+        base_query = Product.query
+        if category:
+            base_query = base_query.filter_by(category=category)
+        if merchant:
+            base_query = base_query.filter_by(merchant=merchant)
+        if deals in {'1', 'true', 'yes'}:
+            base_query = base_query.filter_by(is_deal=True)
+        if min_price is not None:
+            base_query = base_query.filter(Product.price >= min_price)
+        if max_price is not None:
+            base_query = base_query.filter(Product.price <= max_price)
+        if min_rating is not None:
+            base_query = base_query.filter(Product.rating >= min_rating)
+
+        candidates = base_query.all()
+        scored = [(fuzzy_score(search, product), product) for product in candidates]
+        scored = [item for item in scored if item[0] >= 0.45]
+        scored.sort(key=lambda item: item[0], reverse=True)
+        products = [product for _, product in scored]
+        products = sort_products_in_memory(products, sort)
     else:
-        query = query.order_by(Product.created_at.desc())
+        if sort == 'price_asc':
+            query = query.order_by(Product.price.asc())
+        elif sort == 'price_desc':
+            query = query.order_by(Product.price.desc())
+        elif sort == 'name_asc':
+            query = query.order_by(Product.name.asc())
+        elif sort == 'rating_desc':
+            query = query.order_by(Product.rating.desc())
+        elif sort == 'popular_desc':
+            query = query.order_by(Product.review_count.desc())
+        elif sort == 'deals_desc':
+            query = query.order_by((Product.original_price - Product.deal_price).desc())
+        else:
+            query = query.order_by(Product.created_at.desc())
+
+        products = query.all()
 
     if limit:
-        query = query.limit(limit)
-    
-    products = query.all()
+        products = products[:limit]
+
     return jsonify([product.to_dict() for product in products]), 200
+
+
+@products_bp.route('/suggestions', methods=['GET'])
+def product_suggestions():
+    search = (request.args.get('q') or '').strip()
+    limit = request.args.get('limit', type=int) or 8
+    limit = max(1, min(limit, 20))
+    if not search:
+        return jsonify([]), 200
+
+    search_like = f"%{search}%"
+    products = Product.query.filter(
+        or_(
+            Product.name.ilike(search_like),
+            Product.category.ilike(search_like),
+            Product.merchant.ilike(search_like)
+        )
+    ).order_by(Product.review_count.desc(), Product.created_at.desc()).limit(limit).all()
+
+    if not products:
+        candidates = Product.query.limit(300).all()
+        scored = [(fuzzy_score(search, product), product) for product in candidates]
+        scored = [item for item in scored if item[0] >= 0.5]
+        scored.sort(key=lambda item: item[0], reverse=True)
+        products = [product for _, product in scored[:limit]]
+
+    suggestions = []
+    seen = set()
+    for product in products:
+        for text in [product.name, product.category]:
+            value = (text or '').strip()
+            key = value.lower()
+            if not value or key in seen:
+                continue
+            seen.add(key)
+            suggestions.append(value)
+            if len(suggestions) >= limit:
+                break
+        if len(suggestions) >= limit:
+            break
+
+    return jsonify(suggestions), 200
 
 @products_bp.route('/<int:product_id>', methods=['GET'])
 def get_product(product_id):
@@ -384,6 +740,138 @@ def get_product(product_id):
     if not product:
         return jsonify({'error': 'Product not found'}), 404
     return jsonify(product.to_dict()), 200
+
+
+@products_bp.route('/<int:product_id>/reviews', methods=['GET'])
+def get_product_reviews(product_id):
+    product = Product.query.get(product_id)
+    if not product:
+        return jsonify({'error': 'Product not found'}), 404
+
+    include_pending = request.args.get('include_pending') in {'1', 'true', 'yes'}
+    status = request.args.get('status')
+    query = Review.query.filter_by(product_id=product_id)
+
+    if include_pending:
+        auth_error = require_admin_key()
+        if auth_error:
+            return auth_error
+    elif status in {'pending', 'approved', 'rejected'}:
+        query = query.filter_by(moderation_status=status)
+    else:
+        query = query.filter_by(moderation_status='approved')
+
+    reviews = query.order_by(Review.created_at.desc()).all()
+    return jsonify([review.to_dict() for review in reviews]), 200
+
+
+@products_bp.route('/<int:product_id>/reviews', methods=['POST'])
+def submit_product_review(product_id):
+    product = Product.query.get(product_id)
+    if not product:
+        return jsonify({'error': 'Product not found'}), 404
+
+    data = request.get_json(silent=True) if request.is_json else request.form.to_dict()
+    data = data or {}
+
+    reviewer_name = (data.get('reviewer_name') or '').strip()
+    reviewer_email = (data.get('reviewer_email') or '').strip().lower()
+    title = (data.get('title') or '').strip()
+    body = (data.get('body') or '').strip()
+    rating = parse_int(data.get('rating'))
+    order_number = (data.get('order_number') or '').strip()
+
+    if not reviewer_name:
+        return jsonify({'error': 'Reviewer name is required'}), 400
+    if not reviewer_email or '@' not in reviewer_email:
+        return jsonify({'error': 'Valid reviewer email is required'}), 400
+    if rating is None or rating < 1 or rating > 5:
+        return jsonify({'error': 'Rating must be between 1 and 5'}), 400
+    if not body:
+        return jsonify({'error': 'Review text is required'}), 400
+
+    photo_url = data.get('photo_url')
+    photo_file = request.files.get('photo')
+    if photo_file and photo_file.filename:
+        photo_url = save_upload(photo_file)
+
+    verified = has_verified_purchase(reviewer_email, product_id, order_number=order_number or None)
+
+    review = Review(
+        product_id=product_id,
+        reviewer_name=reviewer_name,
+        reviewer_email=reviewer_email,
+        rating=rating,
+        title=title or None,
+        body=body,
+        photo_url=photo_url,
+        verified_purchase=verified,
+        moderation_status='pending'
+    )
+    db.session.add(review)
+    db.session.commit()
+
+    return jsonify({
+        'ok': True,
+        'message': 'Review submitted and pending moderation.',
+        'review': review.to_dict()
+    }), 201
+
+
+@products_bp.route('/reviews/<int:review_id>/helpful', methods=['POST'])
+def vote_review_helpful(review_id):
+    review = Review.query.get(review_id)
+    if not review or review.moderation_status != 'approved':
+        return jsonify({'error': 'Review not found'}), 404
+
+    voter_token = review_voter_token()
+    existing_vote = ReviewHelpfulVote.query.filter_by(review_id=review_id, voter_token=voter_token).first()
+    if existing_vote:
+        return jsonify({'ok': True, 'already_voted': True, 'helpful_count': review.helpful_count}), 200
+
+    vote = ReviewHelpfulVote(review_id=review_id, voter_token=voter_token)
+    review.helpful_count = (review.helpful_count or 0) + 1
+    db.session.add(vote)
+    db.session.commit()
+
+    return jsonify({'ok': True, 'already_voted': False, 'helpful_count': review.helpful_count}), 200
+
+
+@admin_bp.route('/reviews/pending', methods=['GET'])
+def pending_reviews():
+    auth_error = require_admin_key()
+    if auth_error:
+        return auth_error
+
+    reviews = Review.query.filter_by(moderation_status='pending').order_by(Review.created_at.asc()).all()
+    payload = []
+    for review in reviews:
+        data = review.to_dict()
+        data['product_name'] = review.product.name if review.product else 'Unknown product'
+        payload.append(data)
+    return jsonify(payload), 200
+
+
+@admin_bp.route('/reviews/<int:review_id>/moderate', methods=['POST'])
+def moderate_review(review_id):
+    auth_error = require_admin_key()
+    if auth_error:
+        return auth_error
+
+    review = Review.query.get(review_id)
+    if not review:
+        return jsonify({'error': 'Review not found'}), 404
+
+    data = request.get_json(silent=True) or {}
+    next_status = (data.get('status') or '').strip().lower()
+    if next_status not in {'approved', 'rejected'}:
+        return jsonify({'error': 'Status must be approved or rejected'}), 400
+
+    review.moderation_status = next_status
+    db.session.commit()
+    recompute_product_review_stats(review.product_id)
+
+    return jsonify({'ok': True, 'review': review.to_dict()}), 200
 
 @products_bp.route('/', methods=['POST'])
 def create_product():

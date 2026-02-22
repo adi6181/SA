@@ -6,10 +6,14 @@ const dashboardPanel = document.getElementById('dashboardPanel');
 const loginMessage = document.getElementById('loginMessage');
 const formMessage = document.getElementById('formMessage');
 const productsList = document.getElementById('productsList');
+const pendingReviewsList = document.getElementById('pendingReviewsList');
+const supportTicketsList = document.getElementById('supportTicketsList');
 
 const adminKeyInput = document.getElementById('adminKeyInput');
 const adminLoginBtn = document.getElementById('adminLoginBtn');
 const refreshBtn = document.getElementById('refreshBtn');
+const refreshReviewsBtn = document.getElementById('refreshReviewsBtn');
+const refreshTicketsBtn = document.getElementById('refreshTicketsBtn');
 const importUrlInput = document.getElementById('importUrlInput');
 const importUrlBtn = document.getElementById('importUrlBtn');
 const importMessage = document.getElementById('importMessage');
@@ -77,6 +81,8 @@ function unlockDashboard() {
     loginPanel.classList.add('hidden');
     dashboardPanel.classList.remove('hidden');
     loadProducts();
+    loadPendingReviews();
+    loadSupportTickets();
 }
 
 adminLoginBtn?.addEventListener('click', async () => {
@@ -97,6 +103,8 @@ adminLoginBtn?.addEventListener('click', async () => {
 });
 
 refreshBtn?.addEventListener('click', loadProducts);
+refreshReviewsBtn?.addEventListener('click', loadPendingReviews);
+refreshTicketsBtn?.addEventListener('click', loadSupportTickets);
 importUrlBtn?.addEventListener('click', importProductByUrl);
 
 productForm?.addEventListener('submit', async (event) => {
@@ -225,6 +233,132 @@ async function loadProducts() {
         renderProducts(products || []);
     } catch (error) {
         productsList.innerHTML = '<p class="admin-message">Failed to load products.</p>';
+    }
+}
+
+async function loadPendingReviews() {
+    if (!pendingReviewsList) return;
+    pendingReviewsList.innerHTML = '<p class="admin-message">Loading pending reviews...</p>';
+    try {
+        const response = await fetch(`${API_BASE_URL}/admin/reviews/pending`, {
+            headers: buildAdminHeaders()
+        });
+        const reviews = await response.json();
+        if (!response.ok) {
+            throw new Error(reviews.error || 'Failed to load pending reviews');
+        }
+        renderPendingReviews(reviews || []);
+    } catch (error) {
+        pendingReviewsList.innerHTML = `<p class="admin-message">${error.message || 'Failed to load pending reviews.'}</p>`;
+    }
+}
+
+async function loadSupportTickets() {
+    if (!supportTicketsList) return;
+    supportTicketsList.innerHTML = '<p class="admin-message">Loading support tickets...</p>';
+    try {
+        const response = await fetch(`${API_BASE_URL}/admin/support/tickets`, {
+            headers: buildAdminHeaders()
+        });
+        const tickets = await response.json();
+        if (!response.ok) {
+            throw new Error(tickets.error || 'Failed to load tickets');
+        }
+        renderSupportTickets(tickets || []);
+    } catch (error) {
+        supportTicketsList.innerHTML = `<p class="admin-message">${error.message || 'Failed to load support tickets.'}</p>`;
+    }
+}
+
+function renderSupportTickets(tickets) {
+    if (!supportTicketsList) return;
+    if (!tickets.length) {
+        supportTicketsList.innerHTML = '<p class="admin-message">No support tickets.</p>';
+        return;
+    }
+
+    supportTicketsList.innerHTML = '';
+    tickets.forEach((ticket) => {
+        const card = document.createElement('div');
+        card.className = 'admin-item';
+        card.innerHTML = `
+            <h3>${ticket.ticket_number} · ${ticket.subject}</h3>
+            <p>${ticket.customer_name} (${ticket.customer_email}) · ${ticket.channel}</p>
+            <p>Status: ${ticket.status}</p>
+            <p>${ticket.message ? ticket.message.slice(0, 180) : ''}</p>
+            <div class="admin-item-actions">
+                <button data-status="open">Open</button>
+                <button data-status="in_progress">In Progress</button>
+                <button data-status="resolved">Resolve</button>
+            </div>
+        `;
+        card.querySelectorAll('[data-status]').forEach((button) => {
+            button.addEventListener('click', () => updateTicketStatus(ticket.id, button.dataset.status));
+        });
+        supportTicketsList.appendChild(card);
+    });
+}
+
+async function updateTicketStatus(ticketId, status) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/admin/support/tickets/${ticketId}/status`, {
+            method: 'POST',
+            headers: buildAdminHeaders(),
+            body: JSON.stringify({ status })
+        });
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) {
+            throw new Error(payload.error || 'Unable to update status');
+        }
+        loadSupportTickets();
+    } catch (error) {
+        setMessage(formMessage, error.message || 'Unable to update ticket.', 'error');
+    }
+}
+
+function renderPendingReviews(reviews) {
+    if (!pendingReviewsList) return;
+    if (!reviews.length) {
+        pendingReviewsList.innerHTML = '<p class="admin-message">No pending reviews.</p>';
+        return;
+    }
+
+    pendingReviewsList.innerHTML = '';
+    reviews.forEach((review) => {
+        const card = document.createElement('div');
+        card.className = 'admin-item';
+        card.innerHTML = `
+            <h3>${review.product_name}</h3>
+            <p>${review.reviewer_name} · ${review.rating}/5 ${review.verified_purchase ? '· Verified Purchase' : ''}</p>
+            <p>${review.title || 'Review'}</p>
+            <p>${review.body ? review.body.slice(0, 180) : ''}</p>
+            ${review.photo_url ? `<img src="${review.photo_url}" alt="Review photo" style="max-width:120px;border-radius:8px;border:1px solid #e2d9d3;">` : ''}
+            <div class="admin-item-actions">
+                <button data-action="approve">Approve</button>
+                <button class="secondary" data-action="reject">Reject</button>
+            </div>
+        `;
+        card.querySelector('[data-action="approve"]').addEventListener('click', () => moderateReview(review.id, 'approved'));
+        card.querySelector('[data-action="reject"]').addEventListener('click', () => moderateReview(review.id, 'rejected'));
+        pendingReviewsList.appendChild(card);
+    });
+}
+
+async function moderateReview(reviewId, status) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/admin/reviews/${reviewId}/moderate`, {
+            method: 'POST',
+            headers: buildAdminHeaders(),
+            body: JSON.stringify({ status })
+        });
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) {
+            throw new Error(payload.error || 'Moderation failed');
+        }
+        loadPendingReviews();
+        loadProducts();
+    } catch (error) {
+        setMessage(formMessage, error.message || 'Moderation failed.', 'error');
     }
 }
 

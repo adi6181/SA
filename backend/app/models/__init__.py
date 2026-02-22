@@ -1,4 +1,5 @@
 from datetime import datetime
+import uuid
 from app import db
 
 class User(db.Model):
@@ -42,6 +43,13 @@ class Product(db.Model):
         cascade='all, delete-orphan',
         order_by='ProductImage.sort_order.asc()'
     )
+    reviews = db.relationship(
+        'Review',
+        backref='product',
+        lazy=True,
+        cascade='all, delete-orphan',
+        order_by='Review.created_at.desc()'
+    )
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
@@ -77,6 +85,85 @@ class ProductImage(db.Model):
     image_url = db.Column(db.String(500), nullable=False)
     sort_order = db.Column(db.Integer, default=0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+class Review(db.Model):
+    __tablename__ = 'reviews'
+
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False, index=True)
+    reviewer_name = db.Column(db.String(255), nullable=False)
+    reviewer_email = db.Column(db.String(255), nullable=False, index=True)
+    rating = db.Column(db.Integer, nullable=False)
+    title = db.Column(db.String(255))
+    body = db.Column(db.Text, nullable=False)
+    photo_url = db.Column(db.String(500))
+    helpful_count = db.Column(db.Integer, default=0)
+    verified_purchase = db.Column(db.Boolean, default=False)
+    moderation_status = db.Column(db.String(20), default='pending', index=True)  # pending, approved, rejected
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'product_id': self.product_id,
+            'reviewer_name': self.reviewer_name,
+            'rating': self.rating,
+            'title': self.title,
+            'body': self.body,
+            'photo_url': self.photo_url,
+            'helpful_count': self.helpful_count,
+            'verified_purchase': self.verified_purchase,
+            'moderation_status': self.moderation_status,
+            'created_at': self.created_at.isoformat()
+        }
+
+
+class ReviewHelpfulVote(db.Model):
+    __tablename__ = 'review_helpful_votes'
+
+    id = db.Column(db.Integer, primary_key=True)
+    review_id = db.Column(db.Integer, db.ForeignKey('reviews.id'), nullable=False, index=True)
+    voter_token = db.Column(db.String(255), nullable=False, index=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+class SupportTicket(db.Model):
+    __tablename__ = 'support_tickets'
+
+    id = db.Column(db.Integer, primary_key=True)
+    ticket_number = db.Column(
+        db.String(20),
+        unique=True,
+        nullable=False,
+        index=True,
+        default=lambda: f"TKT-{uuid.uuid4().hex[:10].upper()}"
+    )
+    customer_name = db.Column(db.String(255), nullable=False)
+    customer_email = db.Column(db.String(255), nullable=False, index=True)
+    subject = db.Column(db.String(255), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    channel = db.Column(db.String(30), default='contact_form')  # contact_form/chatbot/faq
+    status = db.Column(db.String(30), default='open', index=True)  # open/in_progress/resolved/closed
+    assistant_suggestion = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'ticket_number': self.ticket_number,
+            'customer_name': self.customer_name,
+            'customer_email': self.customer_email,
+            'subject': self.subject,
+            'message': self.message,
+            'channel': self.channel,
+            'status': self.status,
+            'assistant_suggestion': self.assistant_suggestion,
+            'created_at': self.created_at.isoformat(),
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None
+        }
 
 class Cart(db.Model):
     __tablename__ = 'carts'
