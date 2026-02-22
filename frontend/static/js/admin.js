@@ -10,6 +10,9 @@ const productsList = document.getElementById('productsList');
 const adminKeyInput = document.getElementById('adminKeyInput');
 const adminLoginBtn = document.getElementById('adminLoginBtn');
 const refreshBtn = document.getElementById('refreshBtn');
+const importUrlInput = document.getElementById('importUrlInput');
+const importUrlBtn = document.getElementById('importUrlBtn');
+const importMessage = document.getElementById('importMessage');
 
 const productForm = document.getElementById('productForm');
 const formTitle = document.getElementById('formTitle');
@@ -24,6 +27,7 @@ const fields = {
     merchant: document.getElementById('merchant'),
     affiliate_url: document.getElementById('affiliate_url'),
     image_url: document.getElementById('image_url'),
+    image_file: document.getElementById('image_file'),
     image_urls: document.getElementById('image_urls'),
     rating: document.getElementById('rating'),
     review_count: document.getElementById('review_count'),
@@ -93,6 +97,7 @@ adminLoginBtn?.addEventListener('click', async () => {
 });
 
 refreshBtn?.addEventListener('click', loadProducts);
+importUrlBtn?.addEventListener('click', importProductByUrl);
 
 productForm?.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -152,6 +157,66 @@ function collectFormPayload() {
     return payload;
 }
 
+function buildProductRequestBody(payload) {
+    const imageFile = fields.image_file?.files?.[0];
+    if (!imageFile) {
+        return {
+            headers: buildAdminHeaders(true),
+            body: JSON.stringify(payload)
+        };
+    }
+
+    const formData = new FormData();
+    Object.entries(payload).forEach(([key, value]) => {
+        if (value === null || value === undefined) return;
+        if (Array.isArray(value)) {
+            formData.append(key, value.join(', '));
+            return;
+        }
+        formData.append(key, String(value));
+    });
+    formData.append('image_file', imageFile);
+
+    return {
+        headers: buildAdminHeaders(false),
+        body: formData
+    };
+}
+
+async function importProductByUrl() {
+    const url = importUrlInput?.value.trim();
+    if (!url) {
+        setMessage(importMessage, 'Enter a product URL first.', 'error');
+        return;
+    }
+
+    setMessage(importMessage, 'Importing product details...', 'info');
+    try {
+        const response = await fetch(`${API_BASE_URL}/admin/import-url`, {
+            method: 'POST',
+            headers: buildAdminHeaders(),
+            body: JSON.stringify({ url })
+        });
+
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) {
+            throw new Error(payload.error || 'Import failed');
+        }
+
+        setMessage(importMessage, payload.message || 'Product imported.', 'info');
+        if (payload.product) {
+            populateForm(payload.product);
+            formTitle.textContent = `Edit Product #${payload.product.id}`;
+        }
+        if (importUrlInput) {
+            importUrlInput.value = '';
+        }
+        loadProducts();
+    } catch (error) {
+        setMessage(importMessage, error.message || 'Import failed.', 'error');
+    }
+}
+
 async function loadProducts() {
     productsList.innerHTML = '<p class="admin-message">Loading products...</p>';
     try {
@@ -208,10 +273,11 @@ function populateForm(product) {
 }
 
 async function createProduct(payload) {
+    const requestBody = buildProductRequestBody(payload);
     const response = await fetch(`${API_BASE_URL}/products/`, {
         method: 'POST',
-        headers: buildAdminHeaders(),
-        body: JSON.stringify(payload)
+        headers: requestBody.headers,
+        body: requestBody.body
     });
 
     if (!response.ok) {
@@ -221,10 +287,11 @@ async function createProduct(payload) {
 }
 
 async function updateProduct(productId, payload) {
+    const requestBody = buildProductRequestBody(payload);
     const response = await fetch(`${API_BASE_URL}/products/${productId}`, {
         method: 'PUT',
-        headers: buildAdminHeaders(),
-        body: JSON.stringify(payload)
+        headers: requestBody.headers,
+        body: requestBody.body
     });
 
     if (!response.ok) {
@@ -252,8 +319,11 @@ async function deleteProduct(product) {
     loadProducts();
 }
 
-function buildAdminHeaders() {
-    const headers = { 'Content-Type': 'application/json' };
+function buildAdminHeaders(includeJsonContentType = true) {
+    const headers = {};
+    if (includeJsonContentType) {
+        headers['Content-Type'] = 'application/json';
+    }
     const key = getAdminKey();
     if (key) headers['X-Admin-Key'] = key;
     return headers;

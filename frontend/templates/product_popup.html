@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.name }} | Product Details</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            background: #f7f6f2;
+            margin: 0;
+            padding: 18px;
+        }
+        .popup-wrap {
+            max-width: 840px;
+            margin: 0 auto;
+            background: #fff;
+            border: 1px solid #e3e0d8;
+            border-radius: 16px;
+            padding: 20px;
+        }
+        .popup-grid {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 18px;
+        }
+        .popup-media img {
+            width: 100%;
+            height: 240px;
+            object-fit: contain;
+            border: 1px solid #e3e0d8;
+            border-radius: 12px;
+            background: #f9f8f5;
+            padding: 12px;
+        }
+        .popup-title {
+            margin-bottom: 10px;
+        }
+        .popup-list {
+            display: grid;
+            gap: 10px;
+        }
+        .popup-row {
+            border: 1px solid #ece9e1;
+            border-radius: 10px;
+            padding: 10px 12px;
+            background: #fff;
+        }
+        .popup-row strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+        .popup-actions {
+            margin-top: 14px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        @media (max-width: 720px) {
+            .popup-grid {
+                grid-template-columns: 1fr;
+            }
+            .popup-media img {
+                height: 220px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <section class="popup-wrap">
+        <div class="popup-grid">
+            <div class="popup-media">
+                {% set primary_image = (product.image_urls[0] if product.image_urls and product.image_urls|length > 0 else (product.image_url or '')) %}
+                <img src="{{ primary_image }}" alt="{{ product.name }}">
+            </div>
+            <div>
+                <h1 class="popup-title">{{ product.name }}</h1>
+                <div class="popup-list">
+                    <div class="popup-row">
+                        <strong>Brand Name</strong>
+                        <span>{{ product.merchant or 'Not specified' }}</span>
+                    </div>
+                    <div class="popup-row">
+                        <strong>Product Description</strong>
+                        <span>{{ product.description or 'Description not available.' }}</span>
+                    </div>
+                    <div class="popup-row">
+                        <strong>Reviews</strong>
+                        <span>
+                            {% if product.rating %}
+                                {{ '%.1f'|format(product.rating) }} / 5 ({{ product.review_count or 0 }} reviews)
+                            {% else %}
+                                No review data available.
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="popup-row">
+                        <strong>Price Details</strong>
+                        <span>List Price: ${{ '%.2f'|format(product.price or 0) }}</span><br>
+                        {% if product.deal_price %}
+                        <span>Deal Price: ${{ '%.2f'|format(product.deal_price) }}</span>
+                        {% else %}
+                        <span>Deal Price: Not active</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="popup-actions">
+                    <a class="affiliate-btn" href="{{ product.affiliate_url or '#' }}" target="_blank" rel="noopener">Shop on {{ product.merchant or 'Merchant' }}</a>
+                    <button class="btn btn-outline" type="button" onclick="window.close()">Close</button>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

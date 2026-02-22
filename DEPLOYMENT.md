@@ -276,6 +276,83 @@ Schedule this daily using cron:
 0 2 * * * /home/ubuntu/backup-db.sh
 ```
 
+## Next Steps (Without Payment Processing)
+
+Use this order so features land safely and remain testable.
+
+### Phase 1: Re-introduce Cart + Checkout + Orders APIs
+
+1. Add route modules for cart and orders
+   - Create `backend/app/routes/cart.py` and `backend/app/routes/orders.py`
+   - Register both blueprints in `backend/app/__init__.py`
+
+2. Implement cart endpoints
+   - `GET /api/cart/<session_id>`
+   - `POST /api/cart/<session_id>/add`
+   - `PATCH /api/cart/<session_id>/items/<item_id>` (quantity update)
+   - `DELETE /api/cart/<session_id>/remove/<item_id>`
+   - `DELETE /api/cart/<session_id>/clear`
+
+3. Implement checkout/order endpoints (manual payment state only)
+   - `POST /api/orders/` creates order from cart
+   - `GET /api/orders/<order_number>` fetch order details
+   - `PATCH /api/orders/<id>/status` for admin order lifecycle
+   - Keep `payment_status` as `awaiting` / `manual_pending` (no gateway integration yet)
+
+4. Add input validation and inventory safeguards
+   - Validate quantity > 0
+   - Reject checkout for empty cart
+   - Reject when requested quantity exceeds stock
+   - Reduce stock on successful order creation
+
+### Phase 2: User Login and Registration
+
+1. Add user model and auth fields
+   - New `User` table (name, email unique, password_hash, is_active, created_at)
+   - Keep customer checkout guest-enabled initially if needed
+
+2. Add auth endpoints
+   - `POST /api/auth/register`
+   - `POST /api/auth/login`
+   - `POST /api/auth/logout`
+   - `GET /api/auth/me`
+
+3. Secure protected endpoints
+   - Require logged-in users for profile/order-history endpoints
+   - Keep admin routes protected by admin key (or migrate to admin role later)
+
+4. Session/JWT choice
+   - If server-rendered flow stays primary, use secure session cookies
+   - If API-first flow grows, use JWT + refresh token rotation
+
+### Phase 3: Frontend Integration
+
+1. Cart UI wiring
+   - Connect add/remove/update actions to new cart APIs
+   - Show persisted cart count and totals
+
+2. Checkout form wiring
+   - Submit checkout payload to `POST /api/orders/`
+   - Show order confirmation page with order number
+
+3. Auth screens
+   - Add Register/Login views and client-side form validation
+   - Add user state in navbar (login/logout/profile)
+
+### Phase 4: Tests and Definition of Done
+
+1. Replace outdated tests in `backend/test_app.py`
+   - Split into `test_products.py`, `test_cart.py`, `test_orders.py`, `test_auth.py`
+
+2. Minimum test coverage
+   - Happy path + validation errors + unauthorized access
+   - Stock edge cases and empty cart checkout
+
+3. Done criteria
+   - All core APIs return expected status codes and payloads
+   - Auth flow works end-to-end
+   - Existing product/admin flows remain unaffected
+
 ---
 
 **Need Help?** Check official deployment docs:

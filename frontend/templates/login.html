@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Login | ShopHub{% endblock %}
+
+{% block content %}
+<section class="auth-page">
+    <div class="container">
+        <div class="auth-card">
+            <p class="hero-overline">Account Access</p>
+            <h1>Login to your ShopHub account</h1>
+            <p class="auth-note">Use your account credentials to continue.</p>
+            <form class="auth-form" id="loginForm">
+                <label for="loginEmail">Email</label>
+                <input id="loginEmail" type="email" placeholder="you@example.com" required>
+
+                <label for="loginPassword">Password</label>
+                <input id="loginPassword" type="password" placeholder="Enter password" required>
+
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+            <p id="loginMessage" class="modal-message"></p>
+            <button type="button" class="auth-forgot-link" id="openForgotPasswordModal">Forgot Password?</button>
+            <p class="auth-switch">New here? <a href="/signup">Create an account</a></p>
+        </div>
+    </div>
+</section>
+
+<div class="modal-overlay" id="forgotPasswordModal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="forgotPasswordTitle">
+        <h2 id="forgotPasswordTitle">Reset your password</h2>
+        <p>Enter your email. We will send a password reset link.</p>
+        <form id="forgotPasswordForm" class="auth-form">
+            <label for="forgotPasswordEmail">Email</label>
+            <input id="forgotPasswordEmail" type="email" placeholder="you@example.com" required>
+            <div class="modal-actions">
+                <button type="submit" class="btn btn-primary">Send Link</button>
+                <button type="button" class="btn btn-outline" id="closeForgotPasswordModal">Cancel</button>
+            </div>
+        </form>
+        <p id="forgotPasswordMessage" class="modal-message"></p>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+{% endblock %}

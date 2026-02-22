@@ -8,6 +8,7 @@ let filterDebounceTimer = null;
 document.addEventListener('DOMContentLoaded', () => {
     bootstrapAdminMode();
     setupEventListeners();
+    setupProductPopupNavigation();
     loadProducts();
     applyProductImageFallbacks();
     setupScrollAnimations();
@@ -68,6 +69,28 @@ function setupEventListeners() {
             playShopStory(mode);
         });
     });
+}
+
+function setupProductPopupNavigation() {
+    document.addEventListener('click', (event) => {
+        const card = event.target.closest('.product-card[data-product-id]');
+        if (!card) return;
+
+        const ignoredTarget = event.target.closest(
+            '.affiliate-btn, .upload-images-btn, .upload-images-input, .gallery-nav, .gallery-dot'
+        );
+        if (ignoredTarget) return;
+
+        const productId = card.dataset.productId;
+        if (!productId) return;
+
+        event.preventDefault();
+        openProductDetailsPage(productId);
+    });
+}
+
+function openProductDetailsPage(productId) {
+    window.location.href = `/product/${encodeURIComponent(productId)}`;
 }
 
 function bootstrapAdminMode() {

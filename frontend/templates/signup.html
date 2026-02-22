@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Sign Up | ShopHub{% endblock %}
+
+{% block content %}
+<section class="auth-page">
+    <div class="container">
+        <div class="auth-card">
+            <p class="hero-overline">Create Account</p>
+            <h1>Sign up for ShopHub</h1>
+            <p class="auth-note">Create your account to access login and password reset features.</p>
+            <form class="auth-form" id="signupForm">
+                <label for="signupName">Full Name</label>
+                <input id="signupName" type="text" placeholder="Your name" required>
+
+                <label for="signupEmail">Email</label>
+                <input id="signupEmail" type="email" placeholder="you@example.com" required>
+
+                <label for="signupPassword">Password</label>
+                <input id="signupPassword" type="password" placeholder="Create password" required>
+
+                <label for="signupRePassword">Re-enter Password</label>
+                <input id="signupRePassword" type="password" placeholder="Re-enter password" required>
+
+                <label for="signupAddress1">Address Line 1</label>
+                <input id="signupAddress1" type="text" placeholder="Street address" required>
+
+                <label for="signupAddress2">Address Line 2 (Optional)</label>
+                <input id="signupAddress2" type="text" placeholder="Apartment, suite, unit, etc.">
+
+                <label for="signupCity">City</label>
+                <input id="signupCity" type="text" placeholder="City" required>
+
+                <label for="signupState">State (2-letter code)</label>
+                <input id="signupState" type="text" placeholder="CA" minlength="2" maxlength="2" pattern="[A-Za-z]{2}" required>
+
+                <label for="signupZip">ZIP Code</label>
+                <input id="signupZip" type="text" placeholder="12345" pattern="^\d{5}(?:-\d{4})?$" required>
+
+                <label for="signupCountry">Country</label>
+                <input id="signupCountry" type="text" value="United States (USA only)" readonly>
+                <input type="hidden" id="signupCountryCode" value="US">
+
+                <button type="submit" class="btn btn-primary">Create Account</button>
+            </form>
+            <p id="signupMessage" class="modal-message"></p>
+            <p class="auth-switch">Already have an account? <a href="/login">Login</a></p>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+{% endblock %}

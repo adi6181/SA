@@ -1,6 +1,7 @@
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from flask_mail import Mail
 import os
 from dotenv import load_dotenv
 
@@ -13,6 +14,13 @@ env_path = os.path.join(BASE_DIR, 'backend', '.env')
 load_dotenv(env_path)
 
 db = SQLAlchemy()
+mail = Mail()
+
+
+def _as_bool(value, default=False):
+    if value is None:
+        return default
+    return str(value).strip().lower() in {'1', 'true', 'yes', 'y', 'on'}
 
 def create_app():
     # Initialize Flask with frontend templates and static folders
@@ -26,9 +34,17 @@ def create_app():
     app.config['MAX_CONTENT_LENGTH'] = None
     app.config['ADMIN_UPLOAD_KEY'] = os.getenv('ADMIN_UPLOAD_KEY')
     app.config['ADMIN_DASHBOARD_KEY'] = os.getenv('ADMIN_DASHBOARD_KEY') or app.config['ADMIN_UPLOAD_KEY']
+    app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')
+    app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT', 587))
+    app.config['MAIL_USE_TLS'] = _as_bool(os.getenv('MAIL_USE_TLS'), True)
+    app.config['MAIL_USE_SSL'] = _as_bool(os.getenv('MAIL_USE_SSL'), False)
+    app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+    app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+    app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER') or os.getenv('MAIL_USERNAME')
     
     # Initialize extensions
     db.init_app(app)
+    mail.init_app(app)
     CORS(app)
 
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)

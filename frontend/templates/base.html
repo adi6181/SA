@@ -15,12 +15,6 @@
         <div class="background-slide slide-four"></div>
     </div>
 
-    <div class="utility-strip">
-        Discover top affiliate picks and deals.
-        <a href="/deals">Deals</a> |
-        <a href="/reviews">Reviews</a>
-    </div>
-
     <nav class="navbar">
         <div class="container navbar-inner">
             <a href="/" class="logo">ShopHub</a>
@@ -35,6 +29,8 @@
             <ul class="nav-menu nav-menu-right">
                 <li><a href="/" class="nav-link">Home</a></li>
                 <li><a href="#contact" class="nav-link">Contact</a></li>
+                <li><a href="/login" class="auth-link auth-link-login">Login</a></li>
+                <li><a href="/signup" class="auth-link auth-link-signup">Sign Up</a></li>
                 <li><a href="/admin" class="nav-link">Admin</a></li>
             </ul>
         </div>
@@ -66,5 +62,6 @@
     </footer>
 
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    {% block extra_scripts %}{% endblock %}
 </body>
 </html>

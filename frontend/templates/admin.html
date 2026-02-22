@@ -28,6 +28,16 @@
 
         <section class="admin-grid hidden" id="dashboardPanel">
             <div class="admin-card">
+                <h2>Import Product by URL</h2>
+                <p>Paste an affiliate/product URL to auto-fill product details and publish to the user storefront.</p>
+                <div class="admin-row">
+                    <input type="url" id="importUrlInput" placeholder="https://a.co/d/0iJdTnzw">
+                    <button type="button" id="importUrlBtn">Import URL</button>
+                </div>
+                <p class="admin-message" id="importMessage"></p>
+            </div>
+
+            <div class="admin-card">
                 <h2 id="formTitle">Create Product</h2>
                 <form id="productForm">
                     <input type="hidden" id="productId">
@@ -51,7 +61,13 @@
                     <div class="admin-two">
                         <div>
                             <label>Category</label>
-                            <input type="text" id="category" placeholder="Electronics">
+                            <select id="category">
+                                <option value="">Select category</option>
+                                <option value="Electronics">Electronics</option>
+                                <option value="Fashion">Fashion</option>
+                                <option value="Home">Home</option>
+                                <option value="Books">Books</option>
+                            </select>
                         </div>
                         <div>
                             <label>Merchant</label>
@@ -64,6 +80,9 @@
 
                     <label>Main Image URL</label>
                     <input type="url" id="image_url" placeholder="https://">
+
+                    <label>Or Upload Main Image</label>
+                    <input type="file" id="image_file" accept="image/*">
 
                     <label>Gallery Image URLs (comma separated)</label>
                     <input type="text" id="image_urls" placeholder="https://image1.jpg, https://image2.jpg">

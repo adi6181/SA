@@ -1,6 +1,23 @@
 from datetime import datetime
 from app import db
 
+class User(db.Model):
+    __tablename__ = 'users'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    email = db.Column(db.String(255), unique=True, nullable=False, index=True)
+    password_hash = db.Column(db.String(255), nullable=False)
+    address_line1 = db.Column(db.String(255))
+    address_line2 = db.Column(db.String(255))
+    city = db.Column(db.String(100))
+    state = db.Column(db.String(2))
+    zip_code = db.Column(db.String(10))
+    country_code = db.Column(db.String(2), nullable=False, default='US')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
 class Product(db.Model):
     __tablename__ = 'products'
     
