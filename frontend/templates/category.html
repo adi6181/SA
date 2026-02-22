@@ -21,6 +21,16 @@
                     <div class="product-info">
                         <h3 class="product-name">{{ product.name }}</h3>
                         <p class="product-description">{{ product.description[:100] }}{% if product.description|length > 100 %}...{% endif %}</p>
+                        {% if product.why_this_product and product.why_this_product.reasons %}
+                        <div class="why-card">
+                            <p class="why-title">Why this product ({{ product.why_this_product.confidence }} confidence)</p>
+                            <ul>
+                                {% for reason in product.why_this_product.reasons %}
+                                <li>{{ reason }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
                         <div class="product-footer">
                             <span class="product-price">${{ '%.2f'|format(product.price) }}</span>
                             <a class="affiliate-btn" href="{{ product.affiliate_url or '#' }}" target="_blank" rel="noopener">Shop Now</a>

@@ -14,15 +14,29 @@
                 <a class="btn btn-outline" href="/reviews">Read Reviews</a>
             </div>
         </div>
-        <div class="hero-visual">
-            <div class="hero-card">
-                <img src="{{ url_for('static', filename='images/running_shoes.svg') }}" alt="featured product">
-                <span>Top Rated</span>
+        <div class="hero-collage" id="heroCollage">
+            <div class="hero-layer layer-back" data-parallax-layer="0.12">
+                <img src="{{ url_for('static', filename='images/wireless_headphones.svg') }}" alt="Wireless headphones">
             </div>
-            <div class="hero-card secondary">
-                <img src="{{ url_for('static', filename='images/wireless_headphones.svg') }}" alt="featured product">
-                <span>Best Deals</span>
+            <div class="hero-layer layer-mid" data-parallax-layer="0.2">
+                <img src="{{ url_for('static', filename='images/running_shoes.svg') }}" alt="Running shoes">
             </div>
+            <div class="hero-layer layer-front" data-parallax-layer="0.32">
+                <img src="{{ url_for('static', filename='images/smartwatch.svg') }}" alt="Smartwatch">
+            </div>
+            <div class="hero-layer layer-accent" data-parallax-layer="0.18">
+                <img src="{{ url_for('static', filename='images/led_desk_lamp.svg') }}" alt="Desk lamp">
+            </div>
+
+            <button type="button" class="hero-hotspot hotspot-one" data-hotspot-category="Electronics" data-hotspot-label="Electronics Picks">
+                Shop the look · Electronics
+            </button>
+            <button type="button" class="hero-hotspot hotspot-two" data-hotspot-category="Fashion" data-hotspot-label="Fashion Picks">
+                Shop the look · Fashion
+            </button>
+            <button type="button" class="hero-hotspot hotspot-three" data-hotspot-category="Home" data-hotspot-label="Home Picks">
+                Shop the look · Home
+            </button>
         </div>
     </div>
 </header>
@@ -70,6 +84,34 @@
             <button type="button" class="quick-chip" data-filter-chip="rating">4+ Rated</button>
         </div>
         <div class="active-filters" id="activeFilters"></div>
+        <section class="ai-copilot" id="aiCopilot">
+            <div class="ai-copilot-head">
+                <h3>AI Copilot</h3>
+                <p>Use natural language or one-click AI actions to discover products faster.</p>
+            </div>
+            <div class="ai-copilot-actions">
+                <button type="button" class="quick-chip" id="aiExplainQueryBtn">Interpret My Search</button>
+                <button type="button" class="quick-chip" id="aiAutoCompareBtn">AI Auto-Compare Top Matches</button>
+            </div>
+            <div class="ai-copilot-prompts">
+                <button type="button" class="ai-prompt-chip" data-ai-query="best deals under 100">Best deals under $100</button>
+                <button type="button" class="ai-prompt-chip" data-ai-query="top rated electronics">Top rated electronics</button>
+                <button type="button" class="ai-prompt-chip" data-ai-query="fashion below 75">Fashion below $75</button>
+                <button type="button" class="ai-prompt-chip" data-ai-query="home products above 50">Home products above $50</button>
+            </div>
+        </section>
+        <div class="compare-builder" id="compareBuilder">
+            <div class="compare-head">
+                <h3>Smart Comparison Builder</h3>
+                <p>Select 2-4 products and generate an AI-style side-by-side comparison.</p>
+            </div>
+            <div class="compare-selected" id="compareSelected">No products selected.</div>
+            <div class="compare-actions">
+                <button type="button" class="btn btn-primary" id="runComparisonBtn" disabled>Compare Selected</button>
+                <button type="button" class="btn btn-outline" id="clearComparisonBtn" disabled>Clear</button>
+            </div>
+            <div class="compare-results" id="comparisonResults"></div>
+        </div>
         <div class="products-grid" id="productsGrid">
             {%- if products is defined and products|length > 0 -%}
                 {%- for product in products -%}
@@ -86,6 +128,16 @@
                     <div class="product-info">
                         <h3 class="product-name">{{ product.name }}</h3>
                         <p class="product-description">{{ product.description[:100] }}{% if product.description|length > 100 %}...{% endif %}</p>
+                        {% if product.why_this_product and product.why_this_product.reasons %}
+                        <div class="why-card">
+                            <p class="why-title">Why this product ({{ product.why_this_product.confidence }} confidence)</p>
+                            <ul>
+                                {% for reason in product.why_this_product.reasons %}
+                                <li>{{ reason }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
                         <div class="product-footer">
                             <span class="product-price">${{ '%.2f'|format(product.price) }}</span>
                             <a class="affiliate-btn" href="{{ product.affiliate_url or '#' }}" target="_blank" rel="noopener">Shop Now</a>

@@ -52,6 +52,51 @@ class Product(db.Model):
     )
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def build_why_this_product(self):
+        reasons = []
+        evidence_count = 0
+
+        if self.rating is not None and self.review_count:
+            reasons.append(f"Rated {self.rating:.1f}/5 from {self.review_count} reviews.")
+            evidence_count += 1
+        elif self.rating is not None:
+            reasons.append(f"Rated {self.rating:.1f}/5.")
+            evidence_count += 1
+
+        if self.deal_price is not None and self.original_price and self.original_price > self.deal_price:
+            savings = self.original_price - self.deal_price
+            savings_pct = (savings / self.original_price) * 100
+            reasons.append(f"Current deal saves ${savings:.2f} ({savings_pct:.0f}% off).")
+            evidence_count += 1
+
+        if self.price is not None and self.price > 0 and self.price <= 50:
+            reasons.append("Budget-friendly price range.")
+            evidence_count += 1
+        elif self.price is not None and self.price >= 200:
+            reasons.append("Premium-tier product positioning.")
+            evidence_count += 1
+
+        if self.stock is not None:
+            if self.stock > 20:
+                reasons.append("Good stock availability.")
+                evidence_count += 1
+            elif self.stock > 0:
+                reasons.append("Limited stock available.")
+                evidence_count += 1
+
+        if self.merchant:
+            reasons.append(f"Available via {self.merchant}.")
+            evidence_count += 1
+
+        if not reasons:
+            reasons = ["Selected for category relevance and catalog quality checks."]
+
+        confidence = 'high' if evidence_count >= 3 else ('medium' if evidence_count >= 2 else 'low')
+        return {
+            'reasons': reasons[:3],
+            'confidence': confidence
+        }
     
     def to_dict(self):
         image_urls = [img.image_url for img in self.images] if self.images else []
@@ -73,7 +118,8 @@ class Product(db.Model):
             'review_count': self.review_count,
             'is_deal': self.is_deal,
             'deal_price': self.deal_price,
-            'original_price': self.original_price
+            'original_price': self.original_price,
+            'why_this_product': self.build_why_this_product()
         }
 
 

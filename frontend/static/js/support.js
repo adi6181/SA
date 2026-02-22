@@ -13,6 +13,9 @@ const defaultChatSuggestions = [
     'Why is my review not visible?'
 ];
 
+let hasPlayedGreetingSequence = false;
+let typingIndicatorNode = null;
+
 async function loadFaqs() {
     const faqList = document.getElementById('faqListCompact');
     if (!faqList) return;
@@ -105,18 +108,49 @@ function appendChatMessage(text, sender = 'bot') {
     messages.scrollTop = messages.scrollHeight;
 }
 
+function removeTypingIndicator() {
+    if (typingIndicatorNode?.parentNode) {
+        typingIndicatorNode.parentNode.removeChild(typingIndicatorNode);
+    }
+    typingIndicatorNode = null;
+}
+
+function showTypingIndicator() {
+    const messages = document.getElementById('supportChatMessages');
+    if (!messages) return;
+    removeTypingIndicator();
+
+    const bubble = document.createElement('div');
+    bubble.className = 'support-chat-typing';
+    bubble.innerHTML = `
+        <span></span>
+        <span></span>
+        <span></span>
+    `;
+    typingIndicatorNode = bubble;
+    messages.appendChild(bubble);
+    messages.scrollTop = messages.scrollHeight;
+}
+
+function wait(ms) {
+    return new Promise((resolve) => {
+        setTimeout(resolve, ms);
+    });
+}
+
 function renderChatSuggestions(items) {
     const wrap = document.getElementById('supportChatSuggestions');
     if (!wrap) return;
     const list = (items && items.length ? items : defaultChatSuggestions).slice(0, 6);
     wrap.innerHTML = '';
 
-    list.forEach((item) => {
+    list.forEach((item, index) => {
         const question = typeof item === 'string' ? item : item.question;
         if (!question) return;
         const chip = document.createElement('button');
         chip.type = 'button';
         chip.className = 'support-suggestion-chip';
+        chip.style.setProperty('--suggestion-delay', `${index * 70}ms`);
         chip.dataset.question = question;
         chip.textContent = question;
         wrap.appendChild(chip);
@@ -125,6 +159,7 @@ function renderChatSuggestions(items) {
 
 async function sendAssistantMessage(text) {
     appendChatMessage(text, 'user');
+    showTypingIndicator();
     try {
         const response = await fetch('/api/support/assistant', {
             method: 'POST',
@@ -132,6 +167,8 @@ async function sendAssistantMessage(text) {
             body: JSON.stringify({ message: text })
         });
         const result = await response.json().catch(() => ({}));
+        await wait(420);
+        removeTypingIndicator();
         if (!response.ok) {
             appendChatMessage(result.error || 'Assistant unavailable right now.');
             return;
@@ -139,8 +176,31 @@ async function sendAssistantMessage(text) {
         appendChatMessage(result.answer || 'How else can I help?');
         renderChatSuggestions(result.suggestions || []);
     } catch (_error) {
+        removeTypingIndicator();
         appendChatMessage('Network issue. Please try again.');
     }
+}
+
+async function playGreetingSequence() {
+    const messages = document.getElementById('supportChatMessages');
+    if (!messages) return;
+    messages.innerHTML = '';
+
+    const sequence = [
+        'Hi, I am your ShopHub support assistant.',
+        'I can help with shipping, tracking, returns, account access, and reviews.',
+        'Pick a prompt below or ask your question.'
+    ];
+
+    for (const line of sequence) {
+        showTypingIndicator();
+        await wait(380);
+        removeTypingIndicator();
+        appendChatMessage(line, 'bot');
+        await wait(120);
+    }
+
+    renderChatSuggestions(defaultChatSuggestions);
 }
 
 function setupSupportChat() {
@@ -156,14 +216,22 @@ function setupSupportChat() {
         panel.classList.toggle('open');
         panel.setAttribute('aria-hidden', panel.classList.contains('open') ? 'false' : 'true');
         if (panel.classList.contains('open')) {
-            renderChatSuggestions(defaultChatSuggestions);
+            if (!hasPlayedGreetingSequence) {
+                hasPlayedGreetingSequence = true;
+                playGreetingSequence();
+            } else {
+                renderChatSuggestions(defaultChatSuggestions);
+            }
             input.focus();
+        } else {
+            removeTypingIndicator();
         }
     });
 
     close.addEventListener('click', () => {
         panel.classList.remove('open');
         panel.setAttribute('aria-hidden', 'true');
+        removeTypingIndicator();
     });
 
     form.addEventListener('submit', async (event) => {

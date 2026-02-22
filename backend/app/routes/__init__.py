@@ -211,6 +211,50 @@ def normalize_text(value):
     return (value or '').strip().lower()
 
 
+def comparison_score(product):
+    price = product.deal_price if product.deal_price is not None else product.price
+    price = price if price is not None else 0
+    rating = product.rating if product.rating is not None else 0
+    review_count = product.review_count if product.review_count is not None else 0
+    discount = 0
+    if product.original_price and product.deal_price and product.original_price > 0:
+        discount = (product.original_price - product.deal_price) / product.original_price
+
+    # Weighted score to approximate an AI recommendation signal.
+    score = (rating * 16) + (min(review_count, 1000) * 0.03) + (discount * 12) - (price * 0.02)
+    return score
+
+
+def build_comparison_summary(products):
+    if not products:
+        return {}
+
+    score_map = {product.id: comparison_score(product) for product in products}
+    best = max(products, key=lambda item: score_map.get(item.id, 0))
+    cheapest = min(products, key=lambda item: ((item.deal_price if item.deal_price is not None else item.price) or 0))
+    top_rated = max(products, key=lambda item: (item.rating if item.rating is not None else 0))
+    most_reviewed = max(products, key=lambda item: (item.review_count if item.review_count is not None else 0))
+
+    key_points = []
+    if cheapest.id != best.id:
+        key_points.append(f"{cheapest.name} is the best budget option.")
+    if top_rated.id != best.id:
+        key_points.append(f"{top_rated.name} has the strongest rating profile.")
+    if most_reviewed.id != best.id:
+        key_points.append(f"{most_reviewed.name} has the highest review confidence.")
+
+    confidence = "high" if len(products) >= 3 else "medium"
+    return {
+        'recommended_product_id': best.id,
+        'recommended_reason': (
+            f"{best.name} provides the strongest overall value based on rating, review confidence, "
+            "deal strength, and effective price."
+        ),
+        'key_points': key_points,
+        'confidence': confidence
+    }
+
+
 def assistant_reply(user_message):
     message = normalize_text(user_message)
     if not message:
@@ -256,6 +300,81 @@ def infer_merchant_name(url):
         return 'Amazon'
     host = netloc.split(':')[0]
     return host.split('.')[-2].capitalize() if '.' in host else host.capitalize()
+
+
+def clean_product_title(raw_title, merchant=None):
+    title = (raw_title or '').strip()
+    if not title:
+        return ''
+
+    cleanup_patterns = [
+        r'\s*[\|\-–]\s*amazon\.com.*$',
+        r'^\s*amazon\.com\s*[:\-]\s*',
+        r'\s*[\|\-–]\s*buy now.*$',
+        r'\s*[\|\-–]\s*official site.*$'
+    ]
+    for pattern in cleanup_patterns:
+        title = re.sub(pattern, '', title, flags=re.IGNORECASE)
+
+    title = re.sub(r'\s+', ' ', title).strip(' -|')
+    if merchant and title.lower().startswith(merchant.lower()):
+        title = title.strip()
+    return title
+
+
+def infer_category_from_text(name, description):
+    text = f"{name or ''} {description or ''}".lower()
+    category_map = {
+        'Electronics': ['headphone', 'earbud', 'speaker', 'smartwatch', 'laptop', 'usb', 'charger', 'camera', 'phone', 'tablet', 'electronics'],
+        'Fashion': ['shirt', 'tshirt', 'jeans', 'jacket', 'dress', 'shoe', 'sneaker', 'fashion', 'coat'],
+        'Home': ['lamp', 'kitchen', 'home', 'sofa', 'bed', 'garden', 'tool', 'vacuum', 'furniture', 'decor'],
+        'Books': ['book', 'novel', 'guide', 'handbook', 'paperback', 'hardcover', 'author']
+    }
+
+    best_category = None
+    best_score = 0
+    for category, keywords in category_map.items():
+        score = sum(1 for keyword in keywords if keyword in text)
+        if score > best_score:
+            best_score = score
+            best_category = category
+    return best_category or 'General'
+
+
+def extract_specs_from_text(text):
+    source = (text or '')
+    specs = []
+
+    measurement_matches = re.findall(
+        r'\b\d+(?:\.\d+)?\s?(?:inch|inches|cm|mm|gb|tb|mah|hz|w|oz|lb|lbs)\b',
+        source,
+        flags=re.IGNORECASE
+    )
+    specs.extend(measurement_matches[:6])
+
+    feature_keywords = [
+        'wireless', 'bluetooth', 'noise cancelling', 'waterproof', 'usb-c',
+        'fast charging', 'smart', 'portable', 'lightweight', 'eco-friendly'
+    ]
+    lowered = source.lower()
+    for keyword in feature_keywords:
+        if keyword in lowered:
+            specs.append(keyword.title())
+
+    color_match = re.search(r'\b(black|white|blue|red|green|pink|silver|gold|gray|grey)\b', lowered, flags=re.IGNORECASE)
+    if color_match:
+        specs.append(f"Color: {color_match.group(1).title()}")
+
+    # Preserve order and uniqueness.
+    deduped = []
+    seen = set()
+    for item in specs:
+        normalized = item.strip().lower()
+        if not normalized or normalized in seen:
+            continue
+        seen.add(normalized)
+        deduped.append(item.strip())
+    return deduped[:8]
 
 
 def parse_json_ld_candidates(html):
@@ -403,6 +522,15 @@ def scrape_product_details(url):
     )
     rating_value = find_in_json_ld(json_ld_nodes, 'ratingValue')
     review_count = find_in_json_ld(json_ld_nodes, 'reviewCount')
+    brand_value = find_in_json_ld(json_ld_nodes, 'brand')
+    if isinstance(brand_value, dict):
+        brand_value = brand_value.get('name') or brand_value.get('@id')
+    specs_candidates = []
+    for key in ['model', 'sku', 'mpn', 'material', 'color']:
+        value = find_in_json_ld(json_ld_nodes, key)
+        if isinstance(value, (str, int, float)):
+            specs_candidates.append(f"{key.upper()}: {value}")
+    specs_candidates.extend(extract_specs_from_text(f"{title or ''} {description or ''}"))
 
     price = extract_price_value(str(price_text)) if price_text else None
     rating = parse_float(rating_value)
@@ -416,8 +544,68 @@ def scrape_product_details(url):
         'price': price,
         'rating': rating,
         'review_count': reviews,
-        'merchant': infer_merchant_name(final_url)
+        'merchant': infer_merchant_name(final_url),
+        'brand': (brand_value or '').strip() if isinstance(brand_value, str) else None,
+        'specs': specs_candidates
     }
+
+
+def run_ai_import_cleaner(scraped):
+    report = []
+    cleaned = dict(scraped or {})
+
+    cleaned_name = clean_product_title(cleaned.get('name'), cleaned.get('merchant'))
+    if cleaned_name and cleaned_name != cleaned.get('name'):
+        report.append('Title normalized')
+    cleaned['name'] = cleaned_name or cleaned.get('name') or 'Imported Product'
+
+    if not cleaned.get('merchant') and cleaned.get('brand'):
+        cleaned['merchant'] = cleaned.get('brand')
+        report.append('Merchant filled from brand metadata')
+
+    inferred_category = infer_category_from_text(cleaned.get('name'), cleaned.get('description'))
+    cleaned['category'] = inferred_category
+    report.append(f'Category inferred as {inferred_category}')
+
+    specs = cleaned.get('specs') or []
+    if not isinstance(specs, list):
+        specs = []
+    cleaned['specs'] = [str(spec).strip() for spec in specs if str(spec).strip()][:8]
+
+    description = (cleaned.get('description') or '').strip()
+    if not description:
+        description = f"{cleaned['name']} in {cleaned['category']} category."
+        report.append('Description generated because source description was missing')
+
+    if cleaned['specs']:
+        specs_line = f"Key specs: {', '.join(cleaned['specs'][:5])}."
+        if 'key specs:' not in description.lower():
+            description = f"{description}\n\n{specs_line}"
+            report.append('Specs summary added to description')
+
+    cleaned['description'] = description
+
+    if cleaned.get('rating') is not None:
+        cleaned['rating'] = max(0, min(5, cleaned['rating']))
+    if cleaned.get('review_count') is not None:
+        cleaned['review_count'] = max(0, cleaned['review_count'])
+
+    if cleaned.get('price') is None:
+        cleaned['price'] = 0.0
+        report.append('Price missing; set to 0.0 for manual follow-up')
+
+    if not cleaned.get('image_url'):
+        fallback_images = {
+            'Electronics': '/static/images/wireless_headphones.svg',
+            'Fashion': '/static/images/tshirt.svg',
+            'Home': '/static/images/led_desk_lamp.svg',
+            'Books': '/static/images/python_programming_guide.svg',
+            'General': '/static/images/wireless_speaker.svg'
+        }
+        cleaned['image_url'] = fallback_images.get(cleaned['category'], fallback_images['General'])
+        report.append('Image missing; fallback image assigned')
+
+    return cleaned, report
 
 @admin_bp.route('/login', methods=['POST'])
 def admin_login():
@@ -555,51 +743,55 @@ def import_product_from_url():
 
     try:
         scraped = scrape_product_details(source_url)
+        cleaned, cleaner_report = run_ai_import_cleaner(scraped)
     except requests.RequestException as error:
         return jsonify({'error': f'Unable to fetch URL: {error}'}), 400
     except Exception as error:
         current_app.logger.exception('Product URL import failed')
         return jsonify({'error': f'Import failed: {error}'}), 500
 
-    final_url = scraped.get('final_url') or source_url
-    persisted_image_url = persist_remote_image(scraped.get('image_url'), referer_url=final_url)
+    final_url = cleaned.get('final_url') or source_url
+    persisted_image_url = persist_remote_image(cleaned.get('image_url'), referer_url=final_url)
     product = Product.query.filter_by(affiliate_url=final_url).first()
     created = product is None
 
     if created:
         product = Product(
-            name=scraped.get('name') or 'Imported Product',
-            description=scraped.get('description') or f'Imported from {final_url}',
-            price=scraped.get('price') if scraped.get('price') is not None else 0.0,
+            name=cleaned.get('name') or 'Imported Product',
+            description=cleaned.get('description') or f'Imported from {final_url}',
+            price=cleaned.get('price') if cleaned.get('price') is not None else 0.0,
             image_url=persisted_image_url,
             stock=10,
-            category='General',
+            category=cleaned.get('category') or 'General',
             affiliate_url=final_url,
-            merchant=scraped.get('merchant'),
-            rating=scraped.get('rating'),
-            review_count=scraped.get('review_count'),
-            original_price=scraped.get('price') if scraped.get('price') is not None else 0.0
+            merchant=cleaned.get('merchant'),
+            rating=cleaned.get('rating'),
+            review_count=cleaned.get('review_count'),
+            original_price=cleaned.get('price') if cleaned.get('price') is not None else 0.0
         )
         db.session.add(product)
     else:
-        product.name = scraped.get('name') or product.name
-        product.description = scraped.get('description') or product.description
-        if scraped.get('price') is not None:
-            product.price = scraped.get('price')
+        product.name = cleaned.get('name') or product.name
+        product.description = cleaned.get('description') or product.description
+        product.category = cleaned.get('category') or product.category
+        if cleaned.get('price') is not None:
+            product.price = cleaned.get('price')
             if not product.original_price:
-                product.original_price = scraped.get('price')
+                product.original_price = cleaned.get('price')
         product.image_url = persisted_image_url or product.image_url
         product.affiliate_url = final_url
-        product.merchant = scraped.get('merchant') or product.merchant
-        product.rating = scraped.get('rating') if scraped.get('rating') is not None else product.rating
-        product.review_count = scraped.get('review_count') if scraped.get('review_count') is not None else product.review_count
+        product.merchant = cleaned.get('merchant') or product.merchant
+        product.rating = cleaned.get('rating') if cleaned.get('rating') is not None else product.rating
+        product.review_count = cleaned.get('review_count') if cleaned.get('review_count') is not None else product.review_count
 
     db.session.commit()
     return jsonify({
         'ok': True,
         'created': created,
         'message': 'Product imported successfully',
-        'product': product.to_dict()
+        'product': product.to_dict(),
+        'ai_cleaner_report': cleaner_report,
+        'ai_extracted_specs': cleaned.get('specs') or []
     }), 200
 
 @products_bp.route('/', methods=['GET'])
@@ -732,6 +924,63 @@ def product_suggestions():
             break
 
     return jsonify(suggestions), 200
+
+
+@products_bp.route('/compare', methods=['POST'])
+def compare_products():
+    data = request.get_json(silent=True) or {}
+    product_ids = data.get('product_ids') or []
+    if not isinstance(product_ids, list):
+        return jsonify({'error': 'product_ids must be an array'}), 400
+
+    normalized_ids = []
+    for raw_id in product_ids:
+        parsed_id = parse_int(raw_id)
+        if parsed_id is None:
+            continue
+        if parsed_id not in normalized_ids:
+            normalized_ids.append(parsed_id)
+
+    if len(normalized_ids) < 2:
+        return jsonify({'error': 'Select at least 2 products to compare'}), 400
+    if len(normalized_ids) > 4:
+        return jsonify({'error': 'You can compare up to 4 products at a time'}), 400
+
+    products = Product.query.filter(Product.id.in_(normalized_ids)).all()
+    by_id = {product.id: product for product in products}
+    ordered = [by_id[item_id] for item_id in normalized_ids if item_id in by_id]
+    if len(ordered) < 2:
+        return jsonify({'error': 'Selected products not found'}), 404
+
+    matrix = []
+    for product in ordered:
+        current_price = product.deal_price if product.deal_price is not None else product.price
+        discount_pct = None
+        if product.original_price and product.deal_price and product.original_price > 0:
+            discount_pct = round(((product.original_price - product.deal_price) / product.original_price) * 100, 1)
+
+        matrix.append({
+            'id': product.id,
+            'name': product.name,
+            'merchant': product.merchant,
+            'category': product.category,
+            'current_price': current_price,
+            'list_price': product.original_price or product.price,
+            'discount_pct': discount_pct,
+            'rating': product.rating,
+            'review_count': product.review_count,
+            'description': product.description,
+            'stock': product.stock,
+            'affiliate_url': product.affiliate_url,
+            'image_url': product.image_url,
+            'score': round(comparison_score(product), 2)
+        })
+
+    summary = build_comparison_summary(ordered)
+    return jsonify({
+        'products': matrix,
+        'summary': summary
+    }), 200
 
 @products_bp.route('/<int:product_id>', methods=['GET'])
 def get_product(product_id):

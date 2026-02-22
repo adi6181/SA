@@ -211,7 +211,12 @@ async function importProductByUrl() {
             throw new Error(payload.error || 'Import failed');
         }
 
-        setMessage(importMessage, payload.message || 'Product imported.', 'info');
+        const cleanerNotes = (payload.ai_cleaner_report || []).slice(0, 4).join(' | ');
+        const cleanerSpecs = (payload.ai_extracted_specs || []).slice(0, 3).join(', ');
+        const noteParts = [payload.message || 'Product imported.'];
+        if (cleanerNotes) noteParts.push(`AI cleaner: ${cleanerNotes}`);
+        if (cleanerSpecs) noteParts.push(`Specs: ${cleanerSpecs}`);
+        setMessage(importMessage, noteParts.join(' '), 'info');
         if (payload.product) {
             populateForm(payload.product);
             formTitle.textContent = `Edit Product #${payload.product.id}`;
