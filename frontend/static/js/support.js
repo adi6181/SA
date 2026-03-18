@@ -187,7 +187,7 @@ async function playGreetingSequence() {
     messages.innerHTML = '';
 
     const sequence = [
-        'Hi, I am your ShopHub support assistant.',
+        'Hi, I am your DealDrop support assistant.',
         'I can help with shipping, tracking, returns, account access, and reviews.',
         'Pick a prompt below or ask your question.'
     ];

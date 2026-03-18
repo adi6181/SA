@@ -40,16 +40,16 @@ def send_password_reset_email(user_email, reset_link):
         return False
 
     message = Message(
-        subject='ShopHub Password Reset Link',
+        subject='DealDrop Password Reset Link',
         recipients=[user_email]
     )
     message.body = (
-        "You requested a password reset for ShopHub.\n\n"
+        "You requested a password reset for DealDrop.\n\n"
         f"Reset your password: {reset_link}\n\n"
         "If you did not request this, you can ignore this email."
     )
     message.html = (
-        "<p>You requested a password reset for ShopHub.</p>"
+        "<p>You requested a password reset for DealDrop.</p>"
         f"<p><a href=\"{reset_link}\">Reset your password</a></p>"
         "<p>If you did not request this, you can ignore this email.</p>"
     )

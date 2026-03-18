@@ -1,6 +1,24 @@
 const API_BASE_URL = '/api';
 const ADMIN_MODE_KEY = 'adminImageUploadMode';
 const ADMIN_API_KEY_STORAGE = 'adminImageUploadKey';
+const CART_STORAGE_KEY = 'dealdrop_cart';
+
+function handleNewsletterSubmit(event) {
+    event.preventDefault();
+    const email = document.getElementById('newsletterEmail')?.value.trim();
+    const msg = document.getElementById('newsletterMsg');
+    if (!email || !msg) return;
+    msg.textContent = '';
+    msg.style.color = '';
+    if (!email.includes('@')) {
+        msg.textContent = 'Please enter a valid email.';
+        msg.style.color = 'var(--error)';
+        return;
+    }
+    msg.textContent = "You're in! Watch your inbox for hot drops.";
+    msg.style.color = 'var(--success)';
+    event.target.reset();
+}
 
 let productsCache = [];
 let filterDebounceTimer = null;
@@ -21,7 +39,142 @@ document.addEventListener('DOMContentLoaded', () => {
     loadProducts();
     applyProductImageFallbacks();
     setupScrollAnimations();
+    updateCartBadge();
 });
+
+/* ============================================================
+   CART SYSTEM
+   ============================================================ */
+
+function getCart() {
+    try { return JSON.parse(localStorage.getItem(CART_STORAGE_KEY)) || []; }
+    catch { return []; }
+}
+
+function saveCart(cart) {
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+    updateCartBadge();
+}
+
+function updateCartBadge() {
+    const cart = getCart();
+    const qty = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+    const badge = document.getElementById('cartBadge');
+    if (!badge) return;
+    badge.textContent = qty;
+    badge.style.display = qty > 0 ? 'flex' : 'none';
+}
+
+function addToCart(product) {
+    const cart = getCart();
+    const existing = cart.find(item => item.id === product.id);
+    if (existing) {
+        existing.quantity = (existing.quantity || 1) + 1;
+    } else {
+        cart.push({
+            id: product.id,
+            name: product.name,
+            price: Number(product.deal_price || product.price || 0),
+            image: getProductImage(product),
+            merchant: product.merchant || 'Shop',
+            affiliate_url: product.affiliate_url || '#',
+            quantity: 1
+        });
+    }
+    saveCart(cart);
+    renderCartDrawer();
+    showNotification(`${product.name} added to cart!`, 'success');
+}
+
+function removeFromCart(productId) {
+    const cart = getCart().filter(item => item.id !== Number(productId));
+    saveCart(cart);
+    renderCartDrawer();
+}
+
+function openCart() {
+    document.getElementById('cartDrawer')?.classList.add('open');
+    document.getElementById('cartOverlay')?.classList.add('open');
+    renderCartDrawer();
+}
+
+function closeCart() {
+    document.getElementById('cartDrawer')?.classList.remove('open');
+    document.getElementById('cartOverlay')?.classList.remove('open');
+}
+
+function getMerchantBtnClass(merchant) {
+    if (!merchant) return 'merchant-btn-default';
+    const m = merchant.toLowerCase().replace(/\s+/g, '-');
+    const known = ['amazon', 'walmart', 'target', 'best-buy', 'shareasale'];
+    return known.some(k => m.includes(k.replace('-', '')))
+        ? `merchant-btn-${m}`
+        : 'merchant-btn-default';
+}
+
+function renderCartDrawer() {
+    const cartItemsEl = document.getElementById('cartItems');
+    const checkoutArea = document.getElementById('cartCheckoutArea');
+    if (!cartItemsEl) return;
+
+    const cart = getCart();
+
+    if (cart.length === 0) {
+        cartItemsEl.innerHTML = `
+            <div class="cart-empty">
+                <div class="cart-empty-icon">🛒</div>
+                <p>Your cart is empty</p>
+                <p class="cart-empty-sub">Add products to see vendor options</p>
+            </div>`;
+        if (checkoutArea) checkoutArea.innerHTML = '';
+        return;
+    }
+
+    // Group by merchant
+    const byMerchant = {};
+    cart.forEach(item => {
+        const m = item.merchant || 'Shop';
+        if (!byMerchant[m]) byMerchant[m] = { items: [], url: item.affiliate_url };
+        byMerchant[m].items.push(item);
+    });
+
+    let html = '';
+    Object.entries(byMerchant).forEach(([merchant, group]) => {
+        const subtotal = group.items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+        const btnClass = getMerchantBtnClass(merchant);
+        html += `
+            <div class="cart-merchant-group">
+                <div class="cart-merchant-header">
+                    <span class="vendor-badge vendor-${merchant.toLowerCase().replace(/\s+/g, '-')}">${merchant}</span>
+                    <span class="cart-merchant-subtotal">$${subtotal.toFixed(2)}</span>
+                </div>
+                ${group.items.map(item => `
+                    <div class="cart-item">
+                        <img class="cart-item-img" src="${item.image}" alt="${item.name}" onerror="this.src='/static/images/led_desk_lamp.svg'">
+                        <div class="cart-item-details">
+                            <p class="cart-item-name">${item.name}</p>
+                            <p class="cart-item-price">$${item.price.toFixed(2)} × ${item.quantity} = $${(item.price * item.quantity).toFixed(2)}</p>
+                        </div>
+                        <button class="cart-item-remove" onclick="removeFromCart(${item.id})" title="Remove">×</button>
+                    </div>`).join('')}
+                <a href="${group.url}" target="_blank" rel="noopener" class="btn-shop-vendor ${btnClass}">
+                    Shop on ${merchant} →
+                </a>
+            </div>`;
+    });
+
+    cartItemsEl.innerHTML = html;
+
+    const total = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
+    if (checkoutArea) {
+        checkoutArea.innerHTML = `
+            <div class="cart-total">
+                <span>Total</span>
+                <span>$${total.toFixed(2)}</span>
+            </div>
+            <p class="cart-checkout-note">Click a vendor button above to complete your purchase</p>`;
+    }
+}
 
 function setupEventListeners() {
     const searchInput = document.getElementById('searchInput');
@@ -151,7 +304,7 @@ function setupProductPopupNavigation() {
         if (!card) return;
 
         const ignoredTarget = event.target.closest(
-            '.affiliate-btn, .upload-images-btn, .upload-images-input, .gallery-nav, .gallery-dot, .compare-toggle, .compare-checkbox'
+            '.affiliate-btn, .btn-add-cart, .btn-buy-vendor, .upload-images-btn, .upload-images-input, .gallery-nav, .gallery-dot, .compare-toggle, .compare-checkbox'
         );
         if (ignoredTarget) return;
 
@@ -527,6 +680,13 @@ function createProductCard(product, index) {
     const media = document.createElement('div');
     media.className = 'product-media';
 
+    if (product.is_deal || product.deal_price) {
+        const dealBadge = document.createElement('span');
+        dealBadge.className = 'deal-badge';
+        dealBadge.textContent = 'DEAL';
+        media.appendChild(dealBadge);
+    }
+
     const tag = document.createElement('span');
     tag.className = 'product-tag';
     tag.textContent = product.category || 'General';
@@ -595,24 +755,55 @@ function createProductCard(product, index) {
         media.appendChild(dotsWrap);
     }
 
+    // Store data on card for fallback add-to-cart
+    card.dataset.productPrice    = String(product.deal_price || product.price || 0);
+    card.dataset.productMerchant = product.merchant || '';
+    card.dataset.productAffiliate = product.affiliate_url || '#';
+
     const info = document.createElement('div');
     info.className = 'product-info';
 
-    const priceLabel = product.deal_price || product.price;
-    const merchantLabel = product.merchant ? `Buy on ${product.merchant}` : 'Shop Now';
-    const reasons = product.why_this_product?.reasons || [];
-    const confidence = product.why_this_product?.confidence || 'medium';
+    const priceLabel   = product.deal_price || product.price;
+    const merchant     = product.merchant || '';
+    const merchantSlug = merchant.toLowerCase().replace(/\s+/g, '-');
+    const reasons      = product.why_this_product?.reasons || [];
+    const confidence   = product.why_this_product?.confidence || 'medium';
+    const rating       = Number(product.rating || 0);
+    const reviewCount  = Number(product.review_count || 0);
+
     const reasonsHtml = reasons.length
-        ? `<div class="why-card"><p class="why-title">Why this product (${confidence} confidence)</p><ul>${reasons.map((reason) => `<li>${reason}</li>`).join('')}</ul></div>`
+        ? `<div class="why-card"><p class="why-title">Why this product (${confidence})</p><ul>${reasons.map(r => `<li>${r}</li>`).join('')}</ul></div>`
+        : '';
+
+    const ratingHtml = rating
+        ? `<span class="product-rating">
+               <svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24" stroke="#fbbf24" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+               ${rating.toFixed(1)}
+               <span class="rating-count">(${reviewCount.toLocaleString()})</span>
+           </span>`
+        : '';
+
+    const originalPriceHtml = product.original_price && product.original_price > priceLabel
+        ? `<span class="product-price-original">$${Number(product.original_price).toFixed(2)}</span>`
         : '';
 
     info.innerHTML = `
+        <div class="product-merchant-row">
+            <span class="vendor-badge vendor-${merchantSlug}">${merchant || 'Shop'}</span>
+            ${ratingHtml}
+        </div>
         <h3 class="product-name">${product.name}</h3>
         <p class="product-description">${description}${product.description && product.description.length > 100 ? '...' : ''}</p>
         ${reasonsHtml}
         <div class="product-footer">
-            <span class="product-price">$${Number(priceLabel || 0).toFixed(2)}</span>
-            <a class="affiliate-btn" href="${product.affiliate_url || '#'}" target="_blank" rel="noopener">${merchantLabel}</a>
+            <div class="product-price-block">
+                <span class="product-price">$${Number(priceLabel || 0).toFixed(2)}</span>
+                ${originalPriceHtml}
+            </div>
+            <div class="product-actions">
+                <button class="btn-add-cart" data-action="add-to-cart" data-product-id="${product.id}">+ Cart</button>
+                <a class="btn-buy-vendor vendor-btn-${merchantSlug}" href="${product.affiliate_url || '#'}" target="_blank" rel="noopener">${merchant || 'Shop'} →</a>
+            </div>
         </div>
     `;
 
@@ -640,6 +831,26 @@ function handleProductGridClick(event) {
     const productId = actionElement.dataset.productId;
     const card = actionElement.closest('.product-card');
     if (!productId || !card) return;
+
+    if (action === 'add-to-cart') {
+        event.stopPropagation();
+        const product = getCachedProductById(productId);
+        if (product) {
+            addToCart(product);
+        } else {
+            // Fallback: build from card data attributes
+            addToCart({
+                id: Number(productId),
+                name: card.dataset.productName || 'Product',
+                price: Number(card.dataset.productPrice || 0),
+                deal_price: null,
+                merchant: card.dataset.productMerchant || 'Shop',
+                affiliate_url: card.dataset.productAffiliate || '#',
+                image_url: card.querySelector('.product-image')?.src || ''
+            });
+        }
+        return;
+    }
 
     if (action === 'open-upload' && isAdminMode()) {
         const input = card.querySelector('.upload-images-input');

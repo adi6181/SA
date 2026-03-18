@@ -3,41 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="ShopHub - Affiliate product discovery and reviews.">
-    <title>{% block title %}ShopHub Affiliate{% endblock %}</title>
+    <meta name="description" content="DealDrop - Discover top-rated products from Amazon, Walmart, Target, Best Buy and more.">
+    <title>{% block title %}DealDrop{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <div class="background-slider" aria-hidden="true">
-        <div class="background-slide slide-one"></div>
-        <div class="background-slide slide-two"></div>
-        <div class="background-slide slide-three"></div>
-        <div class="background-slide slide-four"></div>
-    </div>
 
+    <!-- Cart Overlay -->
+    <div id="cartOverlay" class="cart-overlay" onclick="closeCart()"></div>
+
+    <!-- Cart Drawer -->
+    <aside id="cartDrawer" class="cart-drawer" aria-label="Shopping Cart">
+        <div class="cart-drawer-header">
+            <h2 class="cart-drawer-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                Your Cart
+            </h2>
+            <button class="cart-drawer-close" onclick="closeCart()" aria-label="Close cart">×</button>
+        </div>
+        <div id="cartItems" class="cart-items-list"></div>
+        <div id="cartCheckoutArea" class="cart-checkout-area"></div>
+    </aside>
+
+    <!-- Navbar -->
     <nav class="navbar">
         <div class="container navbar-inner">
-            <a href="/" class="logo">ShopHub</a>
+            <a href="/" class="logo">Deal<span>Drop</span></a>
+
             <ul class="nav-menu main-tabs">
+                <li><a href="/" class="nav-link">Home</a></li>
+                <li><a href="/category/Books" class="nav-link">Books</a></li>
                 <li><a href="/category/Electronics" class="nav-link">Electronics</a></li>
                 <li><a href="/category/Fashion" class="nav-link">Fashion</a></li>
-                <li><a href="/category/Home" class="nav-link">Home</a></li>
-                <li><a href="/category/Books" class="nav-link">Books</a></li>
-                <li><a href="/deals" class="nav-link">Deals</a></li>
+                <li><a href="/deals" class="nav-link nav-deals">🔥 Deals</a></li>
                 <li><a href="/reviews" class="nav-link">Reviews</a></li>
             </ul>
+
             <ul class="nav-menu nav-menu-right">
-                <li><a href="#contact" class="nav-link">Contact</a></li>
                 <li><a href="/support" class="nav-link">Support</a></li>
                 <li><a href="/login" class="auth-link auth-link-login">Login</a></li>
                 <li><a href="/signup" class="auth-link auth-link-signup">Sign Up</a></li>
-                <li><a href="/admin" class="nav-link">Admin</a></li>
+                <li>
+                    <button class="cart-btn" onclick="openCart()" aria-label="Open cart">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                        <span id="cartBadge" class="cart-badge" style="display:none">0</span>
+                    </button>
+                </li>
             </ul>
         </div>
     </nav>
 
     {% block content %}{% endblock %}
 
+    <!-- Contact Section -->
     <section id="contact" class="contact-section">
         <div class="container support-grid">
             <div class="contact-card support-card">
@@ -67,31 +88,161 @@
         </div>
     </section>
 
+    <!-- Support Chat Toggle -->
     <button type="button" id="supportChatToggle" class="support-chat-toggle" aria-label="Open support chatbot" title="Support chatbot">
-        <span class="chatbot-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" role="img" focusable="false">
-                <path d="M12 2c4.96 0 9 3.58 9 8 0 2.39-1.2 4.53-3.1 6v4l-3.03-2.07A10.8 10.8 0 0 1 12 18c-4.96 0-9-3.58-9-8s4.04-8 9-8zm-4 7a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm8 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm-4 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/>
-            </svg>
-        </span>
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+            <path d="M12 2c4.96 0 9 3.58 9 8 0 2.39-1.2 4.53-3.1 6v4l-3.03-2.07A10.8 10.8 0 0 1 12 18c-4.96 0-9-3.58-9-8s4.04-8 9-8zm-4 7a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm8 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm-4 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/>
+        </svg>
     </button>
+
     <section id="supportChatPanel" class="support-chat-panel" aria-hidden="true">
         <div class="support-chat-header">
             <h3>FAQ Assistant</h3>
             <button type="button" id="supportChatClose">×</button>
         </div>
         <div id="supportChatMessages" class="support-chat-messages">
-            <p class="support-chat-bot">Hi, ask me about shipping, tracking, returns, account help, or reviews.</p>
+            <p class="support-chat-bot">Hi! Ask me about shipping, tracking, returns, or account help.</p>
         </div>
         <div id="supportChatSuggestions" class="support-chat-suggestions"></div>
         <form id="supportChatForm" class="support-chat-form">
-            <input id="supportChatInput" type="text" placeholder="Ask a support question..." required>
+            <input id="supportChatInput" type="text" placeholder="Ask a question..." required>
             <button type="submit">Send</button>
         </form>
     </section>
 
+    <!-- Marquee Ticker -->
+    <div class="marquee-strip" aria-hidden="true">
+        <div class="marquee-track">
+            <span class="marquee-item"><span class="mq-dot mq-dot-purple"></span>Free Shipping on $50+</span>
+            <span class="marquee-item"><span class="mq-dot mq-dot-pink"></span>Amazon Deals</span>
+            <span class="marquee-item"><span class="mq-dot mq-dot-cyan"></span>Walmart Picks</span>
+            <span class="marquee-item"><span class="mq-dot mq-dot-purple"></span>Target Exclusives</span>
+            <span class="marquee-item"><span class="mq-dot mq-dot-pink"></span>Best Buy Tech</span>
+            <span class="marquee-item"><span class="mq-dot mq-dot-cyan"></span>Up to 60% Off</span>
+            <span class="marquee-item"><span class="mq-dot mq-dot-purple"></span>Top Rated Picks</span>
+            <span class="marquee-item"><span class="mq-dot mq-dot-pink"></span>New Arrivals Daily</span>
+            <span class="marquee-item"><span class="mq-dot mq-dot-cyan"></span>Price Drop Alerts</span>
+            <!-- duplicate for seamless loop -->
+            <span class="marquee-item"><span class="mq-dot mq-dot-purple"></span>Free Shipping on $50+</span>
+            <span class="marquee-item"><span class="mq-dot mq-dot-pink"></span>Amazon Deals</span>
+            <span class="marquee-item"><span class="mq-dot mq-dot-cyan"></span>Walmart Picks</span>
+            <span class="marquee-item"><span class="mq-dot mq-dot-purple"></span>Target Exclusives</span>
+            <span class="marquee-item"><span class="mq-dot mq-dot-pink"></span>Best Buy Tech</span>
+            <span class="marquee-item"><span class="mq-dot mq-dot-cyan"></span>Up to 60% Off</span>
+            <span class="marquee-item"><span class="mq-dot mq-dot-purple"></span>Top Rated Picks</span>
+            <span class="marquee-item"><span class="mq-dot mq-dot-pink"></span>New Arrivals Daily</span>
+            <span class="marquee-item"><span class="mq-dot mq-dot-cyan"></span>Price Drop Alerts</span>
+        </div>
+    </div>
+
+    <!-- Stats Bar -->
+    <section class="stats-bar">
+        <div class="container stats-grid">
+            <div class="stat-item">
+                <span class="stat-num gradient-text">10K+</span>
+                <span class="stat-label">Products Listed</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <span class="stat-num gradient-text">4</span>
+                <span class="stat-label">Trusted Retailers</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <span class="stat-num gradient-text">60%</span>
+                <span class="stat-label">Max Savings</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <span class="stat-num gradient-text">24/7</span>
+                <span class="stat-label">Deal Updates</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter CTA -->
+    <section class="newsletter-cta">
+        <div class="newsletter-orbs" aria-hidden="true">
+            <div class="nl-orb nl-orb-1"></div>
+            <div class="nl-orb nl-orb-2"></div>
+        </div>
+        <div class="container newsletter-inner">
+            <div class="newsletter-copy">
+                <span class="newsletter-badge">Newsletter</span>
+                <h2>Never Miss a Drop.</h2>
+                <p>Get the hottest deals, price alerts, and new arrivals — straight to your inbox.</p>
+            </div>
+            <form class="newsletter-form" id="newsletterForm" onsubmit="handleNewsletterSubmit(event)">
+                <div class="nl-input-wrap">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                    <input type="email" id="newsletterEmail" placeholder="your@email.com" required>
+                </div>
+                <button type="submit" class="btn btn-primary nl-btn">Get Deals</button>
+            </form>
+            <p id="newsletterMsg" class="nl-msg"></p>
+        </div>
+    </section>
+
+    <!-- Vendor Trust Band -->
+    <section class="vendor-trust-band">
+        <div class="container vendor-trust-inner">
+            <span class="vt-label">Shop directly on</span>
+            <div class="vt-pills">
+                <span class="vt-pill vt-amazon">Amazon</span>
+                <span class="vt-pill vt-walmart">Walmart</span>
+                <span class="vt-pill vt-target">Target</span>
+                <span class="vt-pill vt-bestbuy">Best Buy</span>
+            </div>
+        </div>
+    </section>
+
     <footer class="footer">
-        <div class="container">
-            <p>&copy; 2026 ShopHub. All rights reserved.</p>
+        <div class="footer-grid-bg" aria-hidden="true"></div>
+        <div class="footer-glow-orbs" aria-hidden="true">
+            <div class="fg-orb fg-orb-1"></div>
+            <div class="fg-orb fg-orb-2"></div>
+        </div>
+        <div class="container footer-inner">
+            <div class="footer-brand">
+                <a href="/" class="logo footer-logo">Deal<span>Drop</span></a>
+                <p>Your shortcut to the best deals across the web. We earn a small commission — you save big.</p>
+                <div class="footer-socials">
+                    <a href="#" class="footer-social-btn" aria-label="Twitter">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.736-8.857L2.25 2.25h6.985l4.266 5.636zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                    </a>
+                    <a href="#" class="footer-social-btn" aria-label="Instagram">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/></svg>
+                    </a>
+                    <a href="#" class="footer-social-btn" aria-label="YouTube">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                    </a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <div>
+                    <h4>Shop</h4>
+                    <a href="/category/Electronics">Electronics</a>
+                    <a href="/category/Fashion">Fashion</a>
+                    <a href="/category/Home">Home</a>
+                    <a href="/category/Books">Books</a>
+                </div>
+                <div>
+                    <h4>Explore</h4>
+                    <a href="/deals">Deals</a>
+                    <a href="/reviews">Reviews</a>
+                    <a href="/support">Support</a>
+                </div>
+                <div>
+                    <h4>Retailers</h4>
+                    <a href="https://www.amazon.com" target="_blank" rel="noopener">Amazon</a>
+                    <a href="https://www.walmart.com" target="_blank" rel="noopener">Walmart</a>
+                    <a href="https://www.target.com" target="_blank" rel="noopener">Target</a>
+                    <a href="https://www.bestbuy.com" target="_blank" rel="noopener">Best Buy</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 DealDrop. All rights reserved. We may earn a commission on purchases.</p>
         </div>
     </footer>
 

@@ -29,8 +29,18 @@ function setupForgotPasswordModal() {
         setMessage(message, '');
     };
 
+    const cancelModal = () => {
+        closeModal();
+        // If user came from another page go back, otherwise go home
+        if (document.referrer && !document.referrer.includes('/login')) {
+            window.history.back();
+        } else {
+            window.location.href = '/';
+        }
+    };
+
     openButton.addEventListener('click', openModal);
-    closeButton.addEventListener('click', closeModal);
+    closeButton.addEventListener('click', cancelModal);
 
     modal.addEventListener('click', (event) => {
         if (event.target === modal) closeModal();

@@ -11,8 +11,8 @@ app = create_app()
 with app.app_context():
     # Clear existing products
     Product.query.delete()
-    
-    # Sample products
+
+    # Sample products with varied merchants: Amazon, Walmart, Target, Best Buy
     products = [
         Product(
             name="Wireless Headphones",
@@ -21,13 +21,13 @@ with app.app_context():
             image_url="/static/images/wireless_headphones.svg",
             stock=50,
             category="Electronics",
-            affiliate_url="https://www.amazon.com/",
-            merchant="Amazon",
+            affiliate_url="https://www.bestbuy.com/site/searchpage.jsp?st=Wireless+Headphones",
+            merchant="Best Buy",
             rating=4.6,
             review_count=1842,
             is_deal=True,
             deal_price=179.99,
-            original_price=199.99
+            original_price=249.99
         ),
         Product(
             name="Premium Smartwatch",
@@ -36,7 +36,7 @@ with app.app_context():
             image_url="/static/images/smartwatch.svg",
             stock=35,
             category="Electronics",
-            affiliate_url="https://www.amazon.com/",
+            affiliate_url="https://www.amazon.com/s?k=Premium+Smartwatch",
             merchant="Amazon",
             rating=4.4,
             review_count=935
@@ -48,10 +48,13 @@ with app.app_context():
             image_url="/static/images/wireless_speaker.svg",
             stock=100,
             category="Electronics",
-            affiliate_url="https://www.amazon.com/",
-            merchant="Amazon",
+            affiliate_url="https://www.walmart.com/search?q=Wireless+Bluetooth+Speaker",
+            merchant="Walmart",
             rating=4.5,
-            review_count=1260
+            review_count=1260,
+            is_deal=True,
+            deal_price=59.99,
+            original_price=79.99
         ),
         Product(
             name="USB-C Cable (2-Pack)",
@@ -60,7 +63,7 @@ with app.app_context():
             image_url="/static/images/usb_c_cable.svg",
             stock=200,
             category="Electronics",
-            affiliate_url="https://www.amazon.com/",
+            affiliate_url="https://www.amazon.com/s?k=USB-C+Cable+2+Pack",
             merchant="Amazon",
             rating=4.3,
             review_count=860,
@@ -75,8 +78,8 @@ with app.app_context():
             image_url="/static/images/tshirt.svg",
             stock=150,
             category="Fashion",
-            affiliate_url="https://www.shareasale.com/",
-            merchant="ShareASale",
+            affiliate_url="https://www.target.com/s?searchTerm=Classic+Cotton+T-Shirt",
+            merchant="Target",
             rating=4.2,
             review_count=412
         ),
@@ -87,8 +90,8 @@ with app.app_context():
             image_url="/static/images/denim_jeans.svg",
             stock=80,
             category="Fashion",
-            affiliate_url="https://www.shareasale.com/",
-            merchant="ShareASale",
+            affiliate_url="https://www.walmart.com/search?q=Denim+Jeans+Men+Women",
+            merchant="Walmart",
             rating=4.1,
             review_count=268
         ),
@@ -99,7 +102,7 @@ with app.app_context():
             image_url="/static/images/running_shoes.svg",
             stock=60,
             category="Fashion",
-            affiliate_url="https://www.amazon.com/",
+            affiliate_url="https://www.amazon.com/s?k=Running+Shoes",
             merchant="Amazon",
             rating=4.5,
             review_count=1421,
@@ -114,8 +117,8 @@ with app.app_context():
             image_url="/static/images/winter_jacket.svg",
             stock=40,
             category="Fashion",
-            affiliate_url="https://www.shareasale.com/",
-            merchant="ShareASale",
+            affiliate_url="https://www.target.com/s?searchTerm=Winter+Jacket",
+            merchant="Target",
             rating=4.4,
             review_count=522
         ),
@@ -126,8 +129,8 @@ with app.app_context():
             image_url="/static/images/garden_tool_set.svg",
             stock=45,
             category="Home",
-            affiliate_url="https://www.amazon.com/",
-            merchant="Amazon",
+            affiliate_url="https://www.walmart.com/search?q=Garden+Tool+Set+12+Piece",
+            merchant="Walmart",
             rating=4.3,
             review_count=338
         ),
@@ -138,10 +141,13 @@ with app.app_context():
             image_url="/static/images/led_desk_lamp.svg",
             stock=70,
             category="Home",
-            affiliate_url="https://www.amazon.com/",
-            merchant="Amazon",
+            affiliate_url="https://www.bestbuy.com/site/searchpage.jsp?st=LED+Desk+Lamp",
+            merchant="Best Buy",
             rating=4.4,
-            review_count=904
+            review_count=904,
+            is_deal=True,
+            deal_price=27.99,
+            original_price=34.99
         ),
         Product(
             name="Python Programming Guide",
@@ -150,7 +156,7 @@ with app.app_context():
             image_url="/static/images/python_programming_guide.svg",
             stock=55,
             category="Books",
-            affiliate_url="https://www.amazon.com/",
+            affiliate_url="https://www.amazon.com/s?k=Python+Programming+Guide+Book",
             merchant="Amazon",
             rating=4.7,
             review_count=511
@@ -162,16 +168,16 @@ with app.app_context():
             image_url="/static/images/web_development_handbook.svg",
             stock=40,
             category="Books",
-            affiliate_url="https://www.amazon.com/",
+            affiliate_url="https://www.amazon.com/s?k=Web+Development+Handbook",
             merchant="Amazon",
             rating=4.6,
             review_count=633
         ),
     ]
-    
-    # Add products to database
+
     for product in products:
         db.session.add(product)
-    
+
     db.session.commit()
     print(f"✓ Successfully added {len(products)} sample products!")
+    print("  Merchants: Amazon (4), Walmart (3), Target (2), Best Buy (2), Amazon Books (2)")
