@@ -93,6 +93,12 @@ def home():
     return render_template('index.html', products=[p.to_dict() for p in products])
 
 
+@app.route('/category/Fashion', methods=['GET'])
+def fashion_page():
+    products = Product.query.filter_by(category='Fashion').order_by(Product.created_at.desc()).all()
+    return render_template('fashion.html', products=[p.to_dict() for p in products])
+
+
 @app.route('/category/<string:category>', methods=['GET'])
 def category_page(category):
     products = Product.query.filter_by(category=category).order_by(Product.created_at.desc()).all()

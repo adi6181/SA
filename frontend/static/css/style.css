@@ -2330,3 +2330,358 @@ body::before {
 .footer-brand p {
     max-width: 36ch;
 }
+
+/* ============================================================
+   FASHION PAGE
+   ============================================================ */
+
+/* ── Hero ── */
+.fashion-hero {
+    position: relative;
+    padding: 90px 0 70px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #fdf4ff 0%, #f5f3ff 50%, #fce7f3 100%);
+}
+
+.fh-bg { position: absolute; inset: 0; pointer-events: none; }
+
+.fh-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.55;
+}
+.fh-orb-1 { width: 420px; height: 420px; background: rgba(139,92,246,0.22); top: -120px; left: -100px; }
+.fh-orb-2 { width: 340px; height: 340px; background: rgba(219,39,119,0.16); top: 40px;  right: -80px; }
+.fh-orb-3 { width: 280px; height: 280px; background: rgba(8,145,178,0.14);  bottom: -80px; left: 40%; }
+
+.fh-inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 52px;
+    text-align: center;
+}
+
+.fh-copy { max-width: 640px; }
+
+.fh-badge {
+    display: inline-block;
+    background: rgba(124,58,237,0.10);
+    color: var(--purple);
+    border: 1px solid var(--glass-border-2);
+    border-radius: var(--radius-full);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 5px 16px;
+    margin-bottom: 20px;
+}
+
+.fh-copy h1 {
+    font-size: clamp(2.4rem, 5vw, 3.8rem);
+    font-weight: 900;
+    color: var(--ink);
+    line-height: 1.1;
+    margin-bottom: 18px;
+}
+
+.fh-copy h1 em {
+    font-style: normal;
+    background: linear-gradient(135deg, var(--pink) 0%, var(--purple) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.fh-copy p {
+    font-size: 1.08rem;
+    color: var(--ink-soft);
+    line-height: 1.65;
+    max-width: 52ch;
+    margin: 0 auto;
+}
+
+/* ── Gender Selector Cards ── */
+.gender-selector {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+    max-width: 780px;
+    justify-content: center;
+}
+
+.gc-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 28px 20px 24px;
+    background: var(--surface);
+    border: 2px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    transition: transform 0.22s, box-shadow 0.22s, border-color 0.22s, background 0.22s;
+    text-align: center;
+}
+
+.gc-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+}
+
+.gc-women.active {
+    border-color: var(--pink);
+    background: rgba(219,39,119,0.05);
+    box-shadow: 0 8px 32px rgba(219,39,119,0.14);
+}
+.gc-men.active {
+    border-color: var(--purple);
+    background: rgba(124,58,237,0.05);
+    box-shadow: 0 8px 32px rgba(124,58,237,0.14);
+}
+.gc-kids.active {
+    border-color: var(--cyan);
+    background: rgba(8,145,178,0.05);
+    box-shadow: 0 8px 32px rgba(8,145,178,0.14);
+}
+
+.gc-art { margin-bottom: 4px; }
+
+.gc-label {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+}
+
+.gc-sub {
+    font-size: 0.8rem;
+    color: var(--ink-muted);
+    font-weight: 500;
+}
+
+.gc-arrow {
+    font-size: 1rem;
+    color: var(--ink-muted);
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity 0.18s, transform 0.18s;
+}
+
+.gc-card:hover .gc-arrow,
+.gc-card.active .gc-arrow {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.gc-women.active .gc-label { color: var(--pink); }
+.gc-men.active   .gc-label { color: var(--purple); }
+.gc-kids.active  .gc-label { color: var(--cyan); }
+
+/* ── How It Works ── */
+.fashion-how {
+    padding: 72px 0;
+    background: var(--surface);
+    border-top: 1px solid var(--glass-border);
+    border-bottom: 1px solid var(--glass-border);
+    text-align: center;
+}
+
+.fashion-eyebrow {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--purple);
+    margin-bottom: 10px;
+}
+
+.fashion-section-title {
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    font-weight: 800;
+    color: var(--ink);
+    margin-bottom: 44px;
+    line-height: 1.2;
+}
+
+.fhow-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    max-width: 860px;
+    margin: 0 auto;
+}
+
+.fhow-step {
+    flex: 1;
+    padding: 0 24px;
+    text-align: center;
+}
+
+.fhow-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--purple), var(--pink));
+    color: #fff;
+    font-size: 1.3rem;
+    font-weight: 800;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-md);
+}
+
+.fhow-step h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 8px;
+}
+
+.fhow-step p {
+    font-size: 0.88rem;
+    color: var(--ink-muted);
+    line-height: 1.6;
+}
+
+.fhow-line {
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--purple-light), var(--pink));
+    border-radius: 2px;
+    flex-shrink: 0;
+    opacity: 0.45;
+}
+
+/* ── Products Section ── */
+.fashion-products-section {
+    padding: 72px 0;
+    background: var(--bg);
+}
+
+.fashion-ph {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 36px;
+    flex-wrap: wrap;
+}
+
+.fashion-filter-pills {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.fpill {
+    padding: 8px 22px;
+    border-radius: var(--radius-full);
+    font-size: 0.88rem;
+    font-weight: 600;
+    border: 2px solid var(--glass-border);
+    background: var(--surface);
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: all 0.18s;
+}
+
+.fpill:hover {
+    border-color: var(--purple);
+    color: var(--purple);
+    background: rgba(124,58,237,0.06);
+}
+
+.fpill.active {
+    background: var(--purple);
+    border-color: var(--purple);
+    color: #fff;
+    box-shadow: var(--shadow-sm);
+}
+
+.fashion-empty-msg {
+    text-align: center;
+    color: var(--ink-muted);
+    padding: 40px 0;
+    font-size: 0.95rem;
+}
+
+/* ── Benefits ── */
+.fashion-benefits {
+    padding: 72px 0 80px;
+    background: var(--surface);
+    border-top: 1px solid var(--glass-border);
+    text-align: center;
+}
+
+.fbenefit-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.fbenefit-card {
+    background: var(--bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: 36px 28px;
+    transition: transform 0.22s, box-shadow 0.22s;
+}
+
+.fbenefit-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+}
+
+.fbenefit-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-md);
+    background: linear-gradient(135deg, rgba(124,58,237,0.12), rgba(219,39,119,0.10));
+    color: var(--purple);
+    margin-bottom: 18px;
+}
+
+.fbenefit-card h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 10px;
+}
+
+.fbenefit-card p {
+    font-size: 0.88rem;
+    color: var(--ink-muted);
+    line-height: 1.6;
+}
+
+/* ── Fashion Responsive ── */
+@media (max-width: 768px) {
+    .gender-selector { flex-direction: column; gap: 12px; max-width: 340px; }
+    .gc-card { flex-direction: row; align-items: center; padding: 18px 20px; text-align: left; gap: 14px; }
+    .gc-art { margin-bottom: 0; flex-shrink: 0; }
+    .gc-arrow { margin-left: auto; opacity: 1; }
+    .fhow-steps { flex-direction: column; gap: 24px; }
+    .fhow-line { width: 2px; height: 40px; }
+    .fbenefit-grid { grid-template-columns: 1fr; max-width: 400px; }
+    .fashion-ph { flex-direction: column; align-items: flex-start; }
+}
+
+@media (max-width: 480px) {
+    .fashion-hero { padding: 60px 0 50px; }
+    .fh-copy h1 { font-size: 2rem; }
+}

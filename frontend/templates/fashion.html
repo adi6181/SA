@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+
+{% block title %}Fashion | DealDrop{% endblock %}
+
+{% block content %}
+
+<!-- ── Fashion Hero ── -->
+<section class="fashion-hero">
+    <div class="fh-bg" aria-hidden="true">
+        <div class="fh-orb fh-orb-1"></div>
+        <div class="fh-orb fh-orb-2"></div>
+        <div class="fh-orb fh-orb-3"></div>
+    </div>
+    <div class="container fh-inner">
+        <div class="fh-copy">
+            <span class="fh-badge">✦ New Arrivals Daily</span>
+            <h1>Style Made <em>Simple.</em></h1>
+            <p>Curated fashion picks for Women, Men &amp; Kids — shop the best deals from Amazon, Walmart, Target, and more.</p>
+        </div>
+
+        <!-- Gender Selector Cards -->
+        <div class="gender-selector" id="genderSelector">
+            <button class="gc-card gc-women active" data-filter="women" onclick="setFashionFilter('women', this)">
+                <div class="gc-art">
+                    <svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="26" cy="13" r="8" fill="rgba(219,39,119,0.15)" stroke="#db2777" stroke-width="2"/>
+                        <path d="M13 46 C13 32 39 32 39 46" fill="rgba(219,39,119,0.12)" stroke="#db2777" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M17 30 L26 40 L35 30" fill="rgba(219,39,119,0.10)" stroke="#db2777" stroke-width="2" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <span class="gc-label">Women</span>
+                <span class="gc-sub">Dresses, Tops &amp; More</span>
+                <span class="gc-arrow">→</span>
+            </button>
+
+            <button class="gc-card gc-men" data-filter="men" onclick="setFashionFilter('men', this)">
+                <div class="gc-art">
+                    <svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="26" cy="12" r="7" fill="rgba(124,58,237,0.15)" stroke="#7c3aed" stroke-width="2"/>
+                        <rect x="17" y="24" width="18" height="20" rx="3" fill="rgba(124,58,237,0.12)" stroke="#7c3aed" stroke-width="2"/>
+                        <line x1="26" y1="24" x2="26" y2="44" stroke="#7c3aed" stroke-width="1.5"/>
+                        <path d="M17 30 L9 40 M35 30 L43 40" stroke="#7c3aed" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <span class="gc-label">Men</span>
+                <span class="gc-sub">Shirts, Pants &amp; More</span>
+                <span class="gc-arrow">→</span>
+            </button>
+
+            <button class="gc-card gc-kids" data-filter="kids" onclick="setFashionFilter('kids', this)">
+                <div class="gc-art">
+                    <svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="26" cy="14" r="6" fill="rgba(8,145,178,0.15)" stroke="#0891b2" stroke-width="2"/>
+                        <path d="M17 26 C17 22 35 22 35 26 L37 46 H15 Z" fill="rgba(8,145,178,0.12)" stroke="#0891b2" stroke-width="2" stroke-linejoin="round"/>
+                        <circle cx="21" cy="35" r="2" fill="#0891b2" opacity="0.5"/>
+                        <circle cx="31" cy="35" r="2" fill="#0891b2" opacity="0.5"/>
+                    </svg>
+                </div>
+                <span class="gc-label">Kids</span>
+                <span class="gc-sub">Ages 2–16</span>
+                <span class="gc-arrow">→</span>
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- ── How It Works ── -->
+<section class="fashion-how">
+    <div class="container">
+        <p class="fashion-eyebrow">How It Works</p>
+        <h2 class="fashion-section-title">Shop Fashion in 3 Easy Steps</h2>
+        <div class="fhow-steps">
+            <div class="fhow-step">
+                <div class="fhow-num">1</div>
+                <h3>Pick Your Style</h3>
+                <p>Choose Women, Men, or Kids and browse hundreds of curated picks.</p>
+            </div>
+            <div class="fhow-line" aria-hidden="true"></div>
+            <div class="fhow-step">
+                <div class="fhow-num">2</div>
+                <h3>Find Your Match</h3>
+                <p>Compare prices and styles from Amazon, Walmart, Target &amp; Best Buy.</p>
+            </div>
+            <div class="fhow-line" aria-hidden="true"></div>
+            <div class="fhow-step">
+                <div class="fhow-num">3</div>
+                <h3>Shop &amp; Save</h3>
+                <p>Click through to your favourite retailer and grab the best deal.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── Products Section ── -->
+<section class="fashion-products-section" id="fashionProducts">
+    <div class="container">
+        <div class="fashion-ph">
+            <div>
+                <p class="fashion-eyebrow">Curated Picks</p>
+                <h2 class="fashion-section-title" id="fashionHeading">Women's Fashion</h2>
+            </div>
+            <div class="fashion-filter-pills" id="fashionFilterPills">
+                <button class="fpill active" data-filter="women" onclick="setFashionFilter('women', this)">Women</button>
+                <button class="fpill" data-filter="men"   onclick="setFashionFilter('men',   this)">Men</button>
+                <button class="fpill" data-filter="kids"  onclick="setFashionFilter('kids',  this)">Kids</button>
+                <button class="fpill" data-filter="all"   onclick="setFashionFilter('all',   this)">All</button>
+            </div>
+        </div>
+
+        <div class="products-grid" id="fashionGrid">
+            {% if products %}
+                {% for product in products %}
+                {% set primary_image = (product.image_urls[0] if product.image_urls and product.image_urls|length > 0 else (product.image_url or '')) %}
+                {% set combined = ((product.name or '') + ' ' + (product.description or '')) | lower %}
+                {% if 'women' in combined or 'woman' in combined or 'ladies' in combined or 'dress' in combined or 'skirt' in combined or 'blouse' in combined or 'handbag' in combined or 'purse' in combined or 'heels' in combined or 'bra' in combined or 'legging' in combined or 'jumpsuit' in combined or 'cardigan' in combined %}
+                    {% set gender = 'women' %}
+                {% elif 'men' in combined or 'shirt' in combined or 'trouser' in combined or 'suit' in combined or 'polo' in combined or 'chino' in combined or 'blazer' in combined %}
+                    {% set gender = 'men' %}
+                {% elif 'kids' in combined or 'child' in combined or 'children' in combined or 'baby' in combined or 'toddler' in combined or 'infant' in combined or 'youth' in combined %}
+                    {% set gender = 'kids' %}
+                {% else %}
+                    {% set gender = 'all' %}
+                {% endif %}
+                <div class="product-card" data-product-id="{{ product.id }}" data-gender="{{ gender }}">
+                    <div class="product-media">
+                        <span class="product-tag">{{ product.category or 'Fashion' }}</span>
+                        <img src="{{ primary_image }}" alt="{{ product.name }}" class="product-image">
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">{{ product.name }}</h3>
+                        <p class="product-description">{{ product.description[:100] }}{% if product.description|length > 100 %}...{% endif %}</p>
+                        <div class="product-footer">
+                            <span class="product-price">${{ '%.2f'|format(product.price) }}</span>
+                            <a class="affiliate-btn" href="{{ product.affiliate_url or '#' }}" target="_blank" rel="noopener">Shop Now</a>
+                        </div>
+                        <a class="detail-link" href="/product/{{ product.id }}">View Details</a>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p class="empty-products">No fashion products found yet.</p>
+            {% endif %}
+        </div>
+
+        <p class="fashion-empty-msg" id="fashionEmptyMsg" style="display:none">
+            No products found for this filter — try a different category or check back soon.
+        </p>
+    </div>
+</section>
+
+<!-- ── Fashion Benefits ── -->
+<section class="fashion-benefits">
+    <div class="container">
+        <p class="fashion-eyebrow">Why DealDrop Fashion</p>
+        <h2 class="fashion-section-title">Your Style Deserves the Best Deals</h2>
+        <div class="fbenefit-grid">
+            <div class="fbenefit-card">
+                <div class="fbenefit-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                        <line x1="3" y1="6" x2="21" y2="6"/>
+                        <path d="M16 10a4 4 0 0 1-8 0"/>
+                    </svg>
+                </div>
+                <h3>4 Major Retailers</h3>
+                <p>Shop Amazon, Walmart, Target, and Best Buy — all in one place, all in one click.</p>
+            </div>
+            <div class="fbenefit-card">
+                <div class="fbenefit-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                        <polyline points="17 6 23 6 23 12"/>
+                    </svg>
+                </div>
+                <h3>Daily New Arrivals</h3>
+                <p>Fresh fashion drops updated every day — never miss a trend or a sale.</p>
+            </div>
+            <div class="fbenefit-card">
+                <div class="fbenefit-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                    </svg>
+                </div>
+                <h3>Top-Rated Picks Only</h3>
+                <p>We curate only the highest-rated items so you always get the best value.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function setFashionFilter(filter, clickedBtn) {
+    const headings = {
+        women: "Women's Fashion",
+        men:   "Men's Fashion",
+        kids:  "Kids' Fashion",
+        all:   "All Fashion Picks"
+    };
+
+    // Update heading
+    const heading = document.getElementById('fashionHeading');
+    if (heading) heading.textContent = headings[filter] || 'All Fashion Picks';
+
+    // Update active state on all pill + gender-card buttons
+    document.querySelectorAll('.fpill, .gc-card').forEach(b => {
+        b.classList.toggle('active', b.dataset.filter === filter);
+    });
+
+    // Filter product cards
+    const cards = document.querySelectorAll('#fashionGrid .product-card');
+    let visible = 0;
+    cards.forEach(card => {
+        const g = card.dataset.gender || 'all';
+        const show = filter === 'all' || g === filter || g === 'all';
+        card.style.display = show ? '' : 'none';
+        if (show) visible++;
+    });
+
+    // Show/hide empty state
+    const emptyMsg = document.getElementById('fashionEmptyMsg');
+    if (emptyMsg) emptyMsg.style.display = visible === 0 ? 'block' : 'none';
+
+    // Smooth-scroll to products
+    if (clickedBtn) {
+        const sec = document.getElementById('fashionProducts');
+        if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    setFashionFilter('women', null);
+});
+</script>
+{% endblock %}
