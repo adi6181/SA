@@ -4,216 +4,375 @@
 
 {% block content %}
 
-<!-- Hero Section -->
-<header class="hero">
-    <div class="hero-bg-orbs">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="orb orb-3"></div>
-    </div>
-    <div class="container hero-layout">
-        <div class="hero-copy">
-            <div class="hero-badge">
-                <span class="hero-badge-dot"></span>
-                Trusted Affiliate Picks
-            </div>
-            <h1>Shop Smarter.<br><span class="gradient-text">Buy Anywhere.</span></h1>
-            <p>Discover top-rated products from Amazon, Walmart, Target, Best Buy and more — all in one place.</p>
-            <div class="hero-actions">
-                <a class="btn btn-primary" href="/deals">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                    Browse Deals
-                </a>
-                <a class="btn btn-ghost" href="/reviews">Top Rated</a>
-            </div>
-            <div class="hero-merchants">
-                <span class="merchant-pill pill-amazon">Amazon</span>
-                <span class="merchant-pill pill-walmart">Walmart</span>
-                <span class="merchant-pill pill-target">Target</span>
-                <span class="merchant-pill pill-bestbuy">Best Buy</span>
-            </div>
-        </div>
-        <div class="hero-collage" id="heroCollage">
-            <div class="hero-layer layer-back" data-parallax-layer="0.12">
-                <img src="{{ url_for('static', filename='images/wireless_headphones.svg') }}" alt="Wireless headphones">
-            </div>
-            <div class="hero-layer layer-mid" data-parallax-layer="0.2">
-                <img src="{{ url_for('static', filename='images/running_shoes.svg') }}" alt="Running shoes">
-            </div>
-            <div class="hero-layer layer-front" data-parallax-layer="0.32">
-                <img src="{{ url_for('static', filename='images/smartwatch.svg') }}" alt="Smartwatch">
-            </div>
-            <div class="hero-layer layer-accent" data-parallax-layer="0.18">
-                <img src="{{ url_for('static', filename='images/led_desk_lamp.svg') }}" alt="Desk lamp">
-            </div>
-            <button type="button" class="hero-hotspot hotspot-one" data-hotspot-category="Electronics" data-hotspot-label="Electronics Picks">Electronics</button>
-            <button type="button" class="hero-hotspot hotspot-two" data-hotspot-category="Fashion" data-hotspot-label="Fashion Picks">Fashion</button>
-            <button type="button" class="hero-hotspot hotspot-three" data-hotspot-category="Home" data-hotspot-label="Home Picks">Home</button>
-        </div>
-    </div>
-</header>
+<!-- ══════════════════════════════════
+     HERO — Animated Value Proposition
+══════════════════════════════════ -->
+<section class="lp-hero">
+    <div class="lp-hero-pattern" aria-hidden="true"></div>
+    <div class="lp-hero-glow" aria-hidden="true"></div>
 
-<!-- Category Chips -->
-<section class="collections-strip">
-    <div class="container collections-grid">
-        <button class="collection-chip active" data-category="">All</button>
-        <button class="collection-chip" data-category="Electronics">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-            Electronics
-        </button>
-        <button class="collection-chip" data-category="Fashion">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.57a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.57a2 2 0 0 0-1.34-2.23z"/></svg>
-            Fashion
-        </button>
-        <button class="collection-chip" data-category="Home">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-            Home
-        </button>
-        <button class="collection-chip" data-category="Books">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-            Books
-        </button>
+    <!-- Floating shapes -->
+    <div class="lp-float-shapes" aria-hidden="true">
+        <div class="lp-shape lp-shape-1"></div>
+        <div class="lp-shape lp-shape-2"></div>
+        <div class="lp-shape lp-shape-3"></div>
+        <div class="lp-shape lp-shape-4"></div>
+    </div>
+
+    <div class="container lp-hero-inner">
+        <span class="lp-eyebrow lp-anim-1">✦ Trusted Affiliate Platform</span>
+        <h1 class="lp-headline lp-anim-2">
+            Shop Smarter.<br>
+            <span class="lp-gradient">Save Everywhere.</span>
+        </h1>
+        <p class="lp-sub lp-anim-3">
+            Discover top-rated products from Amazon, Walmart, Target &amp; Best Buy —
+            curated, compared, and delivered in one seamless experience.
+        </p>
+        <div class="lp-cta-row lp-anim-4">
+            <a href="/deals" class="lp-btn-primary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                Browse Deals
+            </a>
+            <button class="lp-btn-secondary" id="watchVideoBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+                Watch Video
+            </button>
+        </div>
+
+        <!-- Social proof -->
+        <div class="lp-social-proof lp-anim-4b">
+            <div class="lp-avatars">
+                <span class="lp-av lp-av-1"></span>
+                <span class="lp-av lp-av-2"></span>
+                <span class="lp-av lp-av-3"></span>
+                <span class="lp-av lp-av-4"></span>
+            </div>
+            <span class="lp-sp-text"><strong>2,400+</strong> shoppers saved this week</span>
+        </div>
+
+        <!-- Scroll cue -->
+        <div class="lp-scroll-cue lp-anim-5" aria-hidden="true">
+            <span></span>
+        </div>
     </div>
 </section>
 
-<!-- Products Section -->
-<section id="products" class="products-section">
+<!-- Video Modal -->
+<div class="video-modal" id="videoModal" aria-hidden="true">
+    <div class="vm-backdrop" id="vmBackdrop"></div>
+    <div class="vm-box">
+        <button class="vm-close" id="vmClose" aria-label="Close video">×</button>
+        <div class="vm-embed">
+            <div class="vm-placeholder">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+                <p>Product demo video coming soon</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════
+     TRUST STRIP
+══════════════════════════════════ -->
+<section class="trust-strip lp-reveal">
     <div class="container">
-        <div class="products-header">
-            <div>
-                <h2>Featured Picks</h2>
-                <p>Curated products from top retailers with the best prices.</p>
-            </div>
-            <div class="filters">
-                <div class="search-wrap">
-                    <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                    <input type="text" id="searchInput" class="search-input" list="searchSuggestions" placeholder="Search products...">
-                    <datalist id="searchSuggestions"></datalist>
-                </div>
-                <select id="categoryFilter" class="filter-select">
-                    <option value="">All Categories</option>
-                    <option value="Electronics">Electronics</option>
-                    <option value="Fashion">Fashion</option>
-                    <option value="Home">Home</option>
-                    <option value="Books">Books</option>
-                </select>
-                <select id="sortFilter" class="filter-select">
-                    <option value="newest">Newest</option>
-                    <option value="price_asc">Price: Low→High</option>
-                    <option value="price_desc">Price: High→Low</option>
-                    <option value="rating_desc">Top Rated</option>
-                    <option value="popular_desc">Most Reviewed</option>
-                    <option value="deals_desc">Best Deals</option>
-                </select>
-                <div class="price-inputs">
-                    <input type="number" id="minPriceFilter" class="filter-input" min="0" placeholder="Min $">
-                    <span>—</span>
-                    <input type="number" id="maxPriceFilter" class="filter-input" min="0" placeholder="Max $">
-                </div>
-            </div>
-        </div>
-
-        <div class="quick-filters">
-            <button type="button" class="quick-chip" data-filter-chip="deals">🔥 Deals Only</button>
-            <button type="button" class="quick-chip" data-filter-chip="rating">⭐ 4+ Rated</button>
-        </div>
-
-        <div class="active-filters" id="activeFilters"></div>
-
-        <!-- AI Copilot -->
-        <section class="ai-copilot" id="aiCopilot">
-            <div class="ai-copilot-head">
-                <span class="ai-badge">AI</span>
-                <div>
-                    <h3>Smart Search</h3>
-                    <p>Natural language product discovery</p>
-                </div>
-            </div>
-            <div class="ai-copilot-prompts">
-                <button type="button" class="ai-prompt-chip" data-ai-query="best deals under 100">Best deals under $100</button>
-                <button type="button" class="ai-prompt-chip" data-ai-query="top rated electronics">Top rated electronics</button>
-                <button type="button" class="ai-prompt-chip" data-ai-query="fashion below 75">Fashion below $75</button>
-                <button type="button" class="ai-prompt-chip" data-ai-query="home products above 50">Home above $50</button>
-            </div>
-            <div class="ai-copilot-actions">
-                <button type="button" class="btn btn-sm btn-outline" id="aiExplainQueryBtn">Interpret My Search</button>
-                <button type="button" class="btn btn-sm btn-outline" id="aiAutoCompareBtn">AI Auto-Compare</button>
-            </div>
-        </section>
-
-        <!-- Compare Builder -->
-        <div class="compare-builder" id="compareBuilder">
-            <div class="compare-head">
-                <h3>Smart Comparison</h3>
-                <p>Select 2–4 products for AI side-by-side comparison.</p>
-            </div>
-            <div class="compare-selected" id="compareSelected">No products selected.</div>
-            <div class="compare-actions">
-                <button type="button" class="btn btn-sm btn-primary" id="runComparisonBtn" disabled>Compare</button>
-                <button type="button" class="btn btn-sm btn-ghost" id="clearComparisonBtn" disabled>Clear</button>
-            </div>
-            <div class="compare-results" id="comparisonResults"></div>
-        </div>
-
-        <!-- Product Grid -->
-        <div class="products-grid" id="productsGrid">
-            {%- if products is defined and products|length > 0 -%}
-                {%- for product in products -%}
-                {% set primary_image = (product.image_urls[0] if product.image_urls and product.image_urls|length > 0 else (product.image_url or '')) %}
-                {% set merchant_class = (product.merchant or 'default') | lower | replace(' ', '-') %}
-                <div class="product-card"
-                    data-product-id="{{ product.id }}"
-                    data-product-name="{{ product.name | e }}"
-                    data-product-category="{{ product.category or '' }}"
-                    data-product-price="{{ product.deal_price or product.price }}"
-                    data-product-merchant="{{ product.merchant or '' }}"
-                    data-product-affiliate="{{ product.affiliate_url or '#' }}"
-                    data-image-urls='{{ product.image_urls | tojson if product.image_urls is defined else "[]" }}'>
-                    <div class="product-media">
-                        {% if product.is_deal %}
-                        <span class="deal-badge">DEAL</span>
-                        {% endif %}
-                        <span class="product-tag">{{ product.category or 'General' }}</span>
-                        <label class="compare-toggle">
-                            <input type="checkbox" class="compare-checkbox" data-product-id="{{ product.id }}">
-                            Compare
-                        </label>
-                        <img src="{{ primary_image }}" alt="{{ product.name }}" class="product-image" data-image-index="0">
-                    </div>
-                    <div class="product-info">
-                        <div class="product-merchant-row">
-                            <span class="vendor-badge vendor-{{ merchant_class }}">{{ product.merchant or 'Shop' }}</span>
-                            {% if product.rating %}
-                            <span class="product-rating">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24" stroke="#fbbf24" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                                {{ '%.1f'|format(product.rating) }}
-                                <span class="rating-count">({{ product.review_count or 0 }})</span>
-                            </span>
-                            {% endif %}
-                        </div>
-                        <h3 class="product-name">{{ product.name }}</h3>
-                        <p class="product-description">{{ product.description[:90] }}{% if product.description|length > 90 %}...{% endif %}</p>
-                        <div class="product-footer">
-                            <div class="product-price-block">
-                                <span class="product-price">${{ '%.2f'|format(product.deal_price if product.deal_price else product.price) }}</span>
-                                {% if product.original_price and product.original_price != product.price %}
-                                <span class="product-price-original">${{ '%.2f'|format(product.original_price) }}</span>
-                                {% endif %}
-                            </div>
-                            <div class="product-actions">
-                                <button class="btn-add-cart" data-action="add-to-cart" data-product-id="{{ product.id }}">+ Cart</button>
-                                <a class="btn-buy-vendor vendor-btn-{{ merchant_class }}" href="{{ product.affiliate_url or '#' }}" target="_blank" rel="noopener">
-                                    {{ product.merchant or 'Shop' }} →
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {%- endfor -%}
-            {%- else -%}
-                <p class="empty-products">No products found.</p>
-            {%- endif -%}
+        <p class="trust-label">Trusted by shoppers from</p>
+        <div class="trust-logos">
+            <span class="trust-logo">amazon</span>
+            <span class="trust-logo">walmart</span>
+            <span class="trust-logo">target</span>
+            <span class="trust-logo">bestbuy</span>
+            <span class="trust-logo">shopify</span>
+            <span class="trust-logo">paypal</span>
+            <span class="trust-logo">stripe</span>
+            <span class="trust-logo">google</span>
         </div>
     </div>
 </section>
+
+<!-- ══════════════════════════════════
+     FEATURE HIGHLIGHTS
+══════════════════════════════════ -->
+<section class="features-section lp-reveal">
+    <div class="container">
+        <div class="features-grid">
+            <div class="feat-card">
+                <div class="feat-icon-wrap feat-icon-purple">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                </div>
+                <h3>Real-Time Deals</h3>
+                <p>Price drops updated every hour from Amazon, Walmart, Target &amp; Best Buy.</p>
+            </div>
+            <div class="feat-card">
+                <div class="feat-icon-wrap feat-icon-pink">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <h3>Trusted &amp; Safe</h3>
+                <p>Every link goes directly to the official retailer. No middlemen, no surprises.</p>
+            </div>
+            <div class="feat-card">
+                <div class="feat-icon-wrap feat-icon-cyan">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                </div>
+                <h3>Smart Discovery</h3>
+                <p>AI-curated picks tailored to your budget and preferences across all categories.</p>
+            </div>
+            <div class="feat-card">
+                <div class="feat-icon-wrap feat-icon-amber">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                </div>
+                <h3>Price History</h3>
+                <p>See how prices have moved over time before you decide to buy.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════
+     SERVICES TABS
+══════════════════════════════════ -->
+<section class="services-section lp-reveal">
+    <div class="container">
+        <p class="section-eyebrow">What We Offer</p>
+        <h2 class="section-title">Everything You Need to Shop Smarter</h2>
+
+        <div class="services-tabs">
+            <div class="stab-list" role="tablist">
+                <button class="stab active" data-tab="consulting" role="tab">Consulting</button>
+                <button class="stab" data-tab="audit"       role="tab">Audit</button>
+                <button class="stab" data-tab="integration" role="tab">Integration</button>
+                <button class="stab" data-tab="analytics"   role="tab">Analytics</button>
+            </div>
+
+            <div class="stab-panels">
+                <div class="stab-panel active" id="tab-consulting">
+                    <div class="stab-panel-inner">
+                        <div class="stab-content">
+                            <span class="stab-icon">🎯</span>
+                            <h3>Affiliate Consulting</h3>
+                            <p>Our team of affiliate marketing experts helps you identify the highest-converting products and strategies. Get personalized advice on which retailers and categories deliver the best returns for your audience.</p>
+                            <ul class="stab-list-items">
+                                <li>Partner network strategy &amp; optimization</li>
+                                <li>Commission structure analysis</li>
+                                <li>Content &amp; placement recommendations</li>
+                                <li>Competitor benchmarking reports</li>
+                            </ul>
+                            <a href="/support" class="stab-cta">Get Started →</a>
+                        </div>
+                        <div class="stab-visual stab-visual-consulting"></div>
+                    </div>
+                </div>
+                <div class="stab-panel" id="tab-audit">
+                    <div class="stab-panel-inner">
+                        <div class="stab-content">
+                            <span class="stab-icon">🔍</span>
+                            <h3>Catalog Audit</h3>
+                            <p>We review your product listings end-to-end — checking accuracy, pricing competitiveness, image quality, and SEO metadata. Receive a detailed report with actionable improvements.</p>
+                            <ul class="stab-list-items">
+                                <li>Product data quality review</li>
+                                <li>Pricing vs. competitor analysis</li>
+                                <li>Image &amp; metadata compliance check</li>
+                                <li>Dead-link and affiliate URL validation</li>
+                            </ul>
+                            <a href="/support" class="stab-cta">Request Audit →</a>
+                        </div>
+                        <div class="stab-visual stab-visual-audit"></div>
+                    </div>
+                </div>
+                <div class="stab-panel" id="tab-integration">
+                    <div class="stab-panel-inner">
+                        <div class="stab-content">
+                            <span class="stab-icon">🔗</span>
+                            <h3>Retailer Integration</h3>
+                            <p>Connect your platform directly to Amazon, Walmart, Target, and Best Buy APIs. Automate product sync, pricing updates, and inventory status in real time.</p>
+                            <ul class="stab-list-items">
+                                <li>API-level retailer connections</li>
+                                <li>Real-time price &amp; stock sync</li>
+                                <li>Automated affiliate link generation</li>
+                                <li>Webhook &amp; event-based triggers</li>
+                            </ul>
+                            <a href="/support" class="stab-cta">Learn More →</a>
+                        </div>
+                        <div class="stab-visual stab-visual-integration"></div>
+                    </div>
+                </div>
+                <div class="stab-panel" id="tab-analytics">
+                    <div class="stab-panel-inner">
+                        <div class="stab-content">
+                            <span class="stab-icon">📊</span>
+                            <h3>Performance Analytics</h3>
+                            <p>Track clicks, conversions, revenue, and commissions across all retailers and categories. Our dashboard gives you the full picture with drill-down capabilities by date, product, and channel.</p>
+                            <ul class="stab-list-items">
+                                <li>Revenue &amp; commission dashboards</li>
+                                <li>Click-through &amp; conversion tracking</li>
+                                <li>Category &amp; product-level insights</li>
+                                <li>Scheduled email reports</li>
+                            </ul>
+                            <a href="/support" class="stab-cta">View Demo →</a>
+                        </div>
+                        <div class="stab-visual stab-visual-analytics"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════
+     DARK COUNTERS
+══════════════════════════════════ -->
+<section class="counters-section lp-reveal">
+    <div class="counters-bg" aria-hidden="true">
+        <div class="cb-orb cb-orb-1"></div>
+        <div class="cb-orb cb-orb-2"></div>
+    </div>
+    <div class="container counters-grid">
+        <div class="counter-item">
+            <span class="counter-num" data-target="10000" data-suffix="+">0</span>
+            <span class="counter-label">Products Listed</span>
+        </div>
+        <div class="counter-divider"></div>
+        <div class="counter-item">
+            <span class="counter-num" data-target="4" data-suffix="">0</span>
+            <span class="counter-label">Trusted Retailers</span>
+        </div>
+        <div class="counter-divider"></div>
+        <div class="counter-item">
+            <span class="counter-num" data-target="60" data-suffix="%">0</span>
+            <span class="counter-label">Max Savings</span>
+        </div>
+        <div class="counter-divider"></div>
+        <div class="counter-item">
+            <span class="counter-num" data-target="500" data-suffix="+">0</span>
+            <span class="counter-label">Happy Clients</span>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════
+     TEAM
+══════════════════════════════════ -->
+<section class="team-section lp-reveal">
+    <div class="container">
+        <p class="section-eyebrow">Our Team</p>
+        <h2 class="section-title">The People Behind DealDrop</h2>
+
+        <div class="team-slider-wrap">
+            <div class="team-slider" id="teamSlider">
+                <div class="team-track" id="teamTrack">
+                    <div class="team-card">
+                        <div class="tc-avatar tc-av-1"></div>
+                        <h3 class="tc-name">Sri Bala Ch</h3>
+                        <span class="tc-role">Founder &amp; CEO</span>
+                        <p class="tc-bio">Visionary behind DealDrop — building the smartest affiliate shopping experience across top retailers.</p>
+                        <a href="#" class="tc-linkedin" aria-label="LinkedIn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════
+     TESTIMONIALS
+══════════════════════════════════ -->
+<section class="testimonials-section lp-reveal">
+    <div class="container">
+        <p class="section-eyebrow">What Shoppers Say</p>
+        <h2 class="section-title">Loved by Deal Hunters</h2>
+        <div class="testi-grid">
+            <div class="testi-card">
+                <div class="testi-stars">★★★★★</div>
+                <p class="testi-text">"Found a laptop $200 cheaper than on the retailer's own homepage. DealDrop is the first place I check now."</p>
+                <div class="testi-author">
+                    <span class="testi-av testi-av-1"></span>
+                    <div><strong>Marcus T.</strong><span>Electronics shopper</span></div>
+                </div>
+            </div>
+            <div class="testi-card">
+                <div class="testi-stars">★★★★★</div>
+                <p class="testi-text">"The fashion section is incredible. I got brand-name clothes at 40% off — all with direct retailer links."</p>
+                <div class="testi-author">
+                    <span class="testi-av testi-av-2"></span>
+                    <div><strong>Priya K.</strong><span>Fashion deals</span></div>
+                </div>
+            </div>
+            <div class="testi-card">
+                <div class="testi-stars">★★★★☆</div>
+                <p class="testi-text">"Clean interface, real savings. I use the AI copilot to find gifts under $50 for family. Works every time."</p>
+                <div class="testi-author">
+                    <span class="testi-av testi-av-3"></span>
+                    <div><strong>Jordan W.</strong><span>Gift finder</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+/* ── Watch Video Modal ── */
+const watchBtn = document.getElementById('watchVideoBtn');
+const modal    = document.getElementById('videoModal');
+const backdrop = document.getElementById('vmBackdrop');
+const closeBtn = document.getElementById('vmClose');
+const openModal  = () => { modal.classList.add('open'); modal.setAttribute('aria-hidden','false'); };
+const closeModal = () => { modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); };
+watchBtn?.addEventListener('click', openModal);
+closeBtn?.addEventListener('click', closeModal);
+backdrop?.addEventListener('click', closeModal);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+/* ── Services Tabs ── */
+document.querySelectorAll('.stab').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.stab').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.stab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        const panel = document.getElementById('tab-' + btn.dataset.tab);
+        if (panel) panel.classList.add('active');
+    });
+});
+
+/* ── Animated Counters ── */
+function animateCounter(el) {
+    const target   = parseInt(el.dataset.target, 10);
+    const suffix   = el.dataset.suffix || '';
+    const duration = 1800;
+    const step     = 16;
+    const steps    = duration / step;
+    const increment = target / steps;
+    let current = 0;
+    const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) { clearInterval(timer); current = target; }
+        const display = target >= 1000
+            ? (current >= 1000 ? (current / 1000).toFixed(1) + 'K' : Math.floor(current).toString())
+            : Math.floor(current).toString();
+        el.textContent = display + suffix;
+    }, step);
+}
+const counterObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+        if (e.isIntersecting && !e.target.dataset.animated) {
+            e.target.dataset.animated = '1';
+            animateCounter(e.target);
+        }
+    });
+}, { threshold: 0.4 });
+document.querySelectorAll('.counter-num').forEach(el => counterObs.observe(el));
+
+/* ── Scroll reveal for sections ── */
+const revealObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('lp-revealed'); revealObs.unobserve(e.target); }
+    });
+}, { threshold: 0.12 });
+document.querySelectorAll('.lp-reveal').forEach(el => revealObs.observe(el));
+</script>
 {% endblock %}

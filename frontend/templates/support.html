@@ -1,21 +1,163 @@
 {% extends "base.html" %}
 
-{% block title %}Support | DealDrop{% endblock %}
+{% block title %}Support Center | DealDrop{% endblock %}
 
 {% block content %}
-<section class="products-section">
+
+<!-- ══════════════════════════════════
+     SUPPORT HERO
+══════════════════════════════════ -->
+<section class="support-hero">
     <div class="container">
-        <div class="products-header">
-            <h2>Support Center</h2>
-            <p>Use the contact form, ticket lookup, and FAQ assistant below to get help quickly.</p>
-        </div>
-        <div class="contact-card support-card">
-            <h3>Support Channels Available</h3>
-            <p>1. Contact form ticket creation</p>
-            <p>2. Ticket status tracking</p>
-            <p>3. FAQ assistant chatbot</p>
-            <p>Go to the contact section below to use all support tools.</p>
+        <p class="section-eyebrow">Support Center</p>
+        <h1>How can we <span class="lp-gradient">help you?</span></h1>
+        <p>Create a ticket, track your issue, or browse our FAQ — we're here 24/7.</p>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════
+     SUPPORT OPTION CARDS
+══════════════════════════════════ -->
+<section class="support-cards-section">
+    <div class="container">
+        <div class="support-cards-row">
+            <div class="sp-card">
+                <div class="sp-card-icon">🎫</div>
+                <h3>Create a Ticket</h3>
+                <p>Describe your issue and we'll get back to you within 24 hours.</p>
+                <button id="openTicketFormBtn" class="spg-btn spg-btn-primary">Open Form</button>
+            </div>
+            <div class="sp-card">
+                <div class="sp-card-icon">🔍</div>
+                <h3>Track Your Ticket</h3>
+                <p>Already submitted? Enter your ticket number and email to check status.</p>
+                <button id="openLookupBtn" class="spg-btn spg-btn-outline">Look Up</button>
+            </div>
+            <div class="sp-card">
+                <div class="sp-card-icon">💬</div>
+                <h3>Live Chat Assistant</h3>
+                <p>Get instant answers from our AI assistant — no waiting required.</p>
+                <button id="openChatBotBtn" class="spg-btn spg-btn-outline">Start Chat</button>
+            </div>
         </div>
     </div>
 </section>
+
+<!-- ══════════════════════════════════
+     FORMS ROW
+══════════════════════════════════ -->
+<section class="support-forms-section">
+    <div class="container">
+        <div class="support-forms-row">
+
+            <!-- Create Ticket Form -->
+            <div class="sp-panel" id="ticketFormPanel">
+                <h2>Create a Support Ticket</h2>
+                <form id="contactSupportForm" class="support-form">
+                    <input id="supportName"    type="text"  placeholder="Your name"   required>
+                    <input id="supportEmail"   type="email" placeholder="Your email"  required>
+                    <input id="supportSubject" type="text"  placeholder="Subject"     required>
+                    <select id="supportCategory">
+                        <option value="">Select category…</option>
+                        <option>General</option>
+                        <option>Order Issue</option>
+                        <option>Payment</option>
+                        <option>Product Question</option>
+                        <option>Returns &amp; Refunds</option>
+                        <option>Technical Issue</option>
+                        <option>Other</option>
+                    </select>
+                    <textarea id="supportMessage" rows="5" placeholder="Describe your issue in detail…" required></textarea>
+                    <button type="submit" class="btn btn-primary">Create Ticket</button>
+                    <p id="supportFormMessage" class="modal-message"></p>
+                </form>
+            </div>
+
+            <!-- Ticket Lookup + FAQ -->
+            <div class="sp-panel" id="lookupPanel">
+                <h2>Track a Ticket</h2>
+                <form id="ticketLookupForm" class="support-form">
+                    <input id="lookupTicketNumber" type="text"  placeholder="Ticket number (TKT-…)" required>
+                    <input id="lookupEmail"        type="email" placeholder="Your email"             required>
+                    <button type="submit" class="btn btn-outline">Check Status</button>
+                </form>
+                <p id="ticketLookupMessage" class="modal-message"></p>
+
+                <h3 class="faq-section-title">Quick FAQs</h3>
+                <ul id="faqListCompact" class="faq-list"></ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════
+     FAQ ACCORDION
+══════════════════════════════════ -->
+<section class="faq-accordion-section">
+    <div class="container">
+        <p class="section-eyebrow">FAQs</p>
+        <h2 class="section-title">Common Questions</h2>
+        <ul class="faq-acc-list">
+            <li class="faq-acc-item">
+                <button class="faq-acc-q">How do I track my order?</button>
+                <div class="faq-acc-a"><p>All purchases are made directly on the retailer's site (Amazon, Walmart, etc.). Use the confirmation email from the retailer to track your order.</p></div>
+            </li>
+            <li class="faq-acc-item">
+                <button class="faq-acc-q">Can I return a product?</button>
+                <div class="faq-acc-a"><p>Returns are handled by the retailer. Visit the retailer's return page and follow their standard return policy.</p></div>
+            </li>
+            <li class="faq-acc-item">
+                <button class="faq-acc-q">How does the affiliate model work?</button>
+                <div class="faq-acc-a"><p>When you click "Shop Now" and complete a purchase, DealDrop earns a small commission at no extra cost to you.</p></div>
+            </li>
+            <li class="faq-acc-item">
+                <button class="faq-acc-q">How do I reset my password?</button>
+                <div class="faq-acc-a"><p>Click "Login", then "Forgot Password". Enter your email and we'll send a reset link within a few minutes.</p></div>
+            </li>
+            <li class="faq-acc-item">
+                <button class="faq-acc-q">Why isn't my review showing?</button>
+                <div class="faq-acc-a"><p>Reviews are moderated and may take up to 24 hours to appear after submission.</p></div>
+            </li>
+            <li class="faq-acc-item">
+                <button class="faq-acc-q">How do I contact support urgently?</button>
+                <div class="faq-acc-a"><p>Use the ticket form on this page. Mention "URGENT" in the subject line and we'll prioritize your request.</p></div>
+            </li>
+        </ul>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════
+     SUPPORT CTA BANNER
+══════════════════════════════════ -->
+<section class="support-cta-banner">
+    <div class="container">
+        <h2>Still need help?</h2>
+        <p>Our team is available Monday–Friday, 9am–6pm EST.</p>
+        <a href="mailto:support@dealdrop.com" class="btn btn-primary">Email Support</a>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+/* ── FAQ Accordion ── */
+document.querySelectorAll('.faq-acc-item').forEach(item => {
+    item.querySelector('.faq-acc-q')?.addEventListener('click', () => {
+        const isOpen = item.classList.contains('open');
+        document.querySelectorAll('.faq-acc-item').forEach(i => i.classList.remove('open'));
+        if (!isOpen) item.classList.add('open');
+    });
+});
+
+/* ── Card button smooth scroll ── */
+document.getElementById('openTicketFormBtn')?.addEventListener('click', () => {
+    document.getElementById('ticketFormPanel')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setTimeout(() => document.getElementById('supportName')?.focus(), 600);
+});
+document.getElementById('openLookupBtn')?.addEventListener('click', () => {
+    document.getElementById('lookupPanel')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setTimeout(() => document.getElementById('lookupTicketNumber')?.focus(), 600);
+});
+</script>
 {% endblock %}

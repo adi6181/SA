@@ -3,20 +3,79 @@
 {% block title %}{{ category }} | DealDrop{% endblock %}
 
 {% block content %}
+
+<!-- ══════════════════════════════════
+     CATEGORY HERO BANNER
+══════════════════════════════════ -->
+<section class="cat-hero">
+    <div class="container">
+        <p class="section-eyebrow">Browse</p>
+        <h1 class="cat-hero-title">{{ category }} <span class="lp-gradient">Deals</span></h1>
+        <p class="cat-hero-sub">Top-rated products from Amazon, Walmart, Target &amp; Best Buy — curated for the best value.</p>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════
+     FILTER / SEARCH BAR
+══════════════════════════════════ -->
+<section class="browse-controls">
+    <div class="container">
+        <div class="bc-row">
+            <!-- Search -->
+            <div class="bc-search-wrap">
+                <svg class="bc-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                <input type="text" class="bc-search" id="catSearch" placeholder="Search products…">
+            </div>
+
+            <!-- Sort -->
+            <select class="bc-select" id="catSort">
+                <option value="default">Sort: Default</option>
+                <option value="price-asc">Price: Low → High</option>
+                <option value="price-desc">Price: High → Low</option>
+                <option value="name-asc">Name: A → Z</option>
+            </select>
+
+            <!-- Price Range -->
+            <div class="bc-price-wrap">
+                <label class="bc-price-label">Max price: $<span id="priceDisplay">500</span></label>
+                <input type="range" class="bc-range" id="priceRange" min="0" max="500" value="500" step="5">
+            </div>
+        </div>
+
+        <!-- Quick chips -->
+        <div class="bc-chips">
+            <button class="bc-chip active" data-filter="all">All</button>
+            <button class="bc-chip" data-filter="deals">🔥 Deals Only</button>
+            <button class="bc-chip" data-filter="rated">⭐ 4+ Rated</button>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════
+     PRODUCT GRID
+══════════════════════════════════ -->
 <section class="products-section">
     <div class="container">
-        <div class="products-header">
-            <h2>{{ category }} Picks</h2>
-            <p>Browse affiliate products from this category.</p>
-        </div>
-        <div class="products-grid">
+        <div class="products-grid" id="catProductGrid">
             {% if products %}
                 {% for product in products %}
                 {% set primary_image = (product.image_urls[0] if product.image_urls and product.image_urls|length > 0 else (product.image_url or '')) %}
-                <div class="product-card" data-product-id="{{ product.id }}">
+                {% set discount = ((product.original_price - product.price) / product.original_price * 100)|int if product.original_price and product.original_price > product.price else 0 %}
+                <div class="product-card"
+                     data-product-id="{{ product.id }}"
+                     data-product-name="{{ product.name | lower }}"
+                     data-product-category="{{ product.category or 'General' }}"
+                     data-product-price="{{ product.price }}"
+                     data-product-retailer="{{ product.retailer or '' }}"
+                     data-product-discount="{{ discount }}"
+                     data-product-rating="{{ product.rating or 0 }}">
                     <div class="product-media">
+                        {% if discount > 0 %}
+                        <span class="product-tag deal-tag">-{{ discount }}% OFF</span>
+                        {% else %}
                         <span class="product-tag">{{ product.category or 'General' }}</span>
-                        <img src="{{ primary_image }}" alt="{{ product.name }}" class="product-image">
+                        {% endif %}
+                        <img src="{{ primary_image }}" alt="{{ product.name }}" class="product-image" loading="lazy">
                     </div>
                     <div class="product-info">
                         <h3 class="product-name">{{ product.name }}</h3>
@@ -32,7 +91,12 @@
                         </div>
                         {% endif %}
                         <div class="product-footer">
-                            <span class="product-price">${{ '%.2f'|format(product.price) }}</span>
+                            <div class="product-price-group">
+                                <span class="product-price">${{ '%.2f'|format(product.price) }}</span>
+                                {% if product.original_price and product.original_price > product.price %}
+                                <span class="product-original-price">${{ '%.2f'|format(product.original_price) }}</span>
+                                {% endif %}
+                            </div>
                             <a class="affiliate-btn" href="{{ product.affiliate_url or '#' }}" target="_blank" rel="noopener">Shop Now</a>
                         </div>
                         <a class="detail-link" href="/product/{{ product.id }}">View Details</a>
@@ -40,9 +104,152 @@
                 </div>
                 {% endfor %}
             {% else %}
-                <p class="empty-products">No products found.</p>
+                <p class="empty-products">No products found in this category.</p>
             {% endif %}
+        </div>
+
+        <p class="cat-no-results" id="catNoResults" style="display:none;">No products match your filters.</p>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════
+     AI COPILOT STRIP
+══════════════════════════════════ -->
+<section class="copilot-section">
+    <div class="container">
+        <div class="copilot-card">
+            <div class="copilot-icon">🤖</div>
+            <div class="copilot-text">
+                <h3>AI Shopping Copilot</h3>
+                <p>Not sure what to pick? Describe what you need and our AI will recommend the best options from this category.</p>
+            </div>
+            <button class="copilot-btn" id="copilotBtn">Ask AI</button>
+        </div>
+        <div class="copilot-chat" id="copilotChat" style="display:none;">
+            <div class="copilot-messages" id="copilotMessages"></div>
+            <div class="copilot-input-row">
+                <input type="text" class="copilot-input" id="copilotInput" placeholder="e.g. I need a laptop under $500 for college…">
+                <button class="copilot-send" id="copilotSend">Send</button>
+            </div>
         </div>
     </div>
 </section>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+/* ── Category page filtering / search / sort ── */
+(function() {
+    const grid      = document.getElementById('catProductGrid');
+    const noResults = document.getElementById('catNoResults');
+    const searchEl  = document.getElementById('catSearch');
+    const sortEl    = document.getElementById('catSort');
+    const rangeEl   = document.getElementById('priceRange');
+    const priceDisp = document.getElementById('priceDisplay');
+    let   chipFilter = 'all';
+
+    function getCards() {
+        return [...grid.querySelectorAll('.product-card')];
+    }
+
+    function applyFilters() {
+        const query    = (searchEl?.value || '').toLowerCase().trim();
+        const maxPrice = parseFloat(rangeEl?.value || 500);
+        const sortVal  = sortEl?.value || 'default';
+
+        let cards = getCards();
+
+        // filter
+        let visible = cards.filter(c => {
+            const name     = c.dataset.productName || '';
+            const price    = parseFloat(c.dataset.productPrice) || 0;
+            const discount = parseInt(c.dataset.productDiscount) || 0;
+            const rating   = parseFloat(c.dataset.productRating) || 0;
+
+            if (query && !name.includes(query)) return false;
+            if (price > maxPrice) return false;
+            if (chipFilter === 'deals'  && discount <= 0) return false;
+            if (chipFilter === 'rated'  && rating < 4)    return false;
+            return true;
+        });
+
+        // sort
+        visible.sort((a, b) => {
+            const pa = parseFloat(a.dataset.productPrice) || 0;
+            const pb = parseFloat(b.dataset.productPrice) || 0;
+            const na = a.dataset.productName || '';
+            const nb = b.dataset.productName || '';
+            if (sortVal === 'price-asc')  return pa - pb;
+            if (sortVal === 'price-desc') return pb - pa;
+            if (sortVal === 'name-asc')   return na.localeCompare(nb);
+            return 0;
+        });
+
+        // reorder DOM
+        cards.forEach(c => c.style.display = 'none');
+        visible.forEach(c => { c.style.display = ''; grid.appendChild(c); });
+        noResults.style.display = visible.length === 0 ? 'block' : 'none';
+    }
+
+    searchEl?.addEventListener('input', applyFilters);
+    sortEl?.addEventListener('change', applyFilters);
+    rangeEl?.addEventListener('input', () => {
+        priceDisp.textContent = rangeEl.value;
+        applyFilters();
+    });
+
+    document.querySelectorAll('.bc-chip').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.bc-chip').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            chipFilter = btn.dataset.filter;
+            applyFilters();
+        });
+    });
+
+    /* ── AI Copilot toggle ── */
+    const copilotBtn  = document.getElementById('copilotBtn');
+    const copilotChat = document.getElementById('copilotChat');
+    const copilotSend = document.getElementById('copilotSend');
+    const copilotInp  = document.getElementById('copilotInput');
+    const copilotMsgs = document.getElementById('copilotMessages');
+
+    copilotBtn?.addEventListener('click', () => {
+        const open = copilotChat.style.display !== 'none';
+        copilotChat.style.display = open ? 'none' : 'block';
+        copilotBtn.textContent = open ? 'Ask AI' : 'Close';
+    });
+
+    function addMsg(role, text) {
+        const div = document.createElement('div');
+        div.className = 'copilot-msg copilot-msg-' + role;
+        div.textContent = text;
+        copilotMsgs.appendChild(div);
+        copilotMsgs.scrollTop = copilotMsgs.scrollHeight;
+    }
+
+    async function sendCopilot() {
+        const q = copilotInp.value.trim();
+        if (!q) return;
+        addMsg('user', q);
+        copilotInp.value = '';
+        addMsg('ai', '…thinking…');
+        try {
+            const r = await fetch('/api/ai/recommend', {
+                method: 'POST',
+                headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({ query: q })
+            });
+            const data = await r.json();
+            copilotMsgs.lastChild.textContent = data.answer || 'Sorry, I could not find a recommendation.';
+        } catch {
+            copilotMsgs.lastChild.textContent = 'Something went wrong. Try again.';
+        }
+    }
+
+    copilotSend?.addEventListener('click', sendCopilot);
+    copilotInp?.addEventListener('keydown', e => { if (e.key === 'Enter') sendCopilot(); });
+})();
+</script>
 {% endblock %}
