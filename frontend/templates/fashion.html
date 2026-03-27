@@ -4,110 +4,320 @@
 
 {% block content %}
 
-<!-- ── Fashion Hero ── -->
-<section class="fashion-hero">
-    <div class="fh-bg" aria-hidden="true">
-        <div class="fh-orb fh-orb-1"></div>
-        <div class="fh-orb fh-orb-2"></div>
-        <div class="fh-orb fh-orb-3"></div>
-    </div>
-    <div class="container fh-inner">
-        <div class="fh-copy">
-            <span class="fh-badge">✦ New Arrivals Daily</span>
-            <h1>Style Made <em>Simple.</em></h1>
-            <p>Curated fashion picks for Women, Men &amp; Kids — shop the best deals from Amazon, Walmart, Target, and more.</p>
+<!-- ── Macy's-Style Editorial Hero ── -->
+<section class="mf-hero">
+    <div class="mf-hero-inner container">
+        <div class="mf-hero-copy">
+            <span class="mf-hero-tag">New Season 2026</span>
+            <h1>Dress to<br><em>Impress.</em></h1>
+            <p>The season's best looks from top brands — curated daily at deal prices.</p>
+            <div class="mf-dept-tabs" id="mfDeptTabs">
+                <button class="mfdt active" data-filter="women" onclick="setFashionFilter('women', this)">Women</button>
+                <button class="mfdt" data-filter="men" onclick="setFashionFilter('men', this)">Men</button>
+                <button class="mfdt" data-filter="kids" onclick="setFashionFilter('kids', this)">Kids</button>
+                <button class="mfdt" data-filter="all" onclick="setFashionFilter('all', this)">All</button>
+            </div>
         </div>
-
-        <!-- Gender Selector Cards -->
-        <div class="gender-selector" id="genderSelector">
-            <button class="gc-card gc-women active" data-filter="women" onclick="setFashionFilter('women', this)">
-                <div class="gc-art">
-                    <svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="26" cy="13" r="8" fill="rgba(219,39,119,0.15)" stroke="#db2777" stroke-width="2"/>
-                        <path d="M13 46 C13 32 39 32 39 46" fill="rgba(219,39,119,0.12)" stroke="#db2777" stroke-width="2" stroke-linecap="round"/>
-                        <path d="M17 30 L26 40 L35 30" fill="rgba(219,39,119,0.10)" stroke="#db2777" stroke-width="2" stroke-linejoin="round"/>
-                    </svg>
+        <div class="mf-hero-visual">
+            <div class="mf-hero-panel mf-panel-main">
+                <img src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=800&q=80&fit=crop&crop=center" alt="Women's Fashion" class="mf-panel-photo" loading="eager">
+                <div class="mf-panel-label">
+                    <span class="mf-panel-tag">Women's</span>
+                    <p>New Arrivals</p>
                 </div>
-                <span class="gc-label">Women</span>
-                <span class="gc-sub">Dresses, Tops &amp; More</span>
-                <span class="gc-arrow">→</span>
-            </button>
-
-            <button class="gc-card gc-men" data-filter="men" onclick="setFashionFilter('men', this)">
-                <div class="gc-art">
-                    <svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="26" cy="12" r="7" fill="rgba(124,58,237,0.15)" stroke="#7c3aed" stroke-width="2"/>
-                        <rect x="17" y="24" width="18" height="20" rx="3" fill="rgba(124,58,237,0.12)" stroke="#7c3aed" stroke-width="2"/>
-                        <line x1="26" y1="24" x2="26" y2="44" stroke="#7c3aed" stroke-width="1.5"/>
-                        <path d="M17 30 L9 40 M35 30 L43 40" stroke="#7c3aed" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
+                <div class="mf-panel-badge">Up to 60% Off</div>
+            </div>
+            <div class="mf-hero-panel-col">
+                <div class="mf-hero-panel mf-panel-men">
+                    <img src="https://images.unsplash.com/photo-1617137968427-85924c800a22?w=500&q=80&fit=crop&crop=top" alt="Men's Fashion" class="mf-panel-photo" loading="eager">
+                    <div class="mf-panel-label">
+                        <span class="mf-panel-tag">Men's</span>
+                        <p>Essentials</p>
+                    </div>
                 </div>
-                <span class="gc-label">Men</span>
-                <span class="gc-sub">Shirts, Pants &amp; More</span>
-                <span class="gc-arrow">→</span>
-            </button>
-
-            <button class="gc-card gc-kids" data-filter="kids" onclick="setFashionFilter('kids', this)">
-                <div class="gc-art">
-                    <svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="26" cy="14" r="6" fill="rgba(8,145,178,0.15)" stroke="#0891b2" stroke-width="2"/>
-                        <path d="M17 26 C17 22 35 22 35 26 L37 46 H15 Z" fill="rgba(8,145,178,0.12)" stroke="#0891b2" stroke-width="2" stroke-linejoin="round"/>
-                        <circle cx="21" cy="35" r="2" fill="#0891b2" opacity="0.5"/>
-                        <circle cx="31" cy="35" r="2" fill="#0891b2" opacity="0.5"/>
-                    </svg>
+                <div class="mf-hero-panel mf-panel-kids">
+                    <img src="https://images.unsplash.com/photo-1503944583220-79d8926ad5e2?w=500&q=80&fit=crop&crop=center" alt="Kids' Fashion" class="mf-panel-photo" loading="eager">
+                    <div class="mf-panel-label">
+                        <span class="mf-panel-tag">Kids'</span>
+                        <p>Back to School</p>
+                    </div>
                 </div>
-                <span class="gc-label">Kids</span>
-                <span class="gc-sub">Ages 2–16</span>
-                <span class="gc-arrow">→</span>
-            </button>
+            </div>
         </div>
     </div>
 </section>
 
-<!-- ── How It Works ── -->
-<section class="fashion-how">
+<!-- ── Category Tiles (Macy's-style mosaic) ── -->
+<section class="mf-tiles-section">
     <div class="container">
-        <p class="fashion-eyebrow">How It Works</p>
-        <h2 class="fashion-section-title">Shop Fashion in 3 Easy Steps</h2>
-        <div class="fhow-steps">
-            <div class="fhow-step">
-                <div class="fhow-num">1</div>
-                <h3>Pick Your Style</h3>
-                <p>Choose Women, Men, or Kids and browse hundreds of curated picks.</p>
+        <div class="mf-tiles-header">
+            <h2>Shop by Category</h2>
+            <p>Pick your department and discover today's best deals</p>
+        </div>
+        <div class="mf-tile-mosaic">
+            <!-- Large tile -->
+            <a class="mf-tile mf-tile-lg" href="#fashionProducts" onclick="setFashionFilter('women', null)">
+                <img src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=900&q=80&fit=crop&crop=center" alt="Women's Fashion" class="mf-tile-photo" loading="lazy">
+                <div class="mf-tile-overlay">
+                    <span class="mf-tile-name">Women's</span>
+                    <span class="mf-tile-sub">Dresses, Tops &amp; More</span>
+                    <span class="mf-tile-cta">Shop Now →</span>
+                </div>
+            </a>
+            <!-- Small tiles grid -->
+            <div class="mf-tile-sm-grid">
+                <a class="mf-tile mf-tile-sm" href="#fashionProducts" onclick="setFashionFilter('women', null)">
+                    <img src="https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=500&q=80&fit=crop&crop=top" alt="Dresses" class="mf-tile-photo" loading="lazy">
+                    <div class="mf-tile-overlay">
+                        <span class="mf-tile-name">Dresses</span>
+                        <span class="mf-tile-cta">Shop →</span>
+                    </div>
+                </a>
+                <a class="mf-tile mf-tile-sm" href="#fashionProducts" onclick="setFashionFilter('women', null)">
+                    <img src="https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=500&q=80&fit=crop&crop=center" alt="Tops & Blouses" class="mf-tile-photo" loading="lazy">
+                    <div class="mf-tile-overlay">
+                        <span class="mf-tile-name">Tops &amp; Blouses</span>
+                        <span class="mf-tile-cta">Shop →</span>
+                    </div>
+                </a>
+                <a class="mf-tile mf-tile-sm" href="#fashionProducts" onclick="setFashionFilter('men', null)">
+                    <img src="https://images.unsplash.com/photo-1490578474895-699cd4e2cf59?w=500&q=80&fit=crop&crop=top" alt="Men's Fashion" class="mf-tile-photo" loading="lazy">
+                    <div class="mf-tile-overlay">
+                        <span class="mf-tile-name">Men's</span>
+                        <span class="mf-tile-cta">Shop →</span>
+                    </div>
+                </a>
+                <a class="mf-tile mf-tile-sm" href="#fashionProducts" onclick="setFashionFilter('kids', null)">
+                    <img src="https://images.unsplash.com/photo-1471286174890-9c112ffca5b4?w=500&q=80&fit=crop&crop=center" alt="Kids Fashion" class="mf-tile-photo" loading="lazy">
+                    <div class="mf-tile-overlay">
+                        <span class="mf-tile-name">Kids</span>
+                        <span class="mf-tile-cta">Shop →</span>
+                    </div>
+                </a>
             </div>
-            <div class="fhow-line" aria-hidden="true"></div>
-            <div class="fhow-step">
-                <div class="fhow-num">2</div>
-                <h3>Find Your Match</h3>
-                <p>Compare prices and styles from Amazon, Walmart, Target &amp; Best Buy.</p>
+        </div>
+        <!-- Row of extra category pills -->
+        <div class="mf-cat-pills">
+            <a class="mf-cat-pill" href="#fashionProducts" onclick="setFashionFilter('women', null)">Shoes &amp; Boots</a>
+            <a class="mf-cat-pill" href="#fashionProducts" onclick="setFashionFilter('women', null)">Handbags</a>
+            <a class="mf-cat-pill" href="#fashionProducts" onclick="setFashionFilter('women', null)">Activewear</a>
+            <a class="mf-cat-pill" href="#fashionProducts" onclick="setFashionFilter('men', null)">Suits &amp; Blazers</a>
+            <a class="mf-cat-pill" href="#fashionProducts" onclick="setFashionFilter('men', null)">Casual Wear</a>
+            <a class="mf-cat-pill mf-cat-pill-sale" href="#fashionProducts" onclick="setFashionFilter('all', null)">Sale</a>
+        </div>
+    </div>
+</section>
+
+<!-- ── Editorial Strip 1 ── -->
+<section class="mf-editorial">
+    <div class="mf-edit-strip">
+        <div class="mf-edit-visual mf-edit-women">
+            <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=900&q=80&fit=crop&crop=center" alt="Women's Summer Collection" class="mf-edit-photo" loading="lazy">
+        </div>
+        <div class="mf-edit-copy">
+            <span class="mf-edit-label">Women's Collection</span>
+            <h2>The Summer Edit</h2>
+            <p>Breezy silhouettes, bold prints, and effortless layering — fresh from the season's most-wanted brands.</p>
+            <div class="mf-edit-tags">
+                <span>Dresses</span><span>Linen Tops</span><span>Wide-Leg Pants</span>
             </div>
-            <div class="fhow-line" aria-hidden="true"></div>
-            <div class="fhow-step">
-                <div class="fhow-num">3</div>
-                <h3>Shop &amp; Save</h3>
-                <p>Click through to your favourite retailer and grab the best deal.</p>
+            <button class="mf-edit-btn" onclick="setFashionFilter('women', null); document.getElementById('fashionProducts').scrollIntoView({behavior:'smooth'})">
+                Shop Women's →
+            </button>
+        </div>
+    </div>
+    <div class="mf-edit-strip mf-edit-strip-rev">
+        <div class="mf-edit-visual mf-edit-men">
+            <img src="https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=900&q=80&fit=crop&crop=top" alt="Men's Collection" class="mf-edit-photo" loading="lazy">
+        </div>
+        <div class="mf-edit-copy">
+            <span class="mf-edit-label">Men's Collection</span>
+            <h2>Sharp. Classic. Him.</h2>
+            <p>Elevated essentials and statement pieces — from boardroom to weekend, every occasion covered.</p>
+            <div class="mf-edit-tags">
+                <span>Shirts</span><span>Chinos</span><span>Outerwear</span>
+            </div>
+            <button class="mf-edit-btn mf-edit-btn-dark" onclick="setFashionFilter('men', null); document.getElementById('fashionProducts').scrollIntoView({behavior:'smooth'})">
+                Shop Men's →
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- ── Lookbook Gallery ── -->
+<section class="mf-lookbook">
+    <div class="container">
+        <div class="mf-lookbook-head" data-reveal="fade-up">
+            <p class="mf-lb-eyebrow">Visual Edit</p>
+            <h2 class="mf-lb-title">The <em>Lookbook</em></h2>
+            <p class="mf-lb-sub">Style inspiration curated by our fashion editors — real looks, real deals.</p>
+        </div>
+        <div class="mf-lb-grid">
+            <!-- Row 1: tall(×2rows col1) | regular | regular | regular -->
+            <div class="mf-lb-item mf-lb-tall" data-reveal="fade-up" style="--rv-delay:0s">
+                <img src="https://images.unsplash.com/photo-1509631179647-0177331693ae?w=700&q=85&fit=crop&crop=center" alt="Street Style" loading="lazy">
+                <div class="mf-lb-caption">Street Style</div>
+            </div>
+            <div class="mf-lb-item" data-reveal="fade-up" style="--rv-delay:0.07s">
+                <img src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=600&q=85&fit=crop&crop=center" alt="Summer Look" loading="lazy">
+                <div class="mf-lb-caption">Summer Vibes</div>
+            </div>
+            <div class="mf-lb-item" data-reveal="fade-up" style="--rv-delay:0.14s">
+                <img src="https://images.unsplash.com/photo-1475180429745-a2fc4c91bcd2?w=600&q=85&fit=crop&crop=top" alt="Accessories" loading="lazy">
+                <div class="mf-lb-caption">Accessories</div>
+            </div>
+            <div class="mf-lb-item" data-reveal="fade-up" style="--rv-delay:0.21s">
+                <img src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&q=85&fit=crop&crop=center" alt="Bags" loading="lazy">
+                <div class="mf-lb-caption">Bags & Clutches</div>
+            </div>
+            <!-- Row 2: [tall continues] | wide(×2cols) | regular -->
+            <div class="mf-lb-item mf-lb-wide" data-reveal="fade-up" style="--rv-delay:0.28s">
+                <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=900&q=85&fit=crop&crop=center" alt="Editorial" loading="lazy">
+                <div class="mf-lb-caption">Editorial Edit</div>
+            </div>
+            <div class="mf-lb-item" data-reveal="fade-up" style="--rv-delay:0.35s">
+                <img src="https://images.unsplash.com/photo-1542060748-10c28b62716f?w=600&q=85&fit=crop&crop=center" alt="Shoes" loading="lazy">
+                <div class="mf-lb-caption">Shoes & Heels</div>
+            </div>
+            <!-- Row 3: regular | tall(×2rows) | regular | regular -->
+            <div class="mf-lb-item" data-reveal="fade-up" style="--rv-delay:0.42s">
+                <img src="https://images.unsplash.com/photo-1566206091558-7f218b696731?w=600&q=85&fit=crop&crop=center" alt="Men's Style" loading="lazy">
+                <div class="mf-lb-caption">Men's Style</div>
+            </div>
+            <div class="mf-lb-item mf-lb-tall" data-reveal="fade-up" style="--rv-delay:0.49s">
+                <img src="https://images.unsplash.com/photo-1581044777550-4cfa60707c03?w=700&q=85&fit=crop&crop=top" alt="Runway" loading="lazy">
+                <div class="mf-lb-caption">Runway Ready</div>
+            </div>
+            <div class="mf-lb-item" data-reveal="fade-up" style="--rv-delay:0.56s">
+                <img src="https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600&q=85&fit=crop&crop=center" alt="Boho Style" loading="lazy">
+                <div class="mf-lb-caption">Boho Chic</div>
+            </div>
+            <div class="mf-lb-item" data-reveal="fade-up" style="--rv-delay:0.63s">
+                <img src="https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=600&q=85&fit=crop&crop=center" alt="Tops" loading="lazy">
+                <div class="mf-lb-caption">Tops & Blouses</div>
+            </div>
+            <!-- Row 4: [tall continues] | wide(×2cols) | regular -->
+            <div class="mf-lb-item mf-lb-wide" data-reveal="fade-up" style="--rv-delay:0.7s">
+                <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=900&q=85&fit=crop&crop=center" alt="Women Collection" loading="lazy">
+                <div class="mf-lb-caption">Women's Edit</div>
+            </div>
+            <div class="mf-lb-item" data-reveal="fade-up" style="--rv-delay:0.77s">
+                <img src="https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=600&q=85&fit=crop&crop=top" alt="Dresses" loading="lazy">
+                <div class="mf-lb-caption">Dresses</div>
             </div>
         </div>
     </div>
 </section>
+
+<!-- ── Trending Styles Strip ── -->
+<section class="mf-trending">
+    <div class="container">
+        <div class="mf-trending-head" data-reveal="fade-up">
+            <p class="mf-lb-eyebrow">Hot Right Now</p>
+            <h2 class="mf-lb-title">Trending <em>Styles</em></h2>
+        </div>
+        <div class="mf-trending-grid">
+            <div class="mf-trend-card" data-reveal="fade-up" style="--rv-delay:0s">
+                <div class="mf-trend-photo">
+                    <img src="https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=700&q=85&fit=crop&crop=center" alt="Boho Chic" loading="lazy">
+                    <span class="mf-trend-badge">Trending</span>
+                </div>
+                <div class="mf-trend-info">
+                    <p class="mf-trend-cat">Women's</p>
+                    <h3 class="mf-trend-name">Boho Chic</h3>
+                    <p class="mf-trend-desc">Flowy fabrics, earthy tones, and layered accessories define this season's top look.</p>
+                    <a href="#fashionProducts" onclick="setFashionFilter('women', null)" class="mf-trend-link">Shop the Look →</a>
+                </div>
+            </div>
+            <div class="mf-trend-card" data-reveal="fade-up" style="--rv-delay:0.1s">
+                <div class="mf-trend-photo">
+                    <img src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=700&q=85&fit=crop&crop=top" alt="Smart Casual" loading="lazy">
+                    <span class="mf-trend-badge mf-trend-badge-dark">New In</span>
+                </div>
+                <div class="mf-trend-info">
+                    <p class="mf-trend-cat">Men's</p>
+                    <h3 class="mf-trend-name">Smart Casual</h3>
+                    <p class="mf-trend-desc">Tailored trousers, clean shirts, and minimalist footwear — effortlessly polished.</p>
+                    <a href="#fashionProducts" onclick="setFashionFilter('men', null)" class="mf-trend-link">Shop the Look →</a>
+                </div>
+            </div>
+            <div class="mf-trend-card" data-reveal="fade-up" style="--rv-delay:0.2s">
+                <div class="mf-trend-photo">
+                    <img src="https://images.unsplash.com/photo-1560243563-062bfc001d68?w=700&q=85&fit=crop&crop=center" alt="Athleisure" loading="lazy">
+                    <span class="mf-trend-badge mf-trend-badge-red">Sale</span>
+                </div>
+                <div class="mf-trend-info">
+                    <p class="mf-trend-cat">All</p>
+                    <h3 class="mf-trend-name">Athleisure</h3>
+                    <p class="mf-trend-desc">Performance meets style — activewear you can wear from the gym to the street.</p>
+                    <a href="#fashionProducts" onclick="setFashionFilter('all', null)" class="mf-trend-link">Shop the Look →</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── Accessories Spotlight ── -->
+<section class="mf-accessories">
+    <div class="mf-acc-bg">
+        <img src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=1800&q=70&fit=crop&crop=center" alt="Accessories bg" class="mf-acc-bg-img" loading="lazy">
+        <div class="mf-acc-bg-overlay"></div>
+    </div>
+    <div class="container mf-acc-inner">
+        <div class="mf-acc-copy" data-reveal="fade-right">
+            <p class="mf-lb-eyebrow" style="color:#f9a8d4">Finishing Touches</p>
+            <h2 class="mf-acc-title">Accessories That <em>Make the Look</em></h2>
+            <p class="mf-acc-desc">Bags, jewellery, sunglasses, scarves — because the details are everything. Up to 50% off top accessories.</p>
+            <a href="#fashionProducts" class="mf-acc-btn">Shop Accessories →</a>
+        </div>
+        <div class="mf-acc-photos" data-reveal="fade-left" style="--rv-delay:0.12s">
+            <div class="mf-acc-photo mf-acc-p1">
+                <img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&q=85&fit=crop&crop=center" alt="Handbag" loading="lazy">
+            </div>
+            <div class="mf-acc-photo mf-acc-p2">
+                <img src="https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400&q=85&fit=crop&crop=center" alt="Sunglasses" loading="lazy">
+            </div>
+            <div class="mf-acc-photo mf-acc-p3">
+                <img src="https://images.unsplash.com/photo-1611085583191-a3b181a88401?w=400&q=85&fit=crop&crop=center" alt="Jewellery" loading="lazy">
+            </div>
+            <div class="mf-acc-photo mf-acc-p4">
+                <img src="https://images.unsplash.com/photo-1542060748-10c28b62716f?w=400&q=85&fit=crop&crop=center" alt="Shoes" loading="lazy">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── Full-Width Promo Banner ── -->
+<div class="mf-promo-banner">
+    <div class="mf-promo-inner container">
+        <div>
+            <span class="mf-promo-tag">Limited Time</span>
+            <h3>Up to 60% Off Fashion Deals</h3>
+            <p>Updated daily from Amazon, Walmart, Target &amp; more</p>
+        </div>
+        <button class="mf-promo-btn" onclick="document.getElementById('fashionProducts').scrollIntoView({behavior:'smooth'})">
+            Shop All Deals
+        </button>
+    </div>
+</div>
 
 <!-- ── Products Section ── -->
-<section class="fashion-products-section" id="fashionProducts">
+<section class="mf-products-section" id="fashionProducts">
     <div class="container">
-        <div class="fashion-ph">
+        <div class="mf-products-header">
             <div>
-                <p class="fashion-eyebrow">Curated Picks</p>
-                <h2 class="fashion-section-title" id="fashionHeading">Women's Fashion</h2>
+                <span class="mf-section-tag">Curated Picks</span>
+                <h2 id="fashionHeading">Women's Fashion</h2>
             </div>
-            <div class="fashion-filter-pills" id="fashionFilterPills">
-                <button class="fpill active" data-filter="women" onclick="setFashionFilter('women', this)">Women</button>
-                <button class="fpill" data-filter="men"   onclick="setFashionFilter('men',   this)">Men</button>
-                <button class="fpill" data-filter="kids"  onclick="setFashionFilter('kids',  this)">Kids</button>
-                <button class="fpill" data-filter="all"   onclick="setFashionFilter('all',   this)">All</button>
+            <div class="mf-filter-pills" id="fashionFilterPills">
+                <button class="mf-pill active" data-filter="women" onclick="setFashionFilter('women', this)">Women</button>
+                <button class="mf-pill" data-filter="men" onclick="setFashionFilter('men', this)">Men</button>
+                <button class="mf-pill" data-filter="kids" onclick="setFashionFilter('kids', this)">Kids</button>
+                <button class="mf-pill" data-filter="all" onclick="setFashionFilter('all', this)">All</button>
             </div>
         </div>
 
-        <div class="products-grid" id="fashionGrid">
+        <div class="mf-products-grid" id="fashionGrid">
             {% if products %}
                 {% for product in products %}
                 {% set primary_image = (product.image_urls[0] if product.image_urls and product.image_urls|length > 0 else (product.image_url or '')) %}
@@ -121,68 +331,117 @@
                 {% else %}
                     {% set gender = 'all' %}
                 {% endif %}
-                <div class="product-card" data-product-id="{{ product.id }}" data-gender="{{ gender }}">
-                    <div class="product-media">
-                        <span class="product-tag">{{ product.category or 'Fashion' }}</span>
-                        <img src="{{ primary_image }}" alt="{{ product.name }}" class="product-image">
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-name">{{ product.name }}</h3>
-                        <p class="product-description">{{ product.description[:100] }}{% if product.description|length > 100 %}...{% endif %}</p>
-                        <div class="product-footer">
-                            <span class="product-price">${{ '%.2f'|format(product.price) }}</span>
-                            <a class="affiliate-btn" href="{{ product.affiliate_url or '#' }}" target="_blank" rel="noopener">Shop Now</a>
+                <div class="mf-product-card" data-product-id="{{ product.id }}" data-gender="{{ gender }}">
+                    <div class="mf-product-img-wrap">
+                        {% if product.original_price and product.price and product.original_price > product.price %}
+                        <span class="mf-product-badge">
+                            -{{ ((1 - product.price / product.original_price) * 100) | int }}%
+                        </span>
+                        {% endif %}
+                        <img src="{{ primary_image }}" alt="{{ product.name }}" class="mf-product-img" loading="lazy">
+                        <div class="mf-product-hover">
+                            <a href="{{ product.affiliate_url or '#' }}" target="_blank" rel="noopener" class="mf-quick-shop">Quick Shop</a>
                         </div>
-                        <a class="detail-link" href="/product/{{ product.id }}">View Details</a>
+                    </div>
+                    <div class="mf-product-info">
+                        {% if product.retailer %}
+                        <span class="mf-product-retailer">{{ product.retailer }}</span>
+                        {% endif %}
+                        <h3 class="mf-product-name">{{ product.name }}</h3>
+                        <div class="mf-product-pricing">
+                            <span class="mf-product-price">${{ '%.2f'|format(product.price) }}</span>
+                            {% if product.original_price and product.original_price > product.price %}
+                            <span class="mf-product-orig">${{ '%.2f'|format(product.original_price) }}</span>
+                            {% endif %}
+                        </div>
+                        {% if product.rating %}
+                        <div class="mf-product-rating">
+                            <span class="mf-stars">{% for i in range(product.rating | int) %}★{% endfor %}{% if product.rating % 1 >= 0.5 %}½{% endif %}</span>
+                            {% if product.review_count %}<span class="mf-review-count">({{ product.review_count }})</span>{% endif %}
+                        </div>
+                        {% endif %}
+                        <div class="mf-product-actions">
+                            <a class="mf-btn-shop" href="{{ product.affiliate_url or '#' }}" target="_blank" rel="noopener">Shop Now</a>
+                            <a class="mf-btn-detail" href="/product/{{ product.id }}">Details</a>
+                        </div>
                     </div>
                 </div>
                 {% endfor %}
             {% else %}
-                <p class="empty-products">No fashion products found yet.</p>
+                <p class="mf-empty">No fashion products found yet. Check back soon!</p>
             {% endif %}
         </div>
 
-        <p class="fashion-empty-msg" id="fashionEmptyMsg" style="display:none">
+        <p class="mf-empty-filter" id="fashionEmptyMsg" style="display:none">
             No products found for this filter — try a different category or check back soon.
         </p>
     </div>
 </section>
 
-<!-- ── Fashion Benefits ── -->
-<section class="fashion-benefits">
+<!-- ── Kids Spotlight ── -->
+<section class="mf-kids-spotlight">
     <div class="container">
-        <p class="fashion-eyebrow">Why DealDrop Fashion</p>
-        <h2 class="fashion-section-title">Your Style Deserves the Best Deals</h2>
-        <div class="fbenefit-grid">
-            <div class="fbenefit-card">
-                <div class="fbenefit-icon">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <div class="mf-kids-inner">
+            <div class="mf-kids-visual">
+                <img src="https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?w=800&q=80&fit=crop&crop=center" alt="Kids Fashion" class="mf-kids-photo" loading="lazy">
+            </div>
+            <div class="mf-kids-copy">
+                <span class="mf-edit-label">Kids' Fashion</span>
+                <h2>Fun Styles for Little Ones</h2>
+                <p>From playful prints to school-ready basics — adorable fits for ages 2–16, at prices parents love.</p>
+                <button class="mf-edit-btn" onclick="setFashionFilter('kids', null); document.getElementById('fashionProducts').scrollIntoView({behavior:'smooth'})">
+                    Shop Kids' →
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── Why DealDrop ── -->
+<section class="mf-why">
+    <div class="container">
+        <h2 class="mf-why-title">Why Shop Fashion on DealDrop?</h2>
+        <div class="mf-why-grid">
+            <div class="mf-why-card">
+                <div class="mf-why-icon">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
                         <line x1="3" y1="6" x2="21" y2="6"/>
                         <path d="M16 10a4 4 0 0 1-8 0"/>
                     </svg>
                 </div>
                 <h3>4 Major Retailers</h3>
-                <p>Shop Amazon, Walmart, Target, and Best Buy — all in one place, all in one click.</p>
+                <p>Amazon, Walmart, Target, Best Buy — all in one place.</p>
             </div>
-            <div class="fbenefit-card">
-                <div class="fbenefit-icon">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <div class="mf-why-card">
+                <div class="mf-why-icon">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
                         <polyline points="17 6 23 6 23 12"/>
                     </svg>
                 </div>
                 <h3>Daily New Arrivals</h3>
-                <p>Fresh fashion drops updated every day — never miss a trend or a sale.</p>
+                <p>Fresh fashion drops every day — never miss a trend.</p>
             </div>
-            <div class="fbenefit-card">
-                <div class="fbenefit-icon">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <div class="mf-why-card">
+                <div class="mf-why-icon">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
                     </svg>
                 </div>
-                <h3>Top-Rated Picks Only</h3>
-                <p>We curate only the highest-rated items so you always get the best value.</p>
+                <h3>Top-Rated Only</h3>
+                <p>Curated picks with the highest customer ratings.</p>
+            </div>
+            <div class="mf-why-card">
+                <div class="mf-why-icon">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="8" x2="12" y2="12"/>
+                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                </div>
+                <h3>Real-Time Pricing</h3>
+                <p>Prices updated live so you always get the best deal.</p>
             </div>
         </div>
     </div>
@@ -200,17 +459,16 @@ function setFashionFilter(filter, clickedBtn) {
         all:   "All Fashion Picks"
     };
 
-    // Update heading
     const heading = document.getElementById('fashionHeading');
     if (heading) heading.textContent = headings[filter] || 'All Fashion Picks';
 
-    // Update active state on all pill + gender-card buttons
-    document.querySelectorAll('.fpill, .gc-card').forEach(b => {
+    // Sync all tab/pill groups
+    document.querySelectorAll('.mfdt, .mf-pill').forEach(b => {
         b.classList.toggle('active', b.dataset.filter === filter);
     });
 
     // Filter product cards
-    const cards = document.querySelectorAll('#fashionGrid .product-card');
+    const cards = document.querySelectorAll('#fashionGrid .mf-product-card');
     let visible = 0;
     cards.forEach(card => {
         const g = card.dataset.gender || 'all';
@@ -219,11 +477,9 @@ function setFashionFilter(filter, clickedBtn) {
         if (show) visible++;
     });
 
-    // Show/hide empty state
     const emptyMsg = document.getElementById('fashionEmptyMsg');
     if (emptyMsg) emptyMsg.style.display = visible === 0 ? 'block' : 'none';
 
-    // Smooth-scroll to products
     if (clickedBtn) {
         const sec = document.getElementById('fashionProducts');
         if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -232,6 +488,14 @@ function setFashionFilter(filter, clickedBtn) {
 
 document.addEventListener('DOMContentLoaded', () => {
     setFashionFilter('women', null);
+
+    /* ── Scroll reveal ── */
+    const obs = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (e.isIntersecting) { e.target.classList.add('rv-in'); obs.unobserve(e.target); }
+        });
+    }, { threshold: 0.06, rootMargin: '0px 0px -30px 0px' });
+    document.querySelectorAll('[data-reveal]').forEach(el => obs.observe(el));
 });
 </script>
 {% endblock %}

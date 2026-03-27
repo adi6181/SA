@@ -99,6 +99,18 @@ def fashion_page():
     return render_template('fashion.html', products=[p.to_dict() for p in products])
 
 
+@app.route('/category/Books', methods=['GET'])
+def books_page():
+    products = Product.query.filter_by(category='Books').order_by(Product.created_at.desc()).all()
+    return render_template('books.html', products=[p.to_dict() for p in products])
+
+
+@app.route('/category/Electronics', methods=['GET'])
+def electronics_page():
+    products = Product.query.filter_by(category='Electronics').order_by(Product.created_at.desc()).all()
+    return render_template('electronics.html', products=[p.to_dict() for p in products])
+
+
 @app.route('/category/<string:category>', methods=['GET'])
 def category_page(category):
     products = Product.query.filter_by(category=category).order_by(Product.created_at.desc()).all()

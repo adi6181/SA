@@ -1,0 +1,497 @@
+{% extends "base.html" %}
+
+{% block title %}Books | DealDrop{% endblock %}
+
+{% block content %}
+
+<!-- ══════════════════════════════════
+     BOOKS HERO
+══════════════════════════════════ -->
+<section class="bk-hero">
+    <div class="bk-hero-bg">
+        <img src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1600&q=80&fit=crop&crop=center" alt="Library" class="bk-hero-photo" loading="eager">
+        <div class="bk-hero-overlay"></div>
+    </div>
+    <div class="container bk-hero-inner">
+        <div class="bk-hero-copy" data-reveal="fade-right">
+            <p class="bk-eyebrow">DealDrop Books</p>
+            <h1 class="bk-hero-title">Find Your Next<br><span class="bk-accent">Great Read</span></h1>
+            <p class="bk-hero-sub">Bestsellers, timeless classics, and hidden gems — all at prices you'll love. Curated from Amazon, Barnes & Noble, and beyond.</p>
+            <div class="bk-hero-actions">
+                <a href="#booksProducts" class="bk-btn-primary">Shop All Books</a>
+                <a href="#bkGenres" class="bk-btn-ghost">Browse Genres</a>
+            </div>
+        </div>
+        <div class="bk-hero-cards" data-reveal="fade-left" style="--rv-delay:0.15s">
+            <div class="bk-hero-book bk-book-1">
+                <img src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=300&q=80&fit=crop&crop=center" alt="Featured Book" class="bk-book-cover">
+                <div class="bk-book-info">
+                    <p class="bk-book-label">Bestseller</p>
+                    <p class="bk-book-name">Atomic Habits</p>
+                    <p class="bk-book-price">$11.99</p>
+                </div>
+            </div>
+            <div class="bk-hero-book bk-book-2">
+                <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?w=300&q=80&fit=crop&crop=center" alt="Featured Book" class="bk-book-cover">
+                <div class="bk-book-info">
+                    <p class="bk-book-label">Hot Deal</p>
+                    <p class="bk-book-name">Thinking, Fast and Slow</p>
+                    <p class="bk-book-price">$9.49</p>
+                </div>
+            </div>
+            <div class="bk-hero-book bk-book-3">
+                <img src="https://images.unsplash.com/photo-1495640388908-05fa85288e61?w=300&q=80&fit=crop&crop=center" alt="Featured Book" class="bk-book-cover">
+                <div class="bk-book-info">
+                    <p class="bk-book-label">Staff Pick</p>
+                    <p class="bk-book-name">The Midnight Library</p>
+                    <p class="bk-book-price">$13.99</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="bk-hero-scroll-hint">
+        <span class="bk-scroll-dot"></span>
+        <span class="bk-scroll-text">Scroll to explore</span>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════
+     GENRE TILES
+══════════════════════════════════ -->
+<section class="bk-genres" id="bkGenres">
+    <div class="container">
+        <div class="bk-section-head" data-reveal="fade-up">
+            <p class="bk-section-eyebrow">Explore</p>
+            <h2 class="bk-section-title">Browse by Genre</h2>
+        </div>
+        <div class="bk-genre-grid">
+            <a class="bk-genre-tile bk-tile-lg" href="#booksProducts" onclick="setBooksFilter('Fiction')" data-reveal="fade-up" style="--rv-delay:0s">
+                <img src="https://images.unsplash.com/photo-1476275466078-4007374efbbe?w=800&q=80&fit=crop&crop=center" alt="Fiction" class="bk-genre-photo" loading="lazy">
+                <div class="bk-genre-overlay"></div>
+                <div class="bk-genre-label">
+                    <span class="bk-genre-icon">📖</span>
+                    <p class="bk-genre-name">Fiction</p>
+                    <p class="bk-genre-sub">Novels & Stories</p>
+                </div>
+            </a>
+            <a class="bk-genre-tile" href="#booksProducts" onclick="setBooksFilter('Non-Fiction')" data-reveal="fade-up" style="--rv-delay:0.07s">
+                <img src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=600&q=80&fit=crop&crop=center" alt="Non-Fiction" class="bk-genre-photo" loading="lazy">
+                <div class="bk-genre-overlay"></div>
+                <div class="bk-genre-label">
+                    <span class="bk-genre-icon">🧠</span>
+                    <p class="bk-genre-name">Non-Fiction</p>
+                    <p class="bk-genre-sub">Real Stories & Ideas</p>
+                </div>
+            </a>
+            <a class="bk-genre-tile" href="#booksProducts" onclick="setBooksFilter('Self-Help')" data-reveal="fade-up" style="--rv-delay:0.14s">
+                <img src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=600&q=80&fit=crop&crop=center" alt="Self-Help" class="bk-genre-photo" loading="lazy">
+                <div class="bk-genre-overlay"></div>
+                <div class="bk-genre-label">
+                    <span class="bk-genre-icon">🌱</span>
+                    <p class="bk-genre-name">Self-Help</p>
+                    <p class="bk-genre-sub">Growth & Mindset</p>
+                </div>
+            </a>
+            <a class="bk-genre-tile bk-tile-wide" href="#booksProducts" onclick="setBooksFilter('Sci-Fi')" data-reveal="fade-up" style="--rv-delay:0.21s">
+                <img src="https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=900&q=80&fit=crop&crop=top" alt="Sci-Fi" class="bk-genre-photo" loading="lazy">
+                <div class="bk-genre-overlay"></div>
+                <div class="bk-genre-label">
+                    <span class="bk-genre-icon">🚀</span>
+                    <p class="bk-genre-name">Sci-Fi & Fantasy</p>
+                    <p class="bk-genre-sub">Worlds Beyond Imagination</p>
+                </div>
+            </a>
+            <a class="bk-genre-tile" href="#booksProducts" onclick="setBooksFilter('Textbooks')" data-reveal="fade-up" style="--rv-delay:0.28s">
+                <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=600&q=80&fit=crop&crop=center" alt="Textbooks" class="bk-genre-photo" loading="lazy">
+                <div class="bk-genre-overlay"></div>
+                <div class="bk-genre-label">
+                    <span class="bk-genre-icon">🎓</span>
+                    <p class="bk-genre-name">Textbooks</p>
+                    <p class="bk-genre-sub">Study & Academic</p>
+                </div>
+            </a>
+            <a class="bk-genre-tile" href="#booksProducts" onclick="setBooksFilter('Children')" data-reveal="fade-up" style="--rv-delay:0.35s">
+                <img src="https://images.unsplash.com/photo-1503919545889-aef636e10ad4?w=600&q=80&fit=crop&crop=center" alt="Children" class="bk-genre-photo" loading="lazy">
+                <div class="bk-genre-overlay"></div>
+                <div class="bk-genre-label">
+                    <span class="bk-genre-icon">🌈</span>
+                    <p class="bk-genre-name">Children's</p>
+                    <p class="bk-genre-sub">Stories for Young Minds</p>
+                </div>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════
+     EDITORIAL STRIP — SUMMER READS
+══════════════════════════════════ -->
+<section class="bk-editorial bk-editorial-warm">
+    <div class="container bk-editorial-inner">
+        <div class="bk-editorial-photo" data-reveal="fade-right">
+            <img src="https://images.unsplash.com/photo-1455541504462-57ebb2a9cec1?w=800&q=80&fit=crop&crop=center" alt="Summer Reading" loading="lazy">
+            <div class="bk-editorial-badge">Summer Picks</div>
+        </div>
+        <div class="bk-editorial-copy" data-reveal="fade-left" style="--rv-delay:0.1s">
+            <p class="bk-section-eyebrow">Editorial</p>
+            <h2 class="bk-editorial-title">The Summer Reading List You Didn't Know You Needed</h2>
+            <p class="bk-editorial-desc">From beach-ready page-turners to thought-provoking literary fiction — our editors curated the 20 best books to carry you through the season.</p>
+            <ul class="bk-editorial-list">
+                <li>Top-rated by readers in 2025</li>
+                <li>Mix of light reads & deeper dives</li>
+                <li>Up to 40% off list price</li>
+            </ul>
+            <a href="#booksProducts" class="bk-btn-primary">Shop Summer Reads</a>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════
+     BESTSELLERS STRIP
+══════════════════════════════════ -->
+<section class="bk-editorial bk-editorial-dark">
+    <div class="container bk-editorial-inner bk-editorial-flip">
+        <div class="bk-editorial-copy" data-reveal="fade-right">
+            <p class="bk-section-eyebrow" style="color:#f59e0b">Trending Now</p>
+            <h2 class="bk-editorial-title" style="color:#fff">New York Times<br>Bestsellers — On Sale</h2>
+            <p class="bk-editorial-desc" style="color:rgba(255,255,255,0.7)">The hottest books on the charts right now, all discounted. Stay current without paying full price.</p>
+            <ul class="bk-editorial-list" style="color:rgba(255,255,255,0.8)">
+                <li>Updated weekly from the NYT list</li>
+                <li>Hardcover & paperback options</li>
+                <li>Free shipping on orders over $25</li>
+            </ul>
+            <a href="#booksProducts" class="bk-btn-amber">Shop Bestsellers</a>
+        </div>
+        <div class="bk-editorial-photo" data-reveal="fade-left" style="--rv-delay:0.1s">
+            <img src="https://images.unsplash.com/photo-1542621334-a254cf47733d?w=800&q=80&fit=crop&crop=center" alt="Bestsellers" loading="lazy">
+            <div class="bk-editorial-badge bk-badge-amber">#1 Bestsellers</div>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════
+     PROMO BANNER
+══════════════════════════════════ -->
+<section class="bk-promo-banner" data-reveal="fade-up">
+    <div class="container bk-promo-inner">
+        <div class="bk-promo-icon">📚</div>
+        <div class="bk-promo-copy">
+            <p class="bk-promo-title">Buy 2 Get 1 Free — All Paperbacks</p>
+            <p class="bk-promo-sub">Mix and match any paperback titles. Discount applied automatically at checkout.</p>
+        </div>
+        <a href="#booksProducts" class="bk-btn-primary">Shop the Deal</a>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════
+     FILTER / SEARCH BAR
+══════════════════════════════════ -->
+<section class="browse-controls bk-browse-controls">
+    <div class="container">
+        <div class="bc-row">
+            <div class="bc-search-wrap">
+                <svg class="bc-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                <input type="text" class="bc-search" id="bkSearch" placeholder="Search books, authors…">
+            </div>
+            <select class="bc-select" id="bkSort">
+                <option value="default">Sort: Default</option>
+                <option value="price-asc">Price: Low → High</option>
+                <option value="price-desc">Price: High → Low</option>
+                <option value="name-asc">Name: A → Z</option>
+            </select>
+            <div class="bc-price-wrap">
+                <label class="bc-price-label">Max price: $<span id="bkPriceDisplay">100</span></label>
+                <input type="range" class="bc-range" id="bkPriceRange" min="0" max="100" value="100" step="1">
+            </div>
+        </div>
+        <div class="bc-chips">
+            <button class="bc-chip active" data-bk-filter="all">All Books</button>
+            <button class="bc-chip" data-bk-filter="deals">🔥 Deals Only</button>
+            <button class="bc-chip" data-bk-filter="rated">⭐ 4+ Rated</button>
+            <button class="bc-chip" data-bk-genre="Fiction">Fiction</button>
+            <button class="bc-chip" data-bk-genre="Non-Fiction">Non-Fiction</button>
+            <button class="bc-chip" data-bk-genre="Self-Help">Self-Help</button>
+            <button class="bc-chip" data-bk-genre="Sci-Fi">Sci-Fi</button>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════
+     PRODUCT GRID
+══════════════════════════════════ -->
+<section class="products-section bk-products-section" id="booksProducts">
+    <div class="container">
+        <div class="bk-grid-head" data-reveal="fade-up">
+            <h2 class="bk-section-title" style="margin-bottom:0">All Books</h2>
+            <p class="bk-grid-count" id="bkCount"></p>
+        </div>
+        <div class="products-grid bk-product-grid" id="bkProductGrid">
+            {% if products %}
+                {% for product in products %}
+                {% set primary_image = (product.image_urls[0] if product.image_urls and product.image_urls|length > 0 else (product.image_url or '')) %}
+                {% set discount = ((product.original_price - product.price) / product.original_price * 100)|int if product.original_price and product.original_price > product.price else 0 %}
+                <div class="product-card bk-card"
+                     data-product-id="{{ product.id }}"
+                     data-product-name="{{ product.name | lower }}"
+                     data-product-category="{{ product.category or 'Books' }}"
+                     data-product-price="{{ product.price }}"
+                     data-product-retailer="{{ product.retailer or '' }}"
+                     data-product-discount="{{ discount }}"
+                     data-product-rating="{{ product.rating or 0 }}"
+                     data-product-genre="{{ product.subcategory or '' }}">
+                    <div class="product-media bk-card-media">
+                        {% if discount > 0 %}
+                        <span class="product-tag deal-tag">-{{ discount }}% OFF</span>
+                        {% else %}
+                        <span class="product-tag bk-tag">Books</span>
+                        {% endif %}
+                        {% if primary_image %}
+                        <img src="{{ primary_image }}" alt="{{ product.name }}" class="product-image bk-cover-img" loading="lazy">
+                        {% else %}
+                        <div class="bk-cover-placeholder">
+                            <span>📗</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">{{ product.name }}</h3>
+                        <p class="product-description">{{ product.description[:100] }}{% if product.description|length > 100 %}...{% endif %}</p>
+                        {% if product.why_this_product and product.why_this_product.reasons %}
+                        <div class="why-card">
+                            <p class="why-title">Why this book ({{ product.why_this_product.confidence }} confidence)</p>
+                            <ul>
+                                {% for reason in product.why_this_product.reasons %}
+                                <li>{{ reason }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+                        <div class="product-footer">
+                            <div class="product-price-group">
+                                <span class="product-price">${{ '%.2f'|format(product.price) }}</span>
+                                {% if product.original_price and product.original_price > product.price %}
+                                <span class="product-original-price">${{ '%.2f'|format(product.original_price) }}</span>
+                                {% endif %}
+                            </div>
+                            <a class="affiliate-btn bk-shop-btn" href="{{ product.affiliate_url or '#' }}" target="_blank" rel="noopener">Shop Now</a>
+                        </div>
+                        <a class="detail-link" href="/product/{{ product.id }}">View Details</a>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="bk-empty-state">
+                    <div class="bk-empty-icon">📚</div>
+                    <p class="bk-empty-title">No books listed yet</p>
+                    <p class="bk-empty-sub">Check back soon — our editors are curating the best deals.</p>
+                </div>
+            {% endif %}
+        </div>
+        <p class="cat-no-results" id="bkNoResults" style="display:none;">No books match your filters. Try adjusting your search.</p>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════
+     KIDS READING SPOTLIGHT
+══════════════════════════════════ -->
+<section class="bk-kids-spotlight">
+    <div class="container">
+        <div class="bk-kids-inner">
+            <div class="bk-kids-copy" data-reveal="fade-right">
+                <p class="bk-section-eyebrow" style="color:#10b981">For Young Readers</p>
+                <h2 class="bk-kids-title">Spark a Love of Reading Early</h2>
+                <p class="bk-kids-desc">Award-winning picture books, middle-grade adventures, and YA novels that keep kids glued to pages — not screens.</p>
+                <a href="#booksProducts" onclick="setBooksFilter('Children')" class="bk-btn-green">Shop Children's Books</a>
+            </div>
+            <div class="bk-kids-photos" data-reveal="fade-left" style="--rv-delay:0.1s">
+                <div class="bk-kids-photo-main">
+                    <img src="https://images.unsplash.com/photo-1503919545889-aef636e10ad4?w=600&q=80&fit=crop&crop=center" alt="Children Reading" loading="lazy">
+                </div>
+                <div class="bk-kids-photo-sm bk-kids-sm-1">
+                    <img src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=300&q=80&fit=crop&crop=center" alt="Books Stack" loading="lazy">
+                </div>
+                <div class="bk-kids-photo-sm bk-kids-sm-2">
+                    <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?w=300&q=80&fit=crop&crop=center" alt="Reading" loading="lazy">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════
+     AI COPILOT
+══════════════════════════════════ -->
+<section class="copilot-section bk-copilot-section">
+    <div class="container">
+        <div class="copilot-card bk-copilot-card">
+            <div class="copilot-icon">🤖</div>
+            <div class="copilot-text">
+                <h3>AI Book Recommender</h3>
+                <p>Tell us what you're in the mood for and our AI will suggest the perfect books — genre, mood, length, you name it.</p>
+            </div>
+            <button class="copilot-btn bk-copilot-btn" id="bkCopilotBtn">Ask AI</button>
+        </div>
+        <div class="copilot-chat" id="bkCopilotChat" style="display:none;">
+            <div class="copilot-messages" id="bkCopilotMessages"></div>
+            <div class="copilot-input-row">
+                <input type="text" class="copilot-input" id="bkCopilotInput" placeholder="e.g. I want a fast-paced thriller under $15…">
+                <button class="copilot-send" id="bkCopilotSend">Send</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+(function() {
+    /* ── Genre filter helper (called from tiles) ── */
+    window.setBooksFilter = function(genre) {
+        const chips = document.querySelectorAll('[data-bk-genre]');
+        chips.forEach(c => c.classList.remove('active'));
+        const target = [...chips].find(c => c.dataset.bkGenre === genre);
+        if (target) {
+            target.classList.add('active');
+            document.querySelectorAll('[data-bk-filter]').forEach(c => c.classList.remove('active'));
+        }
+        bkGenreFilter = genre;
+        applyBkFilters();
+    };
+
+    const grid      = document.getElementById('bkProductGrid');
+    const noResults = document.getElementById('bkNoResults');
+    const countEl   = document.getElementById('bkCount');
+    const searchEl  = document.getElementById('bkSearch');
+    const sortEl    = document.getElementById('bkSort');
+    const rangeEl   = document.getElementById('bkPriceRange');
+    const priceDisp = document.getElementById('bkPriceDisplay');
+    let   bkChipFilter  = 'all';
+    let   bkGenreFilter = null;
+
+    function getCards() {
+        return [...(grid?.querySelectorAll('.product-card') || [])];
+    }
+
+    function applyBkFilters() {
+        if (!grid) return;
+        const query    = (searchEl?.value || '').toLowerCase().trim();
+        const maxPrice = parseFloat(rangeEl?.value || 100);
+        const sortVal  = sortEl?.value || 'default';
+
+        let cards = getCards();
+        let visible = cards.filter(c => {
+            const name     = c.dataset.productName || '';
+            const price    = parseFloat(c.dataset.productPrice) || 0;
+            const discount = parseInt(c.dataset.productDiscount) || 0;
+            const rating   = parseFloat(c.dataset.productRating) || 0;
+            const genre    = c.dataset.productGenre || '';
+
+            if (query && !name.includes(query)) return false;
+            if (price > maxPrice) return false;
+            if (bkChipFilter === 'deals' && discount <= 0) return false;
+            if (bkChipFilter === 'rated' && rating < 4)   return false;
+            if (bkGenreFilter && !genre.toLowerCase().includes(bkGenreFilter.toLowerCase())) return false;
+            return true;
+        });
+
+        visible.sort((a, b) => {
+            const pa = parseFloat(a.dataset.productPrice) || 0;
+            const pb = parseFloat(b.dataset.productPrice) || 0;
+            const na = a.dataset.productName || '';
+            const nb = b.dataset.productName || '';
+            if (sortVal === 'price-asc')  return pa - pb;
+            if (sortVal === 'price-desc') return pb - pa;
+            if (sortVal === 'name-asc')   return na.localeCompare(nb);
+            return 0;
+        });
+
+        cards.forEach(c => c.style.display = 'none');
+        visible.forEach(c => { c.style.display = ''; grid.appendChild(c); });
+        if (noResults) noResults.style.display = visible.length === 0 ? 'block' : 'none';
+        if (countEl) countEl.textContent = visible.length + ' book' + (visible.length !== 1 ? 's' : '') + ' found';
+    }
+
+    searchEl?.addEventListener('input', applyBkFilters);
+    sortEl?.addEventListener('change', applyBkFilters);
+    rangeEl?.addEventListener('input', () => {
+        if (priceDisp) priceDisp.textContent = rangeEl.value;
+        applyBkFilters();
+    });
+
+    document.querySelectorAll('[data-bk-filter]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('[data-bk-filter], [data-bk-genre]').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            bkChipFilter  = btn.dataset.bkFilter;
+            bkGenreFilter = null;
+            applyBkFilters();
+        });
+    });
+
+    document.querySelectorAll('[data-bk-genre]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('[data-bk-filter], [data-bk-genre]').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            bkGenreFilter = btn.dataset.bkGenre;
+            bkChipFilter  = 'all';
+            applyBkFilters();
+        });
+    });
+
+    // init count
+    applyBkFilters();
+
+    /* ── Scroll reveal ── */
+    const obs = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (e.isIntersecting) { e.target.classList.add('rv-in'); obs.unobserve(e.target); }
+        });
+    }, { threshold: 0.06, rootMargin: '0px 0px -30px 0px' });
+    document.querySelectorAll('[data-reveal]').forEach(el => obs.observe(el));
+
+    /* ── AI Copilot ── */
+    const copilotBtn  = document.getElementById('bkCopilotBtn');
+    const copilotChat = document.getElementById('bkCopilotChat');
+    const copilotSend = document.getElementById('bkCopilotSend');
+    const copilotInp  = document.getElementById('bkCopilotInput');
+    const copilotMsgs = document.getElementById('bkCopilotMessages');
+
+    copilotBtn?.addEventListener('click', () => {
+        const open = copilotChat.style.display !== 'none';
+        copilotChat.style.display = open ? 'none' : 'block';
+        copilotBtn.textContent = open ? 'Ask AI' : 'Close';
+    });
+
+    function addMsg(role, text) {
+        const div = document.createElement('div');
+        div.className = 'copilot-msg copilot-msg-' + role;
+        div.textContent = text;
+        copilotMsgs?.appendChild(div);
+        if (copilotMsgs) copilotMsgs.scrollTop = copilotMsgs.scrollHeight;
+    }
+
+    async function sendCopilot() {
+        const q = copilotInp?.value.trim();
+        if (!q) return;
+        addMsg('user', q);
+        copilotInp.value = '';
+        addMsg('ai', '…thinking…');
+        try {
+            const r = await fetch('/api/ai/recommend', {
+                method: 'POST',
+                headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({ query: q })
+            });
+            const data = await r.json();
+            if (copilotMsgs?.lastChild) copilotMsgs.lastChild.textContent = data.answer || 'Sorry, I could not find a recommendation.';
+        } catch {
+            if (copilotMsgs?.lastChild) copilotMsgs.lastChild.textContent = 'Something went wrong. Try again.';
+        }
+    }
+
+    copilotSend?.addEventListener('click', sendCopilot);
+    copilotInp?.addEventListener('keydown', e => { if (e.key === 'Enter') sendCopilot(); });
+})();
+</script>
+{% endblock %}
