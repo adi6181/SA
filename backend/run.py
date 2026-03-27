@@ -111,6 +111,12 @@ def electronics_page():
     return render_template('electronics.html', products=[p.to_dict() for p in products])
 
 
+@app.route('/category/Home', methods=['GET'])
+def home_category_page():
+    products = Product.query.filter_by(category='Home').order_by(Product.created_at.desc()).all()
+    return render_template('home_category.html', products=[p.to_dict() for p in products])
+
+
 @app.route('/category/<string:category>', methods=['GET'])
 def category_page(category):
     products = Product.query.filter_by(category=category).order_by(Product.created_at.desc()).all()

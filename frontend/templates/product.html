@@ -3,83 +3,276 @@
 {% block title %}{{ product.name }} | DealDrop{% endblock %}
 
 {% block content %}
-<section class="product-detail">
-    <div class="container product-detail-grid">
-        <div class="product-detail-media">
-            {% set primary_image = (product.image_urls[0] if product.image_urls and product.image_urls|length > 0 else (product.image_url or '')) %}
-            <img src="{{ primary_image }}" alt="{{ product.name }}">
-        </div>
-        <div class="product-detail-info">
-            <h1>{{ product.name }}</h1>
-            <p class="product-detail-price">${{ '%.2f'|format(product.price) }}</p>
-            {% if product.rating %}
-            <p class="product-rating">Rating: {{ '%.1f'|format(product.rating) }} / 5 ({{ product.review_count or 0 }} reviews)</p>
-            {% endif %}
-            <p>{{ product.description }}</p>
-            <div class="product-detail-actions">
-                <a class="affiliate-btn" href="{{ product.affiliate_url or '#' }}" target="_blank" rel="noopener">Buy on {{ product.merchant or 'Merchant' }}</a>
-                {% if product.is_deal and product.deal_price %}
-                <span class="deal-badge">Deal: ${{ '%.2f'|format(product.deal_price) }}</span>
+
+{% set primary_image = (product.image_urls[0] if product.image_urls and product.image_urls|length > 0 else (product.image_url or '')) %}
+{% set discount = ((product.original_price - product.price) / product.original_price * 100)|int if product.original_price and product.original_price > product.price else 0 %}
+{% set cat = product.category or 'General' %}
+
+<!-- ══════════════════════════════════
+     BREADCRUMB
+══════════════════════════════════ -->
+<div class="pd-breadcrumb">
+    <div class="container pd-breadcrumb-inner">
+        <a href="/" class="pd-bc-link">Home</a>
+        <span class="pd-bc-sep">›</span>
+        <a href="/category/{{ cat }}" class="pd-bc-link">{{ cat }}</a>
+        <span class="pd-bc-sep">›</span>
+        <span class="pd-bc-current">{{ product.name[:50] }}{% if product.name|length > 50 %}…{% endif %}</span>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════
+     PRODUCT HERO
+══════════════════════════════════ -->
+<section class="pd-hero">
+    <div class="container pd-hero-grid">
+
+        <!-- Left: Image Gallery -->
+        <div class="pd-gallery" data-reveal="fade-right">
+            <div class="pd-main-img-wrap">
+                {% if discount > 0 %}
+                <span class="pd-discount-badge">-{{ discount }}% OFF</span>
                 {% endif %}
+                {% if primary_image %}
+                <img src="{{ primary_image }}" alt="{{ product.name }}" class="pd-main-img" id="pdMainImg" loading="eager">
+                {% else %}
+                <div class="pd-img-placeholder">
+                    <span>🛍️</span>
+                </div>
+                {% endif %}
+            </div>
+            {% if product.image_urls and product.image_urls|length > 1 %}
+            <div class="pd-thumbs">
+                {% for img in product.image_urls[:5] %}
+                <div class="pd-thumb {% if loop.first %}pd-thumb-active{% endif %}" onclick="pdSetImage('{{ img }}', this)">
+                    <img src="{{ img }}" alt="{{ product.name }} {{ loop.index }}" loading="lazy">
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Right: Product Info -->
+        <div class="pd-info" data-reveal="fade-left" style="--rv-delay:0.1s">
+
+            <!-- Category + retailer badges -->
+            <div class="pd-badges">
+                <span class="pd-badge pd-badge-cat">{{ cat }}</span>
+                {% if product.retailer %}
+                <span class="pd-badge pd-badge-retailer">{{ product.retailer }}</span>
+                {% endif %}
+                {% if discount > 0 %}
+                <span class="pd-badge pd-badge-deal">🔥 Hot Deal</span>
+                {% endif %}
+            </div>
+
+            <h1 class="pd-title">{{ product.name }}</h1>
+
+            <!-- Rating -->
+            {% if product.rating %}
+            <div class="pd-rating-row">
+                <div class="pd-stars">
+                    {% for i in range(5) %}
+                        {% if i < product.rating|int %}
+                        <span class="pd-star pd-star-full">★</span>
+                        {% elif i < product.rating and product.rating % 1 >= 0.5 %}
+                        <span class="pd-star pd-star-half">★</span>
+                        {% else %}
+                        <span class="pd-star pd-star-empty">★</span>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <span class="pd-rating-num">{{ '%.1f'|format(product.rating) }}</span>
+                {% if product.review_count %}
+                <span class="pd-review-count">{{ product.review_count }} reviews</span>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Pricing -->
+            <div class="pd-pricing">
+                <span class="pd-price">${{ '%.2f'|format(product.price) }}</span>
+                {% if product.original_price and product.original_price > product.price %}
+                <span class="pd-orig-price">${{ '%.2f'|format(product.original_price) }}</span>
+                <span class="pd-savings">You save ${{ '%.2f'|format(product.original_price - product.price) }}</span>
+                {% endif %}
+            </div>
+
+            <!-- Why this product -->
+            {% if product.why_this_product and product.why_this_product.reasons %}
+            <div class="pd-why">
+                <div class="pd-why-head">
+                    <span class="pd-why-icon">✦</span>
+                    <p class="pd-why-title">Why DealDrop recommends this <span class="pd-why-conf">{{ product.why_this_product.confidence }} confidence</span></p>
+                </div>
+                <ul class="pd-why-list">
+                    {% for reason in product.why_this_product.reasons %}
+                    <li>{{ reason }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <!-- Description -->
+            <div class="pd-desc">
+                <p>{{ product.description }}</p>
+            </div>
+
+            <!-- CTA -->
+            <div class="pd-actions">
+                <a class="pd-btn-buy" href="{{ product.affiliate_url or '#' }}" target="_blank" rel="noopener">
+                    Shop Now on {{ product.retailer or product.merchant or 'Retailer' }}
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                </a>
+                <a class="pd-btn-back" href="/category/{{ cat }}">← Back to {{ cat }}</a>
+            </div>
+
+            <!-- Trust signals -->
+            <div class="pd-trust">
+                <div class="pd-trust-item">
+                    <span class="pd-trust-icon">🔒</span>
+                    <span>Secure checkout</span>
+                </div>
+                <div class="pd-trust-item">
+                    <span class="pd-trust-icon">↩️</span>
+                    <span>Easy returns</span>
+                </div>
+                <div class="pd-trust-item">
+                    <span class="pd-trust-icon">⚡</span>
+                    <span>Price verified daily</span>
+                </div>
             </div>
         </div>
     </div>
 </section>
 
-<section class="product-reviews-section">
+<!-- ══════════════════════════════════
+     PRODUCT DETAILS TAB STRIP
+══════════════════════════════════ -->
+<section class="pd-details-section">
     <div class="container">
-        <div class="products-header">
-            <h2>Customer Reviews</h2>
-            <p>Verified and moderated reviews from shoppers.</p>
+        <div class="pd-tabs">
+            <button class="pd-tab active" data-tab="overview">Overview</button>
+            <button class="pd-tab" data-tab="reviews">Reviews {% if product.review_count %}({{ product.review_count }}){% endif %}</button>
         </div>
 
-        <div class="review-form-card">
-            <h3>Write a Review</h3>
-            <form id="reviewForm" class="review-form" enctype="multipart/form-data">
-                <input type="hidden" id="reviewProductId" value="{{ product.id }}">
-                <div class="review-form-two">
-                    <div>
-                        <label for="reviewerName">Name</label>
-                        <input type="text" id="reviewerName" required>
-                    </div>
-                    <div>
-                        <label for="reviewerEmail">Email</label>
-                        <input type="email" id="reviewerEmail" required>
-                    </div>
+        <!-- Overview panel -->
+        <div class="pd-tab-panel pd-panel-overview" id="pdTabOverview">
+            <div class="pd-overview-grid">
+                <div class="pd-overview-desc" data-reveal="fade-up">
+                    <h3>About this product</h3>
+                    <p>{{ product.description }}</p>
                 </div>
-                <div class="review-form-two">
-                    <div>
-                        <label for="reviewRating">Rating</label>
-                        <select id="reviewRating" required>
-                            <option value="">Select</option>
-                            <option value="5">5 - Excellent</option>
-                            <option value="4">4 - Very Good</option>
-                            <option value="3">3 - Good</option>
-                            <option value="2">2 - Fair</option>
-                            <option value="1">1 - Poor</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="reviewOrderNumber">Order Number (for verification)</label>
-                        <input type="text" id="reviewOrderNumber" placeholder="ORD-... (optional)">
-                    </div>
+                <div class="pd-overview-meta" data-reveal="fade-up" style="--rv-delay:0.1s">
+                    <h3>Product Details</h3>
+                    <ul class="pd-meta-list">
+                        {% if product.retailer %}
+                        <li><span>Retailer</span><strong>{{ product.retailer }}</strong></li>
+                        {% endif %}
+                        {% if product.category %}
+                        <li><span>Category</span><strong>{{ product.category }}</strong></li>
+                        {% endif %}
+                        {% if product.rating %}
+                        <li><span>Rating</span><strong>{{ '%.1f'|format(product.rating) }} / 5</strong></li>
+                        {% endif %}
+                        {% if product.review_count %}
+                        <li><span>Reviews</span><strong>{{ product.review_count }}</strong></li>
+                        {% endif %}
+                        <li><span>Current Price</span><strong>${{ '%.2f'|format(product.price) }}</strong></li>
+                        {% if product.original_price and product.original_price > product.price %}
+                        <li><span>Original Price</span><strong><s>${{ '%.2f'|format(product.original_price) }}</s></strong></li>
+                        <li><span>Discount</span><strong class="pd-meta-discount">{{ discount }}% OFF</strong></li>
+                        {% endif %}
+                    </ul>
+                    <a class="pd-btn-buy pd-btn-buy-sm" href="{{ product.affiliate_url or '#' }}" target="_blank" rel="noopener">
+                        Get This Deal →
+                    </a>
                 </div>
-                <label for="reviewTitle">Title</label>
-                <input type="text" id="reviewTitle" placeholder="Quick summary">
-                <label for="reviewBody">Review</label>
-                <textarea id="reviewBody" rows="4" required></textarea>
-                <label for="reviewPhoto">Photo (optional)</label>
-                <input type="file" id="reviewPhoto" accept="image/*">
-                <button type="submit" class="btn btn-primary">Submit Review</button>
-                <p id="reviewFormMessage" class="modal-message"></p>
-            </form>
+            </div>
         </div>
 
-        <div id="reviewsList" class="reviews-list"></div>
+        <!-- Reviews panel -->
+        <div class="pd-tab-panel pd-panel-reviews" id="pdTabReviews" style="display:none">
+            <div class="pd-review-form-card" data-reveal="fade-up">
+                <h3>Write a Review</h3>
+                <form id="reviewForm" class="pd-review-form" enctype="multipart/form-data">
+                    <input type="hidden" id="reviewProductId" value="{{ product.id }}">
+                    <div class="pd-form-row">
+                        <div class="pd-form-group">
+                            <label for="reviewerName">Name</label>
+                            <input type="text" id="reviewerName" placeholder="Your name" required>
+                        </div>
+                        <div class="pd-form-group">
+                            <label for="reviewerEmail">Email</label>
+                            <input type="email" id="reviewerEmail" placeholder="you@email.com" required>
+                        </div>
+                    </div>
+                    <div class="pd-form-row">
+                        <div class="pd-form-group">
+                            <label for="reviewRating">Rating</label>
+                            <select id="reviewRating" required>
+                                <option value="">Select rating</option>
+                                <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+                                <option value="4">⭐⭐⭐⭐ Very Good</option>
+                                <option value="3">⭐⭐⭐ Good</option>
+                                <option value="2">⭐⭐ Fair</option>
+                                <option value="1">⭐ Poor</option>
+                            </select>
+                        </div>
+                        <div class="pd-form-group">
+                            <label for="reviewOrderNumber">Order Number <span class="pd-optional">(optional)</span></label>
+                            <input type="text" id="reviewOrderNumber" placeholder="ORD-...">
+                        </div>
+                    </div>
+                    <div class="pd-form-group">
+                        <label for="reviewTitle">Review Title</label>
+                        <input type="text" id="reviewTitle" placeholder="Summarize your experience">
+                    </div>
+                    <div class="pd-form-group">
+                        <label for="reviewBody">Your Review</label>
+                        <textarea id="reviewBody" rows="4" placeholder="Tell others what you think..." required></textarea>
+                    </div>
+                    <div class="pd-form-group">
+                        <label for="reviewPhoto">Photo <span class="pd-optional">(optional)</span></label>
+                        <input type="file" id="reviewPhoto" accept="image/*" class="pd-file-input">
+                    </div>
+                    <button type="submit" class="pd-btn-submit">Submit Review</button>
+                    <p id="reviewFormMessage" class="pd-form-message"></p>
+                </form>
+            </div>
+            <div id="reviewsList" class="pd-reviews-list"></div>
+        </div>
     </div>
 </section>
+
 {% endblock %}
 
 {% block extra_scripts %}
+<script>
+/* ── Image gallery ── */
+function pdSetImage(src, thumbEl) {
+    const main = document.getElementById('pdMainImg');
+    if (main) { main.src = src; main.style.opacity = '0'; setTimeout(() => main.style.opacity = '1', 50); }
+    document.querySelectorAll('.pd-thumb').forEach(t => t.classList.remove('pd-thumb-active'));
+    if (thumbEl) thumbEl.classList.add('pd-thumb-active');
+}
+
+/* ── Tabs ── */
+document.querySelectorAll('.pd-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.pd-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        document.querySelectorAll('.pd-tab-panel').forEach(p => p.style.display = 'none');
+        const panel = document.getElementById('pdTab' + tab.dataset.tab.charAt(0).toUpperCase() + tab.dataset.tab.slice(1));
+        if (panel) panel.style.display = 'block';
+    });
+});
+
+/* ── Scroll reveal ── */
+const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('rv-in'); obs.unobserve(e.target); } });
+}, { threshold: 0.06, rootMargin: '0px 0px -30px 0px' });
+document.querySelectorAll('[data-reveal]').forEach(el => obs.observe(el));
+</script>
 <script src="{{ url_for('static', filename='js/product_reviews.js') }}"></script>
 {% endblock %}

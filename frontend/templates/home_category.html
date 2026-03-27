@@ -1,0 +1,490 @@
+{% extends "base.html" %}
+
+{% block title %}Home & Living | DealDrop{% endblock %}
+
+{% block content %}
+
+<!-- ══════════════════════════════════
+     HERO
+══════════════════════════════════ -->
+<section class="hm-hero">
+    <div class="hm-hero-bg">
+        <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1600&q=80&fit=crop&crop=center" alt="Beautiful Home Interior" class="hm-hero-photo" loading="eager">
+        <div class="hm-hero-overlay"></div>
+    </div>
+    <div class="container hm-hero-inner">
+        <div class="hm-hero-copy" data-reveal="fade-right">
+            <p class="hm-eyebrow">DealDrop Home & Living</p>
+            <h1 class="hm-hero-title">Your Dream Home,<br><span class="hm-accent">Within Budget.</span></h1>
+            <p class="hm-hero-sub">Furniture, décor, kitchen essentials and more — handpicked from top retailers at prices that make decorating actually fun.</p>
+            <div class="hm-hero-actions">
+                <a href="#hmProducts" class="hm-btn-primary">Shop All Home</a>
+                <a href="#hmCategories" class="hm-btn-ghost">Browse Rooms</a>
+            </div>
+            <div class="hm-hero-tags">
+                <span>🛋️ Furniture</span>
+                <span>🍳 Kitchen</span>
+                <span>🛏️ Bedding</span>
+                <span>🪴 Décor</span>
+            </div>
+        </div>
+        <div class="hm-hero-cards" data-reveal="fade-left" style="--rv-delay:0.15s">
+            <div class="hm-hero-card hm-hc-1">
+                <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=500&q=80&fit=crop&crop=center" alt="Modern Sofa" class="hm-hc-img" loading="eager">
+                <div class="hm-hc-label">
+                    <p class="hm-hc-name">Modern Sofa</p>
+                    <p class="hm-hc-price">From $299</p>
+                </div>
+                <span class="hm-hc-badge">-30% OFF</span>
+            </div>
+            <div class="hm-hero-card hm-hc-2">
+                <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=500&q=80&fit=crop&crop=center" alt="Kitchen Essentials" class="hm-hc-img" loading="lazy">
+                <div class="hm-hc-label">
+                    <p class="hm-hc-name">Kitchen Set</p>
+                    <p class="hm-hc-price">From $49</p>
+                </div>
+                <span class="hm-hc-badge">New In</span>
+            </div>
+            <div class="hm-hero-card hm-hc-3">
+                <img src="https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=500&q=80&fit=crop&crop=center" alt="Bedroom Décor" class="hm-hc-img" loading="lazy">
+                <div class="hm-hc-label">
+                    <p class="hm-hc-name">Bedroom Essentials</p>
+                    <p class="hm-hc-price">From $29</p>
+                </div>
+                <span class="hm-hc-badge">Best Seller</span>
+            </div>
+        </div>
+    </div>
+    <div class="hm-scroll-hint">
+        <span class="hm-scroll-dot"></span>
+        <span class="hm-scroll-text">Scroll to explore</span>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════
+     ROOM / CATEGORY TILES
+══════════════════════════════════ -->
+<section class="hm-categories" id="hmCategories">
+    <div class="container">
+        <div class="hm-section-head" data-reveal="fade-up">
+            <p class="hm-section-eyebrow">Shop by Room</p>
+            <h2 class="hm-section-title">Every Corner of Your Home</h2>
+        </div>
+        <div class="hm-cat-grid">
+            <a class="hm-cat-tile hm-tile-tall" href="#hmProducts" onclick="setHmFilter('Living Room')" data-reveal="fade-up" style="--rv-delay:0s">
+                <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=700&q=80&fit=crop&crop=center" alt="Living Room" class="hm-cat-photo" loading="lazy">
+                <div class="hm-cat-overlay"></div>
+                <div class="hm-cat-label">
+                    <span class="hm-cat-icon">🛋️</span>
+                    <p class="hm-cat-name">Living Room</p>
+                    <p class="hm-cat-sub">Sofas, Tables & Shelves</p>
+                </div>
+            </a>
+            <a class="hm-cat-tile" href="#hmProducts" onclick="setHmFilter('Kitchen')" data-reveal="fade-up" style="--rv-delay:0.07s">
+                <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80&fit=crop&crop=center" alt="Kitchen" class="hm-cat-photo" loading="lazy">
+                <div class="hm-cat-overlay"></div>
+                <div class="hm-cat-label">
+                    <span class="hm-cat-icon">🍳</span>
+                    <p class="hm-cat-name">Kitchen</p>
+                    <p class="hm-cat-sub">Cookware & Appliances</p>
+                </div>
+            </a>
+            <a class="hm-cat-tile" href="#hmProducts" onclick="setHmFilter('Bedroom')" data-reveal="fade-up" style="--rv-delay:0.14s">
+                <img src="https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=600&q=80&fit=crop&crop=center" alt="Bedroom" class="hm-cat-photo" loading="lazy">
+                <div class="hm-cat-overlay"></div>
+                <div class="hm-cat-label">
+                    <span class="hm-cat-icon">🛏️</span>
+                    <p class="hm-cat-name">Bedroom</p>
+                    <p class="hm-cat-sub">Bedding, Pillows & More</p>
+                </div>
+            </a>
+            <a class="hm-cat-tile hm-tile-wide" href="#hmProducts" onclick="setHmFilter('Decor')" data-reveal="fade-up" style="--rv-delay:0.21s">
+                <img src="https://images.unsplash.com/photo-1567767292278-a4f21aa2d36e?w=900&q=80&fit=crop&crop=center" alt="Décor" class="hm-cat-photo" loading="lazy">
+                <div class="hm-cat-overlay"></div>
+                <div class="hm-cat-label">
+                    <span class="hm-cat-icon">🪴</span>
+                    <p class="hm-cat-name">Décor & Plants</p>
+                    <p class="hm-cat-sub">Art, Rugs & Greenery</p>
+                </div>
+            </a>
+            <a class="hm-cat-tile" href="#hmProducts" onclick="setHmFilter('Lighting')" data-reveal="fade-up" style="--rv-delay:0.28s">
+                <img src="https://images.unsplash.com/photo-1513506003901-1e6a35eb341b?w=600&q=80&fit=crop&crop=center" alt="Lighting" class="hm-cat-photo" loading="lazy">
+                <div class="hm-cat-overlay"></div>
+                <div class="hm-cat-label">
+                    <span class="hm-cat-icon">💡</span>
+                    <p class="hm-cat-name">Lighting</p>
+                    <p class="hm-cat-sub">Lamps & Fixtures</p>
+                </div>
+            </a>
+            <a class="hm-cat-tile" href="#hmProducts" onclick="setHmFilter('Bathroom')" data-reveal="fade-up" style="--rv-delay:0.35s">
+                <img src="https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=600&q=80&fit=crop&crop=center" alt="Bathroom" class="hm-cat-photo" loading="lazy">
+                <div class="hm-cat-overlay"></div>
+                <div class="hm-cat-label">
+                    <span class="hm-cat-icon">🚿</span>
+                    <p class="hm-cat-name">Bathroom</p>
+                    <p class="hm-cat-sub">Towels, Storage & Spa</p>
+                </div>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════
+     EDITORIAL — COZY LIVING ROOM
+══════════════════════════════════ -->
+<section class="hm-editorial hm-editorial-warm">
+    <div class="container hm-editorial-inner">
+        <div class="hm-editorial-photo" data-reveal="fade-right">
+            <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&q=80&fit=crop&crop=center" alt="Cozy Living Room" loading="lazy">
+            <div class="hm-editorial-badge">Editor's Pick</div>
+        </div>
+        <div class="hm-editorial-copy" data-reveal="fade-left" style="--rv-delay:0.1s">
+            <p class="hm-section-eyebrow">Living Room</p>
+            <h2 class="hm-editorial-title">Create a Living Room You Never Want to Leave</h2>
+            <p class="hm-editorial-desc">From statement sofas to layered throws and artful shelving — our curated picks transform any space into a sanctuary of comfort and style.</p>
+            <ul class="hm-editorial-list">
+                <li>Top-rated furniture under $500</li>
+                <li>Mix-and-match styles for any aesthetic</li>
+                <li>Free shipping on orders over $50</li>
+            </ul>
+            <a href="#hmProducts" onclick="setHmFilter('Living Room')" class="hm-btn-primary">Shop Living Room</a>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════
+     EDITORIAL — KITCHEN ESSENTIALS
+══════════════════════════════════ -->
+<section class="hm-editorial hm-editorial-sage">
+    <div class="container hm-editorial-inner hm-editorial-flip">
+        <div class="hm-editorial-copy" data-reveal="fade-right">
+            <p class="hm-section-eyebrow" style="color:#16a34a">Kitchen & Dining</p>
+            <h2 class="hm-editorial-title">Cook Smarter. Dine Better.</h2>
+            <p class="hm-editorial-desc">Chef-grade cookware, stylish dinnerware, and must-have appliances — everything your kitchen deserves, at prices that won't burn a hole in your wallet.</p>
+            <ul class="hm-editorial-list">
+                <li>Trusted brands: Le Creuset, KitchenAid & more</li>
+                <li>Up to 45% off kitchen appliances</li>
+                <li>Bundles for complete kitchen upgrades</li>
+            </ul>
+            <a href="#hmProducts" onclick="setHmFilter('Kitchen')" class="hm-btn-sage">Shop Kitchen</a>
+        </div>
+        <div class="hm-editorial-photo" data-reveal="fade-left" style="--rv-delay:0.1s">
+            <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&q=80&fit=crop&crop=center" alt="Kitchen" loading="lazy">
+            <div class="hm-editorial-badge hm-badge-sage">Kitchen Deals</div>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════
+     PROMO BANNER
+══════════════════════════════════ -->
+<section class="hm-promo-banner" data-reveal="fade-up">
+    <div class="container hm-promo-inner">
+        <div class="hm-promo-icon">🏡</div>
+        <div class="hm-promo-copy">
+            <p class="hm-promo-title">New Season Home Refresh — Up to 50% Off</p>
+            <p class="hm-promo-sub">Curated deals from IKEA, Wayfair, Target & Amazon. Updated every morning.</p>
+        </div>
+        <a href="#hmProducts" class="hm-btn-primary">Shop the Refresh</a>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════
+     FILTER / SEARCH BAR
+══════════════════════════════════ -->
+<section class="browse-controls hm-browse-controls">
+    <div class="container">
+        <div class="bc-row">
+            <div class="bc-search-wrap">
+                <svg class="bc-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                <input type="text" class="bc-search" id="hmSearch" placeholder="Search furniture, décor, kitchen…">
+            </div>
+            <select class="bc-select" id="hmSort">
+                <option value="default">Sort: Default</option>
+                <option value="price-asc">Price: Low → High</option>
+                <option value="price-desc">Price: High → Low</option>
+                <option value="name-asc">Name: A → Z</option>
+            </select>
+            <div class="bc-price-wrap">
+                <label class="bc-price-label">Max price: $<span id="hmPriceDisplay">1000</span></label>
+                <input type="range" class="bc-range" id="hmPriceRange" min="0" max="1000" value="1000" step="10">
+            </div>
+        </div>
+        <div class="bc-chips">
+            <button class="bc-chip active" data-hm-filter="all">All</button>
+            <button class="bc-chip" data-hm-filter="deals">🔥 Deals Only</button>
+            <button class="bc-chip" data-hm-filter="rated">⭐ 4+ Rated</button>
+            <button class="bc-chip" data-hm-type="Living Room">🛋️ Living Room</button>
+            <button class="bc-chip" data-hm-type="Kitchen">🍳 Kitchen</button>
+            <button class="bc-chip" data-hm-type="Bedroom">🛏️ Bedroom</button>
+            <button class="bc-chip" data-hm-type="Decor">🪴 Décor</button>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════
+     PRODUCT GRID
+══════════════════════════════════ -->
+<section class="products-section hm-products-section" id="hmProducts">
+    <div class="container">
+        <div class="hm-grid-head" data-reveal="fade-up">
+            <h2 class="hm-section-title" style="margin-bottom:0">All Home Products</h2>
+            <p class="hm-grid-count" id="hmCount"></p>
+        </div>
+        <div class="products-grid hm-product-grid" id="hmProductGrid">
+            {% if products %}
+                {% for product in products %}
+                {% set primary_image = (product.image_urls[0] if product.image_urls and product.image_urls|length > 0 else (product.image_url or '')) %}
+                {% set discount = ((product.original_price - product.price) / product.original_price * 100)|int if product.original_price and product.original_price > product.price else 0 %}
+                <div class="product-card hm-card"
+                     data-product-id="{{ product.id }}"
+                     data-product-name="{{ product.name | lower }}"
+                     data-product-category="{{ product.category or 'Home' }}"
+                     data-product-price="{{ product.price }}"
+                     data-product-retailer="{{ product.retailer or '' }}"
+                     data-product-discount="{{ discount }}"
+                     data-product-rating="{{ product.rating or 0 }}"
+                     data-product-type="{{ product.subcategory or '' }}">
+                    <div class="product-media hm-card-media">
+                        {% if discount > 0 %}
+                        <span class="product-tag deal-tag">-{{ discount }}% OFF</span>
+                        {% else %}
+                        <span class="product-tag hm-tag">Home</span>
+                        {% endif %}
+                        {% if primary_image %}
+                        <img src="{{ primary_image }}" alt="{{ product.name }}" class="product-image" loading="lazy">
+                        {% else %}
+                        <div class="hm-img-placeholder"><span>🏡</span></div>
+                        {% endif %}
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">{{ product.name }}</h3>
+                        <p class="product-description">{{ product.description[:100] }}{% if product.description|length > 100 %}...{% endif %}</p>
+                        {% if product.why_this_product and product.why_this_product.reasons %}
+                        <div class="why-card">
+                            <p class="why-title">Why this product ({{ product.why_this_product.confidence }} confidence)</p>
+                            <ul>{% for reason in product.why_this_product.reasons %}<li>{{ reason }}</li>{% endfor %}</ul>
+                        </div>
+                        {% endif %}
+                        <div class="product-footer">
+                            <div class="product-price-group">
+                                <span class="product-price">${{ '%.2f'|format(product.price) }}</span>
+                                {% if product.original_price and product.original_price > product.price %}
+                                <span class="product-original-price">${{ '%.2f'|format(product.original_price) }}</span>
+                                {% endif %}
+                            </div>
+                            <a class="affiliate-btn hm-shop-btn" href="{{ product.affiliate_url or '#' }}" target="_blank" rel="noopener">Shop Now</a>
+                        </div>
+                        <a class="detail-link" href="/product/{{ product.id }}">View Details</a>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="hm-empty-state">
+                    <div class="hm-empty-icon">🏡</div>
+                    <p class="hm-empty-title">No home products listed yet</p>
+                    <p class="hm-empty-sub">Check back soon — our team is sourcing the best home deals.</p>
+                </div>
+            {% endif %}
+        </div>
+        <p class="cat-no-results" id="hmNoResults" style="display:none;">No products match your filters.</p>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════
+     BEDROOM INSPIRATION STRIP
+══════════════════════════════════ -->
+<section class="hm-bedroom-spotlight">
+    <div class="container">
+        <div class="hm-bedroom-inner">
+            <div class="hm-bedroom-copy" data-reveal="fade-right">
+                <p class="hm-section-eyebrow" style="color:#d97706">Sleep Better</p>
+                <h2 class="hm-bedroom-title">The Bedroom Refresh You've Been Putting Off</h2>
+                <p class="hm-bedroom-desc">Luxurious bedding, blackout curtains, and minimalist furniture — transform your bedroom into a five-star retreat without the five-star price tag.</p>
+                <a href="#hmProducts" onclick="setHmFilter('Bedroom')" class="hm-btn-amber">Shop Bedroom</a>
+            </div>
+            <div class="hm-bedroom-photos" data-reveal="fade-left" style="--rv-delay:0.1s">
+                <div class="hm-bedroom-main">
+                    <img src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=700&q=80&fit=crop&crop=center" alt="Bedroom" loading="lazy">
+                </div>
+                <div class="hm-bedroom-sm hm-bed-sm1">
+                    <img src="https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=350&q=80&fit=crop&crop=center" alt="Bedding" loading="lazy">
+                </div>
+                <div class="hm-bedroom-sm hm-bed-sm2">
+                    <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=350&q=80&fit=crop&crop=center" alt="Pillows" loading="lazy">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════
+     AI COPILOT
+══════════════════════════════════ -->
+<section class="copilot-section hm-copilot-section">
+    <div class="container">
+        <div class="copilot-card hm-copilot-card">
+            <div class="copilot-icon">🤖</div>
+            <div class="copilot-text">
+                <h3>AI Home Advisor</h3>
+                <p>Tell us your room size, style, and budget and our AI will recommend the perfect pieces to pull the look together.</p>
+            </div>
+            <button class="copilot-btn hm-copilot-btn" id="hmCopilotBtn">Ask AI</button>
+        </div>
+        <div class="copilot-chat" id="hmCopilotChat" style="display:none;">
+            <div class="copilot-messages" id="hmCopilotMessages"></div>
+            <div class="copilot-input-row">
+                <input type="text" class="copilot-input" id="hmCopilotInput" placeholder="e.g. I need a sofa under $400 for a small apartment…">
+                <button class="copilot-send" id="hmCopilotSend">Send</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+(function() {
+    window.setHmFilter = function(type) {
+        const chips = document.querySelectorAll('[data-hm-type]');
+        chips.forEach(c => c.classList.remove('active'));
+        const target = [...chips].find(c => c.dataset.hmType === type);
+        if (target) {
+            target.classList.add('active');
+            document.querySelectorAll('[data-hm-filter]').forEach(c => c.classList.remove('active'));
+        }
+        hmTypeFilter = type;
+        applyHmFilters();
+    };
+
+    const grid      = document.getElementById('hmProductGrid');
+    const noResults = document.getElementById('hmNoResults');
+    const countEl   = document.getElementById('hmCount');
+    const searchEl  = document.getElementById('hmSearch');
+    const sortEl    = document.getElementById('hmSort');
+    const rangeEl   = document.getElementById('hmPriceRange');
+    const priceDisp = document.getElementById('hmPriceDisplay');
+    let hmChipFilter = 'all';
+    let hmTypeFilter = null;
+
+    function getCards() { return [...(grid?.querySelectorAll('.product-card') || [])]; }
+
+    function applyHmFilters() {
+        if (!grid) return;
+        const query    = (searchEl?.value || '').toLowerCase().trim();
+        const maxPrice = parseFloat(rangeEl?.value || 1000);
+        const sortVal  = sortEl?.value || 'default';
+
+        let cards = getCards();
+        let visible = cards.filter(c => {
+            const name     = c.dataset.productName || '';
+            const price    = parseFloat(c.dataset.productPrice) || 0;
+            const discount = parseInt(c.dataset.productDiscount) || 0;
+            const rating   = parseFloat(c.dataset.productRating) || 0;
+            const type     = c.dataset.productType || '';
+            if (query && !name.includes(query)) return false;
+            if (price > maxPrice) return false;
+            if (hmChipFilter === 'deals' && discount <= 0) return false;
+            if (hmChipFilter === 'rated' && rating < 4)   return false;
+            if (hmTypeFilter && !type.toLowerCase().includes(hmTypeFilter.toLowerCase())) return false;
+            return true;
+        });
+
+        visible.sort((a, b) => {
+            const pa = parseFloat(a.dataset.productPrice) || 0;
+            const pb = parseFloat(b.dataset.productPrice) || 0;
+            const na = a.dataset.productName || '';
+            const nb = b.dataset.productName || '';
+            if (sortVal === 'price-asc')  return pa - pb;
+            if (sortVal === 'price-desc') return pb - pa;
+            if (sortVal === 'name-asc')   return na.localeCompare(nb);
+            return 0;
+        });
+
+        cards.forEach(c => c.style.display = 'none');
+        visible.forEach(c => { c.style.display = ''; grid.appendChild(c); });
+        if (noResults) noResults.style.display = visible.length === 0 ? 'block' : 'none';
+        if (countEl) countEl.textContent = visible.length + ' product' + (visible.length !== 1 ? 's' : '') + ' found';
+    }
+
+    searchEl?.addEventListener('input', applyHmFilters);
+    sortEl?.addEventListener('change', applyHmFilters);
+    rangeEl?.addEventListener('input', () => {
+        if (priceDisp) priceDisp.textContent = rangeEl.value;
+        applyHmFilters();
+    });
+
+    document.querySelectorAll('[data-hm-filter]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('[data-hm-filter],[data-hm-type]').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            hmChipFilter = btn.dataset.hmFilter;
+            hmTypeFilter = null;
+            applyHmFilters();
+        });
+    });
+
+    document.querySelectorAll('[data-hm-type]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('[data-hm-filter],[data-hm-type]').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            hmTypeFilter = btn.dataset.hmType;
+            hmChipFilter = 'all';
+            applyHmFilters();
+        });
+    });
+
+    applyHmFilters();
+
+    /* Scroll reveal */
+    const obs = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('rv-in'); obs.unobserve(e.target); } });
+    }, { threshold: 0.06, rootMargin: '0px 0px -30px 0px' });
+    document.querySelectorAll('[data-reveal]').forEach(el => obs.observe(el));
+
+    /* AI Copilot */
+    const copilotBtn  = document.getElementById('hmCopilotBtn');
+    const copilotChat = document.getElementById('hmCopilotChat');
+    const copilotSend = document.getElementById('hmCopilotSend');
+    const copilotInp  = document.getElementById('hmCopilotInput');
+    const copilotMsgs = document.getElementById('hmCopilotMessages');
+
+    copilotBtn?.addEventListener('click', () => {
+        const open = copilotChat.style.display !== 'none';
+        copilotChat.style.display = open ? 'none' : 'block';
+        copilotBtn.textContent = open ? 'Ask AI' : 'Close';
+    });
+
+    function addMsg(role, text) {
+        const div = document.createElement('div');
+        div.className = 'copilot-msg copilot-msg-' + role;
+        div.textContent = text;
+        copilotMsgs?.appendChild(div);
+        if (copilotMsgs) copilotMsgs.scrollTop = copilotMsgs.scrollHeight;
+    }
+
+    async function sendCopilot() {
+        const q = copilotInp?.value.trim();
+        if (!q) return;
+        addMsg('user', q);
+        copilotInp.value = '';
+        addMsg('ai', '…thinking…');
+        try {
+            const r = await fetch('/api/ai/recommend', {
+                method: 'POST',
+                headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({ query: q })
+            });
+            const data = await r.json();
+            if (copilotMsgs?.lastChild) copilotMsgs.lastChild.textContent = data.answer || 'Sorry, I could not find a recommendation.';
+        } catch {
+            if (copilotMsgs?.lastChild) copilotMsgs.lastChild.textContent = 'Something went wrong. Try again.';
+        }
+    }
+
+    copilotSend?.addEventListener('click', sendCopilot);
+    copilotInp?.addEventListener('keydown', e => { if (e.key === 'Enter') sendCopilot(); });
+})();
+</script>
+{% endblock %}
