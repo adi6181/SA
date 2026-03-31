@@ -1,5 +1,5 @@
 import os
-from app import create_app, db, mail
+from app import create_app, db, mail, limiter
 from app.models import Product, User
 from flask import render_template, abort, request, jsonify, url_for, current_app
 from flask_mail import Message
@@ -87,6 +87,44 @@ def ensure_user_schema():
         db.session.commit()
 
 
+@app.route('/api/newsletter/subscribe', methods=['POST'])
+@limiter.limit("5 per hour")
+def newsletter_subscribe():
+    data = request.get_json(silent=True) or {}
+    email = (data.get('email') or '').strip().lower()
+    if not email or not EMAIL_PATTERN.match(email):
+        return jsonify({'error': 'Valid email is required'}), 400
+    # Log subscription (extend later to save to DB or send to email service)
+    current_app.logger.info(f'Newsletter subscription: {email}')
+    try:
+        mail_server = current_app.config.get('MAIL_SERVER')
+        mail_sender = current_app.config.get('MAIL_DEFAULT_SENDER')
+        if mail_server and mail_sender:
+            msg = Message(
+                subject='Welcome to DealDrop Deals! 🎉',
+                recipients=[email]
+            )
+            msg.body = (
+                "Hey there!\n\n"
+                "You're now subscribed to DealDrop — your daily source for the best deals on "
+                "Electronics, Fashion, Books, and Home products.\n\n"
+                "We'll send you the hottest deals every week. Stay tuned!\n\n"
+                "— The DealDrop Team\n"
+                "https://dealdrop.com"
+            )
+            msg.html = (
+                "<h2>Welcome to DealDrop! 🏷️</h2>"
+                "<p>You're now subscribed to our weekly deals newsletter.</p>"
+                "<p>Every week we'll send you the best curated deals on Electronics, Fashion, Books and Home — all in one place.</p>"
+                "<p>Stay tuned for your first drop!</p>"
+                "<p><strong>— The DealDrop Team</strong></p>"
+            )
+            mail.send(msg)
+    except Exception as e:
+        current_app.logger.warning(f'Newsletter welcome email failed: {e}')
+    return jsonify({'ok': True, 'message': "You're subscribed! Check your inbox."}), 200
+
+
 @app.route('/', methods=['GET'])
 def home():
     products = Product.query.order_by(Product.created_at.desc()).limit(12).all()
@@ -159,6 +197,47 @@ def support_page():
     return render_template('support.html')
 
 
+@app.route('/privacy', methods=['GET'])
+def privacy_page():
+    return render_template('privacy.html')
+
+
+@app.route('/terms', methods=['GET'])
+def terms_page():
+    return render_template('terms.html')
+
+
+@app.route('/robots.txt', methods=['GET'])
+def robots_txt():
+    from flask import send_from_directory
+    import os
+    static_dir = os.path.join(os.path.dirname(__file__), '..', 'frontend', 'static')
+    return send_from_directory(os.path.abspath(static_dir), 'robots.txt', mimetype='text/plain')
+
+
+@app.route('/sitemap.xml', methods=['GET'])
+def sitemap_xml():
+    from flask import Response
+    products = Product.query.order_by(Product.created_at.desc()).all()
+    base = request.host_url.rstrip('/')
+    urls = [
+        f'<url><loc>{base}/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>',
+        f'<url><loc>{base}/deals</loc><changefreq>daily</changefreq><priority>0.9</priority></url>',
+        f'<url><loc>{base}/category/Electronics</loc><changefreq>daily</changefreq><priority>0.8</priority></url>',
+        f'<url><loc>{base}/category/Fashion</loc><changefreq>daily</changefreq><priority>0.8</priority></url>',
+        f'<url><loc>{base}/category/Books</loc><changefreq>daily</changefreq><priority>0.8</priority></url>',
+        f'<url><loc>{base}/category/Home</loc><changefreq>daily</changefreq><priority>0.8</priority></url>',
+        f'<url><loc>{base}/privacy</loc><changefreq>monthly</changefreq><priority>0.3</priority></url>',
+        f'<url><loc>{base}/terms</loc><changefreq>monthly</changefreq><priority>0.3</priority></url>',
+    ]
+    for p in products:
+        urls.append(f'<url><loc>{base}/product/{p.id}</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>')
+    xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    xml += '\n'.join(urls)
+    xml += '\n</urlset>'
+    return Response(xml, mimetype='application/xml')
+
+
 @app.route('/reset-password', methods=['GET'])
 def reset_password_page():
     token = request.args.get('token', '').strip()
@@ -166,6 +245,7 @@ def reset_password_page():
 
 
 @app.route('/api/auth/forgot-password', methods=['POST'])
+@limiter.limit("5 per hour")
 def forgot_password():
     data = request.get_json(silent=True) or {}
     email = (data.get('email') or '').strip().lower()
@@ -197,6 +277,7 @@ def forgot_password():
 
 
 @app.route('/api/auth/register', methods=['POST'])
+@limiter.limit("10 per hour")
 def register():
     data = request.get_json(silent=True) or {}
     name = (data.get('name') or '').strip()
@@ -243,6 +324,7 @@ def register():
 
 
 @app.route('/api/auth/login', methods=['POST'])
+@limiter.limit("10 per minute")
 def login():
     data = request.get_json(silent=True) or {}
     email = (data.get('email') or '').strip().lower()
@@ -291,6 +373,6 @@ ensure_user_schema()
 
 
 if __name__ == '__main__':
-    # Allow overriding port via environment (useful if port 5000 is occupied)
     port = int(os.getenv('PORT', 5000))
-    app.run(debug=True, port=port)
+    debug = os.getenv('FLASK_ENV', 'production') == 'development'
+    app.run(debug=debug, port=port)

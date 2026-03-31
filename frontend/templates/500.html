@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Server Error | DealDrop{% endblock %}
+{% block content %}
+<section class="err-page">
+    <div class="container err-inner">
+        <div class="err-visual">
+            <p class="err-code">500</p>
+            <div class="err-icon">⚙️</div>
+        </div>
+        <h1 class="err-title">Something went wrong on our end</h1>
+        <p class="err-desc">Our team has been notified and is working on a fix. In the meantime, try refreshing the page or head back home.</p>
+        <div class="err-actions">
+            <a href="/" class="err-btn-primary">Back to Home</a>
+            <a href="javascript:location.reload()" class="err-btn-ghost">Try Again</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

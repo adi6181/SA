@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Page Not Found | DealDrop{% endblock %}
+{% block content %}
+<section class="err-page">
+    <div class="container err-inner">
+        <div class="err-visual">
+            <p class="err-code">404</p>
+            <div class="err-icon">🔍</div>
+        </div>
+        <h1 class="err-title">Oops — page not found</h1>
+        <p class="err-desc">The page you're looking for may have moved, been removed, or never existed. Let's get you back to the deals.</p>
+        <div class="err-actions">
+            <a href="/" class="err-btn-primary">Back to Home</a>
+            <a href="/deals" class="err-btn-ghost">Browse Deals</a>
+        </div>
+        <div class="err-cats">
+            <p class="err-cats-label">Or browse a category:</p>
+            <div class="err-cat-links">
+                <a href="/category/Electronics">⚡ Electronics</a>
+                <a href="/category/Fashion">👗 Fashion</a>
+                <a href="/category/Books">📚 Books</a>
+                <a href="/category/Home">🏡 Home</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

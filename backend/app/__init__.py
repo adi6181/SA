@@ -2,6 +2,8 @@ from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_mail import Mail
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 import os
 from dotenv import load_dotenv
 
@@ -15,6 +17,7 @@ load_dotenv(env_path)
 
 db = SQLAlchemy()
 mail = Mail()
+limiter = Limiter(key_func=get_remote_address, default_limits=[])
 
 
 def _as_bool(value, default=False):
@@ -45,6 +48,7 @@ def create_app():
     # Initialize extensions
     db.init_app(app)
     mail.init_app(app)
+    limiter.init_app(app)
     CORS(app)
 
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
@@ -58,6 +62,14 @@ def create_app():
     @app.route('/admin')
     def admin_dashboard():
         return render_template('admin.html')
+
+    @app.errorhandler(404)
+    def page_not_found(e):
+        return render_template('404.html'), 404
+
+    @app.errorhandler(500)
+    def internal_error(e):
+        return render_template('500.html'), 500
     
     # Create database tables
     with app.app_context():

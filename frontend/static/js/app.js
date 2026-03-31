@@ -3,21 +3,36 @@ const ADMIN_MODE_KEY = 'adminImageUploadMode';
 const ADMIN_API_KEY_STORAGE = 'adminImageUploadKey';
 const CART_STORAGE_KEY = 'dealdrop_cart';
 
-function handleNewsletterSubmit(event) {
+async function handleNewsletterSubmit(event) {
     event.preventDefault();
     const email = document.getElementById('newsletterEmail')?.value.trim();
     const msg = document.getElementById('newsletterMsg');
+    const btn = event.target.querySelector('button[type="submit"]');
     if (!email || !msg) return;
     msg.textContent = '';
     msg.style.color = '';
-    if (!email.includes('@')) {
-        msg.textContent = 'Please enter a valid email.';
-        msg.style.color = 'var(--error)';
-        return;
+    if (btn) { btn.disabled = true; btn.textContent = 'Subscribing…'; }
+    try {
+        const res = await fetch('/api/newsletter/subscribe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+        if (res.ok) {
+            msg.textContent = "🎉 You're in! Check your inbox for a welcome email.";
+            msg.style.color = '#16a34a';
+            event.target.reset();
+        } else {
+            msg.textContent = data.error || 'Something went wrong. Try again.';
+            msg.style.color = '#dc2626';
+        }
+    } catch {
+        msg.textContent = 'Network error. Please try again.';
+        msg.style.color = '#dc2626';
+    } finally {
+        if (btn) { btn.disabled = false; btn.textContent = 'Subscribe'; }
     }
-    msg.textContent = "You're in! Watch your inbox for hot drops.";
-    msg.style.color = 'var(--success)';
-    event.target.reset();
 }
 
 let productsCache = [];
