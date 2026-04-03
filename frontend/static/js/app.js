@@ -1208,3 +1208,192 @@ function getCachedProducts() {
     const cached = localStorage.getItem('cachedProducts');
     return cached ? JSON.parse(cached) : [];
 }
+
+/* ============================================================
+   NAVBAR — HAMBURGER, SEARCH, ACTIVE LINK
+   ============================================================ */
+(function initNavbar() {
+    /* ── Active link ── */
+    const path = window.location.pathname.replace(/\/$/, '') || '/';
+    document.querySelectorAll('.nav-link, .nav-mobile-link').forEach(link => {
+        const href = link.getAttribute('href') || '';
+        const linkPath = href.replace(/\/$/, '') || '/';
+        if (linkPath === path) link.classList.add('active');
+    });
+
+    /* ── Hamburger ── */
+    const hamburger = document.getElementById('navHamburger');
+    const mobileMenu = document.getElementById('navMobileMenu');
+    if (hamburger && mobileMenu) {
+        hamburger.addEventListener('click', () => {
+            const open = hamburger.classList.toggle('open');
+            mobileMenu.classList.toggle('open', open);
+            hamburger.setAttribute('aria-expanded', open);
+        });
+        // Close on outside click
+        document.addEventListener('click', e => {
+            if (!hamburger.contains(e.target) && !mobileMenu.contains(e.target)) {
+                hamburger.classList.remove('open');
+                mobileMenu.classList.remove('open');
+            }
+        });
+    }
+
+    /* ── Global Search ── */
+    const toggle   = document.getElementById('navSearchToggle');
+    const searchBox = document.getElementById('navSearchBox');
+    const input    = document.getElementById('navSearchInput');
+    const results  = document.getElementById('navSearchResults');
+    if (!toggle || !searchBox || !input || !results) return;
+
+    toggle.addEventListener('click', e => {
+        e.stopPropagation();
+        const open = searchBox.classList.toggle('open');
+        if (open) { input.focus(); } else { input.value = ''; results.innerHTML = ''; }
+    });
+
+    document.addEventListener('click', e => {
+        if (!searchBox.contains(e.target) && e.target !== toggle) {
+            searchBox.classList.remove('open');
+            input.value = '';
+            results.innerHTML = '';
+        }
+    });
+
+    let searchTimer;
+    input.addEventListener('input', () => {
+        clearTimeout(searchTimer);
+        const q = input.value.trim();
+        if (!q) { results.innerHTML = ''; return; }
+        searchTimer = setTimeout(() => runNavSearch(q), 280);
+    });
+
+    input.addEventListener('keydown', e => {
+        if (e.key === 'Escape') { searchBox.classList.remove('open'); input.value = ''; results.innerHTML = ''; }
+    });
+
+    async function runNavSearch(q) {
+        try {
+            const res = await fetch(`/api/products/?q=${encodeURIComponent(q)}&limit=6`);
+            if (!res.ok) return;
+            const items = await res.json();
+            renderNavResults(items, q);
+        } catch {
+            // Fallback: search productsCache
+            const cached = getCachedProducts();
+            const lower = q.toLowerCase();
+            const hits = cached.filter(p => (p.name || '').toLowerCase().includes(lower)).slice(0, 6);
+            renderNavResults(hits, q);
+        }
+    }
+
+    function renderNavResults(items, q) {
+        if (!items.length) {
+            results.innerHTML = `<div class="nsr-empty">No results for "<strong>${escapeHtml(q)}</strong>"</div>`;
+            return;
+        }
+        results.innerHTML = items.map(p => {
+            const price = p.deal_price || p.price;
+            const priceStr = price ? `$${Number(price).toFixed(2)}` : '';
+            const img = getProductImageUrl(p);
+            return `<a href="/product/${p.id}" class="nsr-item">
+                <img class="nsr-img" src="${escapeHtml(img)}" alt="" onerror="this.style.display='none'">
+                <div class="nsr-info">
+                    <div class="nsr-name">${escapeHtml(p.name || '')}</div>
+                    ${priceStr ? `<div class="nsr-price">${priceStr}</div>` : ''}
+                </div>
+            </a>`;
+        }).join('');
+    }
+
+    function getProductImageUrl(p) {
+        if (p.images && p.images.length) return p.images[0];
+        if (p.image_url) return p.image_url;
+        return '';
+    }
+
+    function escapeHtml(str) {
+        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+})();
+
+/* ============================================================
+   BACK TO TOP
+   ============================================================ */
+(function initBackToTop() {
+    const btn = document.getElementById('backToTop');
+    if (!btn) return;
+    const onScroll = () => btn.classList.toggle('visible', window.scrollY > 400);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+})();
+
+/* ============================================================
+   DEAL URGENCY INDICATORS
+   Inject urgency badge on product cards that have is_deal flag
+   ============================================================ */
+function injectUrgencyBadges() {
+    document.querySelectorAll('[data-is-deal="true"]').forEach(card => {
+        if (card.querySelector('.deal-urgency')) return; // already added
+        const badge = document.createElement('div');
+        badge.className = 'deal-urgency';
+        badge.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>Limited Deal`;
+        // Insert at the top of the card image area
+        const imgWrap = card.querySelector('.product-card-img, .pc-img, figure');
+        if (imgWrap) {
+            imgWrap.style.position = 'relative';
+            imgWrap.style.overflow = 'hidden';
+            Object.assign(badge.style, { position: 'absolute', top: '10px', left: '10px', zIndex: '5' });
+            imgWrap.prepend(badge);
+        } else {
+            card.prepend(badge);
+        }
+    });
+}
+
+/* ============================================================
+   SHARE DEAL BUTTON
+   ============================================================ */
+function initShareButton() {
+    document.querySelectorAll('.share-deal-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const url = btn.dataset.url || window.location.href;
+            const title = btn.dataset.title || document.title;
+            if (navigator.share) {
+                try { await navigator.share({ title, url }); return; } catch {}
+            }
+            try {
+                await navigator.clipboard.writeText(url);
+                btn.classList.add('copied');
+                const orig = btn.innerHTML;
+                btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Copied!`;
+                setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML = orig; }, 2000);
+            } catch {}
+        });
+    });
+}
+
+/* ============================================================
+   LOADING SKELETONS
+   ============================================================ */
+function showProductSkeletons(containerId, count = 8) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = Array.from({ length: count }, () => `
+        <div class="product-card-skeleton">
+            <div class="skeleton sk-img"></div>
+            <div class="sk-body">
+                <div class="skeleton sk-title"></div>
+                <div class="skeleton sk-title-2"></div>
+                <div class="skeleton sk-price"></div>
+                <div class="skeleton sk-btn"></div>
+            </div>
+        </div>
+    `).join('');
+}
+
+/* ── Wire up on DOMContentLoaded additions ── */
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(injectUrgencyBadges, 800); // after products render
+    initShareButton();
+});
