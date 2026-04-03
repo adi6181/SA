@@ -1,0 +1,19 @@
+{
+  "name": "DealDrop",
+  "short_name": "DealDrop",
+  "description": "Discover top-rated deals on Electronics, Fashion, Books and Home.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f3ff",
+  "theme_color": "#7c3aed",
+  "icons": [
+    {
+      "src": "/static/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["shopping", "lifestyle"],
+  "screenshots": []
+}

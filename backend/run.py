@@ -215,6 +215,17 @@ def robots_txt():
     return send_from_directory(os.path.abspath(static_dir), 'robots.txt', mimetype='text/plain')
 
 
+@app.route('/sw.js', methods=['GET'])
+def service_worker():
+    from flask import send_from_directory, make_response
+    import os
+    static_dir = os.path.join(os.path.dirname(__file__), '..', 'frontend', 'static')
+    response = make_response(send_from_directory(os.path.abspath(static_dir), 'sw.js', mimetype='application/javascript'))
+    response.headers['Service-Worker-Allowed'] = '/'
+    response.headers['Cache-Control'] = 'no-cache'
+    return response
+
+
 @app.route('/sitemap.xml', methods=['GET'])
 def sitemap_xml():
     from flask import Response

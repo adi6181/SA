@@ -700,7 +700,24 @@ function createProductCard(product, index) {
         dealBadge.className = 'deal-badge';
         dealBadge.textContent = 'DEAL';
         media.appendChild(dealBadge);
+        card.dataset.isDeal = 'true';
+        // Countdown timer
+        const deadline = getDealDeadline(product.id);
+        const countdown = document.createElement('div');
+        countdown.className = 'deal-countdown';
+        countdown.dataset.deadline = String(deadline);
+        countdown.innerHTML = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span class="cd-time">--:--:--</span>`;
+        media.appendChild(countdown);
     }
+
+    // Wishlist heart button
+    const heartBtn = document.createElement('button');
+    heartBtn.className = `wishlist-btn${isWishlisted(product.id) ? ' wishlisted' : ''}`;
+    heartBtn.dataset.action = 'toggle-wishlist';
+    heartBtn.dataset.productId = String(product.id);
+    heartBtn.setAttribute('aria-label', 'Save to wishlist');
+    heartBtn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
+    media.appendChild(heartBtn);
 
     const tag = document.createElement('span');
     tag.className = 'product-tag';
@@ -846,6 +863,13 @@ function handleProductGridClick(event) {
     const productId = actionElement.dataset.productId;
     const card = actionElement.closest('.product-card');
     if (!productId || !card) return;
+
+    if (action === 'toggle-wishlist') {
+        event.stopPropagation();
+        const product = getCachedProductById(productId);
+        if (product) toggleWishlist(product);
+        return;
+    }
 
     if (action === 'add-to-cart') {
         event.stopPropagation();
@@ -1396,4 +1420,152 @@ function showProductSkeletons(containerId, count = 8) {
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(injectUrgencyBadges, 800); // after products render
     initShareButton();
+    updateWishlistBadge();
+    renderRecentlyViewedStrip();
+    setInterval(tickCountdowns, 1000);
+});
+
+/* ============================================================
+   DARK MODE TOGGLE
+   ============================================================ */
+(function initDarkMode() {
+    const btn = document.getElementById('darkModeToggle');
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+        const current = document.documentElement.getAttribute('data-theme') || 'light';
+        const next = current === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('dealdrop_theme', next);
+    });
+})();
+
+/* ============================================================
+   WISHLIST
+   ============================================================ */
+const WISHLIST_KEY = 'dealdrop_wishlist';
+
+function getWishlist() {
+    try { return JSON.parse(localStorage.getItem(WISHLIST_KEY)) || []; } catch { return []; }
+}
+
+function saveWishlist(list) {
+    localStorage.setItem(WISHLIST_KEY, JSON.stringify(list));
+    updateWishlistBadge();
+}
+
+function isWishlisted(productId) {
+    return getWishlist().some(item => String(item.id) === String(productId));
+}
+
+function toggleWishlist(product) {
+    let list = getWishlist();
+    const idx = list.findIndex(p => String(p.id) === String(product.id));
+    if (idx >= 0) {
+        list.splice(idx, 1);
+        showNotification('Removed from wishlist', 'info');
+    } else {
+        list.push({
+            id: product.id,
+            name: product.name,
+            price: product.deal_price || product.price,
+            image: getProductImage(product),
+            url: `/product/${product.id}`
+        });
+        showNotification('Saved to wishlist ❤', 'success');
+    }
+    saveWishlist(list);
+    // Update button state
+    document.querySelectorAll(`.wishlist-btn[data-product-id="${product.id}"]`).forEach(b => {
+        b.classList.toggle('wishlisted', isWishlisted(product.id));
+    });
+}
+
+function updateWishlistBadge() {
+    const count = getWishlist().length;
+    document.querySelectorAll('.wishlist-count').forEach(el => {
+        el.textContent = count;
+        el.style.display = count > 0 ? 'inline' : 'none';
+    });
+}
+
+/* ============================================================
+   DEAL COUNTDOWN TIMERS
+   ============================================================ */
+function getDealDeadline(productId) {
+    const key = `dd_deadline_${productId}`;
+    let dl = parseInt(sessionStorage.getItem(key) || '0');
+    if (!dl || dl < Date.now()) {
+        const hours = ((Math.abs(Number(productId)) % 8) + 2); // 2–9 h
+        dl = Date.now() + hours * 3_600_000;
+        sessionStorage.setItem(key, String(dl));
+    }
+    return dl;
+}
+
+function tickCountdowns() {
+    const now = Date.now();
+    document.querySelectorAll('.deal-countdown[data-deadline]').forEach(el => {
+        const diff = Math.max(0, parseInt(el.dataset.deadline) - now);
+        const h = Math.floor(diff / 3_600_000);
+        const m = Math.floor((diff % 3_600_000) / 60_000);
+        const s = Math.floor((diff % 60_000) / 1_000);
+        const t = el.querySelector('.cd-time');
+        if (t) t.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    });
+}
+
+/* ============================================================
+   RECENTLY VIEWED STRIP
+   ============================================================ */
+const RV_KEY = 'dealdrop_recently_viewed';
+
+function getRecentlyViewed() {
+    try { return JSON.parse(localStorage.getItem(RV_KEY)) || []; } catch { return []; }
+}
+
+function renderRecentlyViewedStrip() {
+    const list = getRecentlyViewed();
+    if (list.length < 2) return;
+    const footer = document.querySelector('.mega-footer');
+    if (!footer) return;
+    document.getElementById('rvStrip')?.remove();
+    const section = document.createElement('section');
+    section.id = 'rvStrip';
+    section.className = 'rv-strip';
+    section.innerHTML = `
+        <div class="container">
+            <h3 class="rv-strip-title">Recently Viewed</h3>
+            <div class="rv-strip-grid">
+                ${list.map(p => `
+                    <a href="${p.url || `/product/${p.id}`}" class="rv-card">
+                        <div class="rv-card-img">
+                            <img src="${p.image || ''}" alt="${p.name || ''}" loading="lazy" onerror="this.parentElement.innerHTML='🛍️'">
+                        </div>
+                        <p class="rv-card-name">${p.name || ''}</p>
+                        <p class="rv-card-price">$${Number(p.price || 0).toFixed(2)}</p>
+                    </a>
+                `).join('')}
+            </div>
+        </div>`;
+    footer.insertAdjacentElement('beforebegin', section);
+}
+
+/* ============================================================
+   FILTER STATE PERSISTENCE (save on change)
+   ============================================================ */
+const FILTER_PERSIST_KEY = 'dealdrop_filters_v1';
+
+function saveFilterPersist() {
+    try {
+        const f = getCurrentFilters();
+        localStorage.setItem(FILTER_PERSIST_KEY, JSON.stringify(f));
+    } catch {}
+}
+
+// Hook into filter elements to save on each change
+document.addEventListener('DOMContentLoaded', () => {
+    ['searchInput','categoryFilter','sortFilter','minPriceFilter','maxPriceFilter'].forEach(id => {
+        document.getElementById(id)?.addEventListener('change', saveFilterPersist);
+        document.getElementById(id)?.addEventListener('input', saveFilterPersist);
+    });
 });
