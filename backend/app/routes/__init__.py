@@ -9,6 +9,11 @@ from werkzeug.utils import secure_filename
 from sqlalchemy import or_, func
 from urllib.parse import urlparse, urlsplit
 import requests
+try:
+    from bs4 import BeautifulSoup
+    BS4_AVAILABLE = True
+except ImportError:
+    BS4_AVAILABLE = False
 from app import db
 from app.models import Product, ProductImage, Review, ReviewHelpfulVote, Order, OrderItem, SupportTicket
 
@@ -483,19 +488,25 @@ def persist_remote_image(image_url, referer_url=None):
 
 def scrape_product_details(url):
     session = requests.Session()
-    response = session.get(
-        url,
-        timeout=20,
-        allow_redirects=True,
-        headers={
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0 Safari/537.36',
-            'Accept-Language': 'en-US,en;q=0.9'
-        }
-    )
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Connection': 'keep-alive',
+        'Upgrade-Insecure-Requests': '1',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'none',
+        'Cache-Control': 'max-age=0',
+    }
+    response = session.get(url, timeout=20, allow_redirects=True, headers=headers)
     response.raise_for_status()
 
     html = response.text
     final_url = response.url
+    is_amazon = 'amazon.' in urlparse(final_url).netloc
+
     json_ld_nodes = parse_json_ld_candidates(html)
 
     title = (
@@ -510,21 +521,37 @@ def scrape_product_details(url):
         extract_meta_value(html, ['og:description', 'description', 'twitter:description'])
         or find_in_json_ld(json_ld_nodes, 'description')
     )
-    image_url = (
-        extract_meta_value(html, ['og:image', 'twitter:image'])
-        or find_in_json_ld(json_ld_nodes, 'image')
-    )
-    image_url = pick_first_image_url(image_url)
 
+    # ── Image extraction ─────────────────────────────────────
+    image_url = None
+    extra_images = []
+
+    if is_amazon and BS4_AVAILABLE:
+        image_url, extra_images = _extract_amazon_images(html)
+
+    if not image_url:
+        image_url = (
+            extract_meta_value(html, ['og:image', 'twitter:image'])
+            or find_in_json_ld(json_ld_nodes, 'image')
+        )
+        image_url = pick_first_image_url(image_url)
+
+    # ── Price ────────────────────────────────────────────────
     price_text = (
         extract_meta_value(html, ['product:price:amount', 'og:price:amount', 'price'])
         or find_in_json_ld(json_ld_nodes, 'price')
     )
+
+    # Amazon-specific price fallback via BeautifulSoup
+    if not price_text and is_amazon and BS4_AVAILABLE:
+        price_text = _extract_amazon_price(html)
+
     rating_value = find_in_json_ld(json_ld_nodes, 'ratingValue')
     review_count = find_in_json_ld(json_ld_nodes, 'reviewCount')
     brand_value = find_in_json_ld(json_ld_nodes, 'brand')
     if isinstance(brand_value, dict):
         brand_value = brand_value.get('name') or brand_value.get('@id')
+
     specs_candidates = []
     for key in ['model', 'sku', 'mpn', 'material', 'color']:
         value = find_in_json_ld(json_ld_nodes, key)
@@ -541,6 +568,7 @@ def scrape_product_details(url):
         'name': title,
         'description': description,
         'image_url': image_url,
+        'extra_images': extra_images,
         'price': price,
         'rating': rating,
         'review_count': reviews,
@@ -548,6 +576,75 @@ def scrape_product_details(url):
         'brand': (brand_value or '').strip() if isinstance(brand_value, str) else None,
         'specs': specs_candidates
     }
+
+
+def _extract_amazon_images(html):
+    """Extract high-res images from Amazon product page HTML."""
+    soup = BeautifulSoup(html, 'lxml')
+    main_image = None
+    gallery_images = []
+
+    # Strategy 1: data-a-dynamic-image on #landingImage (highest quality)
+    for selector in ['#landingImage', '#imgTagWrapperId img', '#main-image', '#img-canvas img']:
+        tag = soup.select_one(selector)
+        if not tag:
+            continue
+        dynamic = tag.get('data-a-dynamic-image') or tag.get('data-old-hires') or ''
+        if dynamic and dynamic.startswith('{'):
+            try:
+                img_map = json.loads(dynamic)
+                # Pick the largest image by width
+                best = max(img_map.keys(), key=lambda u: img_map[u][0] if isinstance(img_map[u], list) else 0)
+                main_image = best
+            except Exception:
+                pass
+        if not main_image:
+            src = tag.get('src') or tag.get('data-src') or ''
+            if src and 'media-amazon.com' in src and '_SL' not in src:
+                main_image = src
+        if main_image:
+            break
+
+    # Clean up Amazon image URL to get full-size version
+    # Amazon URLs like .../I/51xxx._AC_SX679_.jpg → replace size token with full size
+    if main_image:
+        main_image = re.sub(r'\._[A-Z]{2,}[\w,]+_\.', '.', main_image)
+
+    # Strategy 2: Thumbnail strip for gallery images
+    thumb_imgs = soup.select('#altImages .a-button-thumbnail img, #imageBlock .imageThumbnail img')
+    for img in thumb_imgs[:8]:
+        src = img.get('src') or ''
+        if src and 'media-amazon.com' in src:
+            # Convert thumbnail to full size
+            full = re.sub(r'\._[A-Z]{2,}[\w,]+_\.', '.', src)
+            if full not in gallery_images and full != main_image:
+                gallery_images.append(full)
+
+    # Strategy 3: JSON data embedded in page scripts
+    if not main_image:
+        pattern = re.compile(r'"hiRes"\s*:\s*"(https://[^"]+media-amazon\.com[^"]+)"')
+        hits = pattern.findall(html)
+        if hits:
+            main_image = hits[0]
+            gallery_images = list(dict.fromkeys(hits[1:9]))
+
+    return main_image, gallery_images
+
+
+def _extract_amazon_price(html):
+    """Extract price from Amazon page when meta tags don't have it."""
+    soup = BeautifulSoup(html, 'lxml')
+    for selector in [
+        '.a-price .a-offscreen',
+        '#priceblock_ourprice',
+        '#priceblock_dealprice',
+        '#price_inside_buybox',
+        '.a-price-whole',
+    ]:
+        el = soup.select_one(selector)
+        if el:
+            return el.get_text(strip=True)
+    return None
 
 
 def run_ai_import_cleaner(scraped):
@@ -785,6 +882,17 @@ def import_product_from_url():
         product.review_count = cleaned.get('review_count') if cleaned.get('review_count') is not None else product.review_count
 
     db.session.commit()
+
+    # Persist extra gallery images (Amazon thumbnail strip etc.)
+    extra_images = scraped.get('extra_images') or []
+    for img_url in extra_images[:6]:
+        saved = persist_remote_image(img_url, referer_url=final_url)
+        if saved:
+            existing = ProductImage.query.filter_by(product_id=product.id, image_url=saved).first()
+            if not existing:
+                db.session.add(ProductImage(product_id=product.id, image_url=saved))
+    if extra_images:
+        db.session.commit()
     return jsonify({
         'ok': True,
         'created': created,
