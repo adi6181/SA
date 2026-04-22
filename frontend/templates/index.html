@@ -1,526 +1,407 @@
 {% extends "base.html" %}
-{% block title %}DealDrop | Discover Top Products{% endblock %}
+{% block title %}DealDrop | Shop Smarter, Save Everywhere{% endblock %}
 {% block content %}
 
-<!-- ══ HERO ══ -->
-<section class="ph-hero" id="phHero">
-    <div class="ph-hero-bg" aria-hidden="true">
-        <div class="ph-orb ph-orb-1"></div>
-        <div class="ph-orb ph-orb-2"></div>
-        <div class="ph-orb ph-orb-3"></div>
-        <div class="ph-grid-lines"></div>
+<!-- ══════════════════════════════════════════
+     HERO — dark editorial split
+══════════════════════════════════════════ -->
+<section class="hp-hero" id="phHero">
+    <div class="hp-hero-bg" aria-hidden="true">
+        <div class="hp-orb hp-orb-1"></div>
+        <div class="hp-orb hp-orb-2"></div>
+        <div class="hp-orb hp-orb-3"></div>
     </div>
 
-    <div class="container ph-hero-inner">
-        <!-- Copy -->
-        <div class="ph-copy">
-            <span class="ph-badge ph-a1">✦ Trusted Affiliate Platform</span>
-            <h1 class="ph-headline ph-a2">
-                Shop <em class="ph-accent">Smarter.</em><br>
-                Save <em class="ph-gradient">Everywhere.</em>
+    <div class="hp-hero-inner">
+        <!-- LEFT copy -->
+        <div class="hp-hero-copy">
+            <span class="hp-pill hp-a1">
+                <span class="hp-pill-dot"></span>
+                Up to 60% off · Updated hourly
+            </span>
+
+            <h1 class="hp-headline hp-a2">
+                Shop<br>
+                <span class="hp-grad-text">Smarter.</span><br>
+                Save <em>More.</em>
             </h1>
-            <p class="ph-sub ph-a3">
-                Discover top-rated products from Amazon, Walmart, Target &amp; Best Buy —
-                curated, compared, and delivered in one seamless experience.
+
+            <p class="hp-sub hp-a3">
+                Top-rated deals from Amazon, Walmart, Target &amp; Best Buy —
+                curated and compared in one place.
             </p>
-            <div class="ph-cta-row ph-a4">
-                <a href="/deals" class="ph-btn-primary">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+
+            <div class="hp-cta-row hp-a4">
+                <a href="/deals" class="hp-btn-primary">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
                     Browse Deals
                 </a>
-                <a href="#ph-depts" class="ph-btn-outline">
-                    Explore Categories
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                <a href="#hp-products" class="hp-btn-ghost">
+                    See All Products
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                 </a>
             </div>
-            <div class="ph-social ph-a5">
-                <div class="ph-avs">
-                    <span class="ph-av" style="background:linear-gradient(135deg,#7c3aed,#db2777)"></span>
-                    <span class="ph-av" style="background:linear-gradient(135deg,#0891b2,#7c3aed)"></span>
-                    <span class="ph-av" style="background:linear-gradient(135deg,#059669,#0891b2)"></span>
-                    <span class="ph-av" style="background:linear-gradient(135deg,#d97706,#db2777)"></span>
+
+            <div class="hp-stats hp-a5">
+                <div class="hp-stat">
+                    <strong>10K+</strong>
+                    <span>Products</span>
                 </div>
-                <span><strong>2,400+</strong> shoppers saved this week</span>
+                <div class="hp-stat-div"></div>
+                <div class="hp-stat">
+                    <strong>60%</strong>
+                    <span>Max Savings</span>
+                </div>
+                <div class="hp-stat-div"></div>
+                <div class="hp-stat">
+                    <strong>4.9★</strong>
+                    <span>Avg Rating</span>
+                </div>
             </div>
         </div>
 
-        <!-- Visual -->
-        <div class="ph-visual ph-a6" aria-hidden="true">
-            <div class="ph-card ph-card-1">
-                <div class="ph-card-img">
-                    <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=480&q=80&fit=crop&crop=center" alt="MacBook Air" loading="lazy">
-                    <span class="ph-card-img-badge">-15%</span>
+        <!-- RIGHT bento cluster -->
+        <div class="hp-hero-visual hp-a6" aria-hidden="true">
+            <div class="hp-visual-card hp-vc-main">
+                <div class="hp-vc-img">
+                    <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=600&q=85&fit=crop&crop=center" alt="">
                 </div>
-                <div class="ph-card-body">
-                    <span class="ph-card-cat">Electronics</span>
-                    <h4>Apple MacBook Air M3</h4>
-                    <div class="ph-stars">★★★★★ <span>4.9 (2.4k)</span></div>
-                    <div class="ph-pricing">
-                        <strong>$1,099</strong>
-                        <del>$1,299</del>
-                        <span class="ph-save">Save $200</span>
-                    </div>
-                    <div class="ph-retailer ph-amazon">via Amazon</div>
+                <div class="hp-vc-body">
+                    <span class="hp-vc-cat">Electronics</span>
+                    <p class="hp-vc-name">Apple MacBook Air M3</p>
+                    <div class="hp-vc-price"><strong>$1,099</strong><del>$1,299</del></div>
+                    <div class="hp-vc-save">Save $200 · via Amazon</div>
                 </div>
             </div>
 
-            <div class="ph-card ph-card-2">
-                <div class="ph-card-img">
-                    <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=480&q=80&fit=crop&crop=top" alt="Summer Fashion" loading="lazy">
-                    <span class="ph-card-img-badge">-50%</span>
+            <div class="hp-visual-card hp-vc-sm hp-vc-sm-1">
+                <div class="hp-vc-img">
+                    <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=400&q=80&fit=crop&crop=top" alt="">
                 </div>
-                <div class="ph-card-body">
-                    <span class="ph-card-cat">Fashion</span>
-                    <h4>Summer Collection 2026</h4>
-                    <div class="ph-stars">★★★★★ <span>4.7 (1.8k)</span></div>
-                    <div class="ph-pricing">
-                        <strong>From $29.99</strong>
-                        <del>$59.99</del>
-                        <span class="ph-save">Save 50%</span>
-                    </div>
-                    <div class="ph-retailer ph-target">via Target</div>
+                <div class="hp-vc-body">
+                    <span class="hp-vc-cat">Fashion</span>
+                    <p class="hp-vc-name">Summer Collection</p>
+                    <div class="hp-vc-price"><strong>$29.99</strong><del>$59.99</del></div>
                 </div>
             </div>
 
-            <div class="ph-float-pill ph-pill-1">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                Save 15%
+            <div class="hp-visual-card hp-vc-sm hp-vc-sm-2">
+                <div class="hp-vc-img">
+                    <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80&fit=crop&crop=center" alt="">
+                </div>
+                <div class="hp-vc-body">
+                    <span class="hp-vc-cat">Electronics</span>
+                    <p class="hp-vc-name">Sony WH-1000XM5</p>
+                    <div class="hp-vc-price"><strong>$279</strong><del>$349</del></div>
+                </div>
             </div>
-            <div class="ph-float-pill ph-pill-2">🔥 Hot Deal</div>
+
+            <div class="hp-float-badge hp-fb-1">🔥 Hot Deal</div>
+            <div class="hp-float-badge hp-fb-2">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                −15%
+            </div>
         </div>
     </div>
 
-    <div class="ph-scroll-cue ph-a7" aria-hidden="true">
-        <div class="ph-scroll-line"></div>
-        <span>scroll to explore</span>
-    </div>
-</section>
-
-<!-- ══ TRUST LOGOS MARQUEE ══ -->
-<section class="ph-trust">
-    <div class="ph-trust-inner">
-        <p class="ph-trust-label">Trusted by shoppers from</p>
-        <div class="ph-marquee-wrap">
-            <div class="ph-marquee-track">
-                <span class="ph-tlogo">amazon</span>
-                <span class="ph-tlogo">walmart</span>
-                <span class="ph-tlogo">target</span>
-                <span class="ph-tlogo">bestbuy</span>
-                <span class="ph-tlogo">shopify</span>
-                <span class="ph-tlogo">paypal</span>
-                <span class="ph-tlogo">google</span>
-                <span class="ph-tlogo">stripe</span>
-                <span class="ph-tlogo" aria-hidden="true">amazon</span>
-                <span class="ph-tlogo" aria-hidden="true">walmart</span>
-                <span class="ph-tlogo" aria-hidden="true">target</span>
-                <span class="ph-tlogo" aria-hidden="true">bestbuy</span>
-                <span class="ph-tlogo" aria-hidden="true">shopify</span>
-                <span class="ph-tlogo" aria-hidden="true">paypal</span>
-                <span class="ph-tlogo" aria-hidden="true">google</span>
-                <span class="ph-tlogo" aria-hidden="true">stripe</span>
-            </div>
-        </div>
+    <div class="hp-scroll-hint" aria-hidden="true">
+        <div class="hp-scroll-line"></div>
+        <span>scroll</span>
     </div>
 </section>
 
-<!-- ══ FEATURES ══ -->
-<section class="ph-features">
-    <div class="container">
-        <div class="ph-section-head" data-reveal="fade-up">
-            <p class="ph-eyebrow">Why DealDrop</p>
-            <h2 class="ph-stitle">Everything You Need to Shop Smarter</h2>
-        </div>
-        <div class="ph-feat-grid">
-            <div class="ph-feat-card" data-reveal="fade-up" style="--rv-delay:0s">
-                <div class="ph-feat-icon" style="background:linear-gradient(135deg,#7c3aed,#a855f7)">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                </div>
-                <h3>Real-Time Deals</h3>
-                <p>Price drops updated every hour from Amazon, Walmart, Target &amp; Best Buy.</p>
-                <span class="ph-feat-arrow">→</span>
-            </div>
-            <div class="ph-feat-card" data-reveal="fade-up" style="--rv-delay:0.1s">
-                <div class="ph-feat-icon" style="background:linear-gradient(135deg,#db2777,#f472b6)">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                </div>
-                <h3>Trusted &amp; Safe</h3>
-                <p>Every link goes directly to the official retailer. No middlemen, no surprises.</p>
-                <span class="ph-feat-arrow">→</span>
-            </div>
-            <div class="ph-feat-card" data-reveal="fade-up" style="--rv-delay:0.2s">
-                <div class="ph-feat-icon" style="background:linear-gradient(135deg,#0891b2,#22d3ee)">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-                </div>
-                <h3>Smart Discovery</h3>
-                <p>AI-curated picks tailored to your budget and preferences across all categories.</p>
-                <span class="ph-feat-arrow">→</span>
-            </div>
-            <div class="ph-feat-card" data-reveal="fade-up" style="--rv-delay:0.3s">
-                <div class="ph-feat-icon" style="background:linear-gradient(135deg,#d97706,#fbbf24)">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-                </div>
-                <h3>Price History</h3>
-                <p>See how prices have moved over time before you decide to buy.</p>
-                <span class="ph-feat-arrow">→</span>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ══ DEPARTMENT TILES ══ -->
-<section class="ph-depts" id="ph-depts">
-    <div class="container">
-        <div class="ph-section-head" data-reveal="fade-up">
-            <p class="ph-eyebrow">Browse Departments</p>
-            <h2 class="ph-stitle">Shop Your Category</h2>
-        </div>
-        <div class="ph-dept-grid">
-            <a class="ph-dept-tile" href="/category/Electronics" data-reveal="scale" style="--rv-delay:0s">
-                <div class="ph-dept-bg" style="background-image:url('https://images.unsplash.com/photo-1498049794561-7780e7231661?w=700&q=80&fit=crop&crop=center')"></div>
-                <div class="ph-dept-overlay"></div>
-                <div class="ph-dept-content">
-                    <div class="ph-dept-icon-wrap">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-                    </div>
-                    <h3>Electronics</h3>
-                    <p>Laptops, phones, audio &amp; more</p>
-                    <span class="ph-dept-cta">Shop Now →</span>
-                </div>
-            </a>
-            <a class="ph-dept-tile" href="/category/Fashion" data-reveal="scale" style="--rv-delay:0.1s">
-                <div class="ph-dept-bg" style="background-image:url('https://images.unsplash.com/photo-1483985988355-763728e1935b?w=700&q=80&fit=crop&crop=center')"></div>
-                <div class="ph-dept-overlay"></div>
-                <div class="ph-dept-content">
-                    <div class="ph-dept-icon-wrap">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.57a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.57a2 2 0 0 0-1.34-2.23z"/></svg>
-                    </div>
-                    <h3>Fashion</h3>
-                    <p>Women, Men &amp; Kids deals</p>
-                    <span class="ph-dept-cta">Shop Now →</span>
-                </div>
-            </a>
-            <a class="ph-dept-tile" href="/category/Books" data-reveal="scale" style="--rv-delay:0.2s">
-                <div class="ph-dept-bg" style="background-image:url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=700&q=80&fit=crop&crop=center')"></div>
-                <div class="ph-dept-overlay"></div>
-                <div class="ph-dept-content">
-                    <div class="ph-dept-icon-wrap">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-                    </div>
-                    <h3>Books</h3>
-                    <p>Bestsellers, textbooks &amp; more</p>
-                    <span class="ph-dept-cta">Shop Now →</span>
-                </div>
-            </a>
-            <a class="ph-dept-tile" href="/category/Home" data-reveal="scale" style="--rv-delay:0.3s">
-                <div class="ph-dept-bg" style="background-image:url('https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=700&q=80&fit=crop&crop=center')"></div>
-                <div class="ph-dept-overlay"></div>
-                <div class="ph-dept-content">
-                    <div class="ph-dept-icon-wrap">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                    </div>
-                    <h3>Home & Living</h3>
-                    <p>Furniture, décor & kitchen</p>
-                    <span class="ph-dept-cta">Shop Now →</span>
-                </div>
-            </a>
-            <a class="ph-dept-tile" href="/deals" data-reveal="scale" style="--rv-delay:0.4s">
-                <div class="ph-dept-bg" style="background-image:url('https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=700&q=80&fit=crop&crop=center')"></div>
-                <div class="ph-dept-overlay"></div>
-                <div class="ph-dept-content">
-                    <div class="ph-dept-icon-wrap">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                    </div>
-                    <h3>Hot Deals</h3>
-                    <p>Up to 60% off today only</p>
-                    <span class="ph-dept-cta">See Deals →</span>
-                </div>
-            </a>
-        </div>
-    </div>
-</section>
-
-<!-- ══ SERVICES TABS ══ -->
-<section class="ph-services">
-    <div class="container">
-        <div class="ph-section-head" data-reveal="fade-up">
-            <p class="ph-eyebrow">What We Offer</p>
-            <h2 class="ph-stitle">Everything You Need to Shop Smarter</h2>
-        </div>
-        <div class="services-tabs" data-reveal="fade-up" style="--rv-delay:0.15s">
-            <div class="stab-list" role="tablist">
-                <button class="stab active" data-tab="consulting" role="tab">Consulting</button>
-                <button class="stab" data-tab="audit"       role="tab">Audit</button>
-                <button class="stab" data-tab="integration" role="tab">Integration</button>
-                <button class="stab" data-tab="analytics"   role="tab">Analytics</button>
-            </div>
-            <div class="stab-panels">
-                <div class="stab-panel active" id="tab-consulting">
-                    <div class="stab-panel-inner">
-                        <div class="stab-content">
-                            <span class="stab-icon">🎯</span>
-                            <h3>Affiliate Consulting</h3>
-                            <p>Our team of affiliate marketing experts helps you identify the highest-converting products and strategies.</p>
-                            <ul class="stab-list-items">
-                                <li>Partner network strategy &amp; optimization</li>
-                                <li>Commission structure analysis</li>
-                                <li>Content &amp; placement recommendations</li>
-                                <li>Competitor benchmarking reports</li>
-                            </ul>
-                            <a href="/support" class="stab-cta">Get Started →</a>
-                        </div>
-                        <div class="stab-visual stab-visual-consulting"></div>
-                    </div>
-                </div>
-                <div class="stab-panel" id="tab-audit">
-                    <div class="stab-panel-inner">
-                        <div class="stab-content">
-                            <span class="stab-icon">🔍</span>
-                            <h3>Catalog Audit</h3>
-                            <p>We review your product listings end-to-end — checking accuracy, pricing competitiveness, image quality, and SEO metadata.</p>
-                            <ul class="stab-list-items">
-                                <li>Product data quality review</li>
-                                <li>Pricing vs. competitor analysis</li>
-                                <li>Image &amp; metadata compliance check</li>
-                                <li>Dead-link and affiliate URL validation</li>
-                            </ul>
-                            <a href="/support" class="stab-cta">Request Audit →</a>
-                        </div>
-                        <div class="stab-visual stab-visual-audit"></div>
-                    </div>
-                </div>
-                <div class="stab-panel" id="tab-integration">
-                    <div class="stab-panel-inner">
-                        <div class="stab-content">
-                            <span class="stab-icon">🔗</span>
-                            <h3>Retailer Integration</h3>
-                            <p>Connect your platform directly to Amazon, Walmart, Target, and Best Buy APIs. Automate product sync in real time.</p>
-                            <ul class="stab-list-items">
-                                <li>API-level retailer connections</li>
-                                <li>Real-time price &amp; stock sync</li>
-                                <li>Automated affiliate link generation</li>
-                                <li>Webhook &amp; event-based triggers</li>
-                            </ul>
-                            <a href="/support" class="stab-cta">Learn More →</a>
-                        </div>
-                        <div class="stab-visual stab-visual-integration"></div>
-                    </div>
-                </div>
-                <div class="stab-panel" id="tab-analytics">
-                    <div class="stab-panel-inner">
-                        <div class="stab-content">
-                            <span class="stab-icon">📊</span>
-                            <h3>Performance Analytics</h3>
-                            <p>Track clicks, conversions, revenue, and commissions across all retailers and categories with drill-down capabilities.</p>
-                            <ul class="stab-list-items">
-                                <li>Revenue &amp; commission dashboards</li>
-                                <li>Click-through &amp; conversion tracking</li>
-                                <li>Category &amp; product-level insights</li>
-                                <li>Scheduled email reports</li>
-                            </ul>
-                            <a href="/support" class="stab-cta">View Demo →</a>
-                        </div>
-                        <div class="stab-visual stab-visual-analytics"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ══ COUNTERS (dark) ══ -->
-<section class="ph-counters">
-    <div class="ph-counters-bg" aria-hidden="true">
-        <div class="ph-co-orb ph-co-orb-1"></div>
-        <div class="ph-co-orb ph-co-orb-2"></div>
-    </div>
-    <div class="container ph-counters-grid">
-        <div class="ph-counter" data-reveal="fade-up" style="--rv-delay:0s">
-            <span class="ph-counter-num" data-target="10000" data-suffix="+">0</span>
-            <span class="ph-counter-label">Products Listed</span>
-        </div>
-        <div class="ph-counter-div"></div>
-        <div class="ph-counter" data-reveal="fade-up" style="--rv-delay:0.1s">
-            <span class="ph-counter-num" data-target="4" data-suffix="">0</span>
-            <span class="ph-counter-label">Trusted Retailers</span>
-        </div>
-        <div class="ph-counter-div"></div>
-        <div class="ph-counter" data-reveal="fade-up" style="--rv-delay:0.2s">
-            <span class="ph-counter-num" data-target="60" data-suffix="%">0</span>
-            <span class="ph-counter-label">Max Savings</span>
-        </div>
-        <div class="ph-counter-div"></div>
-        <div class="ph-counter" data-reveal="fade-up" style="--rv-delay:0.3s">
-            <span class="ph-counter-num" data-target="2400" data-suffix="+">0</span>
-            <span class="ph-counter-label">Happy Shoppers</span>
-        </div>
-    </div>
-</section>
-
-<!-- ══ FEATURED DEALS PREVIEW ══ -->
-<section class="ph-deals-preview">
-    <div class="container">
-        <div class="ph-deals-head" data-reveal="fade-up">
-            <div>
-                <p class="ph-eyebrow">Today's Best</p>
-                <h2 class="ph-stitle">Hot Deals Right Now</h2>
-            </div>
-            <a href="/deals" class="ph-see-all">View All Deals →</a>
-        </div>
-        <div class="ph-deals-row">
-            <div class="ph-deal-card" data-reveal="fade-up" style="--rv-delay:0s">
-                <div class="ph-deal-img">
-                    <img src="https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=500&q=80&fit=crop&crop=center" alt="Samsung Galaxy S24" loading="lazy">
-                    <span class="ph-deal-badge">-28%</span>
-                </div>
-                <div class="ph-deal-info">
-                    <span class="ph-deal-cat">Electronics</span>
-                    <h4>Samsung Galaxy S24</h4>
-                    <div class="ph-deal-price"><strong>$699</strong><del>$979</del></div>
-                    <a href="/deals" class="ph-deal-btn">Shop Now</a>
-                </div>
-            </div>
-            <div class="ph-deal-card" data-reveal="fade-up" style="--rv-delay:0.1s">
-                <div class="ph-deal-img">
-                    <img src="https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=500&q=80&fit=crop&crop=top" alt="Summer Dress Collection" loading="lazy">
-                    <span class="ph-deal-badge">-50%</span>
-                </div>
-                <div class="ph-deal-info">
-                    <span class="ph-deal-cat">Fashion</span>
-                    <h4>Summer Dress Collection</h4>
-                    <div class="ph-deal-price"><strong>$29.99</strong><del>$59.99</del></div>
-                    <a href="/deals" class="ph-deal-btn">Shop Now</a>
-                </div>
-            </div>
-            <div class="ph-deal-card" data-reveal="fade-up" style="--rv-delay:0.2s">
-                <div class="ph-deal-img">
-                    <img src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=500&q=80&fit=crop&crop=center" alt="Atomic Habits Book" loading="lazy">
-                    <span class="ph-deal-badge">-35%</span>
-                </div>
-                <div class="ph-deal-info">
-                    <span class="ph-deal-cat">Books</span>
-                    <h4>Atomic Habits — James Clear</h4>
-                    <div class="ph-deal-price"><strong>$9.99</strong><del>$15.99</del></div>
-                    <a href="/deals" class="ph-deal-btn">Shop Now</a>
-                </div>
-            </div>
-            <div class="ph-deal-card" data-reveal="fade-up" style="--rv-delay:0.3s">
-                <div class="ph-deal-img">
-                    <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80&fit=crop&crop=center" alt="Sony WH-1000XM5" loading="lazy">
-                    <span class="ph-deal-badge">-24%</span>
-                </div>
-                <div class="ph-deal-info">
-                    <span class="ph-deal-cat">Electronics</span>
-                    <h4>Sony WH-1000XM5</h4>
-                    <div class="ph-deal-price"><strong>$279</strong><del>$349</del></div>
-                    <a href="/deals" class="ph-deal-btn">Shop Now</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ══ TESTIMONIALS ══ -->
-<section class="ph-testi">
-    <div class="container">
-        <div class="ph-section-head" data-reveal="fade-up">
-            <p class="ph-eyebrow">What Shoppers Say</p>
-            <h2 class="ph-stitle">Loved by Deal Hunters</h2>
-        </div>
-        <div class="ph-testi-grid">
-            <div class="ph-testi-card" data-reveal="fade-up" style="--rv-delay:0s">
-                <div class="ph-testi-quote">&ldquo;</div>
-                <p class="ph-testi-text">Found a laptop $200 cheaper than on the retailer's own homepage. DealDrop is the first place I check now.</p>
-                <div class="ph-testi-stars">★★★★★</div>
-                <div class="ph-testi-author">
-                    <img class="ph-testi-av" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&q=80&fit=crop&crop=face" alt="Marcus T." loading="lazy">
-                    <div>
-                        <strong>Marcus T.</strong>
-                        <span>Electronics shopper</span>
-                    </div>
-                </div>
-            </div>
-            <div class="ph-testi-card ph-testi-featured" data-reveal="fade-up" style="--rv-delay:0.12s">
-                <div class="ph-testi-quote">&ldquo;</div>
-                <p class="ph-testi-text">The fashion section is incredible. I got brand-name clothes at 40% off — all with direct retailer links. Absolutely love it.</p>
-                <div class="ph-testi-stars">★★★★★</div>
-                <div class="ph-testi-author">
-                    <img class="ph-testi-av" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&q=80&fit=crop&crop=face" alt="Priya K." loading="lazy">
-                    <div>
-                        <strong>Priya K.</strong>
-                        <span>Fashion deals</span>
-                    </div>
-                </div>
-            </div>
-            <div class="ph-testi-card" data-reveal="fade-up" style="--rv-delay:0.24s">
-                <div class="ph-testi-quote">&ldquo;</div>
-                <p class="ph-testi-text">Clean interface, real savings. I use the AI copilot to find gifts under $50 for family. Works every time.</p>
-                <div class="ph-testi-stars">★★★★☆</div>
-                <div class="ph-testi-author">
-                    <img class="ph-testi-av" src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=80&q=80&fit=crop&crop=face" alt="Jordan W." loading="lazy">
-                    <div>
-                        <strong>Jordan W.</strong>
-                        <span>Gift finder</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Video Modal -->
-<div class="video-modal" id="videoModal" aria-hidden="true">
-    <div class="vm-backdrop" id="vmBackdrop"></div>
-    <div class="vm-box">
-        <button class="vm-close" id="vmClose" aria-label="Close video">×</button>
-        <div class="vm-embed">
-            <div class="vm-placeholder">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-                <p>Product demo video coming soon</p>
-            </div>
-        </div>
+<!-- ══════════════════════════════════════════
+     MARQUEE TRUST STRIP
+══════════════════════════════════════════ -->
+<div class="hp-marquee-strip">
+    <div class="hp-marquee-track">
+        <span class="hp-mlogo">amazon</span><span class="hp-mdot">·</span>
+        <span class="hp-mlogo">walmart</span><span class="hp-mdot">·</span>
+        <span class="hp-mlogo">target</span><span class="hp-mdot">·</span>
+        <span class="hp-mlogo">best buy</span><span class="hp-mdot">·</span>
+        <span class="hp-mlogo">paypal</span><span class="hp-mdot">·</span>
+        <span class="hp-mlogo">stripe</span><span class="hp-mdot">·</span>
+        <span class="hp-mlogo">google</span><span class="hp-mdot">·</span>
+        <span class="hp-mlogo">shopify</span><span class="hp-mdot">·</span>
+        <!-- duplicate -->
+        <span class="hp-mlogo" aria-hidden="true">amazon</span><span class="hp-mdot" aria-hidden="true">·</span>
+        <span class="hp-mlogo" aria-hidden="true">walmart</span><span class="hp-mdot" aria-hidden="true">·</span>
+        <span class="hp-mlogo" aria-hidden="true">target</span><span class="hp-mdot" aria-hidden="true">·</span>
+        <span class="hp-mlogo" aria-hidden="true">best buy</span><span class="hp-mdot" aria-hidden="true">·</span>
+        <span class="hp-mlogo" aria-hidden="true">paypal</span><span class="hp-mdot" aria-hidden="true">·</span>
+        <span class="hp-mlogo" aria-hidden="true">stripe</span><span class="hp-mdot" aria-hidden="true">·</span>
+        <span class="hp-mlogo" aria-hidden="true">google</span><span class="hp-mdot" aria-hidden="true">·</span>
+        <span class="hp-mlogo" aria-hidden="true">shopify</span><span class="hp-mdot" aria-hidden="true">·</span>
     </div>
 </div>
+
+<!-- ══════════════════════════════════════════
+     BENTO CATEGORY GRID
+══════════════════════════════════════════ -->
+<section class="hp-bento-section">
+    <div class="hp-container">
+        <div class="hp-section-label" data-reveal="fade-up">
+            <span class="hp-eyebrow">Browse by Category</span>
+            <h2 class="hp-section-title">Everything You Love,<br>One Place.</h2>
+        </div>
+
+        <div class="hp-bento" data-reveal="fade-up" style="--rv-delay:0.1s">
+            <!-- Electronics — large -->
+            <a href="/category/Electronics" class="hp-bento-tile hp-bt-lg hp-bt-dark">
+                <div class="hp-bt-bg" style="background-image:url('https://images.unsplash.com/photo-1498049794561-7780e7231661?w=900&q=85&fit=crop&crop=center')"></div>
+                <div class="hp-bt-glass"></div>
+                <div class="hp-bt-content">
+                    <span class="hp-bt-tag">Electronics</span>
+                    <h3>Laptops, Phones<br>&amp; Audio</h3>
+                    <span class="hp-bt-cta">Shop Now <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                </div>
+                <div class="hp-bt-badge">Up to 40% off</div>
+            </a>
+
+            <!-- Fashion — tall -->
+            <a href="/category/Fashion" class="hp-bento-tile hp-bt-tall hp-bt-dark">
+                <div class="hp-bt-bg" style="background-image:url('https://images.unsplash.com/photo-1483985988355-763728e1935b?w=700&q=85&fit=crop&crop=center')"></div>
+                <div class="hp-bt-glass"></div>
+                <div class="hp-bt-content">
+                    <span class="hp-bt-tag">Fashion</span>
+                    <h3>Women, Men<br>&amp; Kids</h3>
+                    <span class="hp-bt-cta">Shop Now <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                </div>
+                <div class="hp-bt-badge">−50%</div>
+            </a>
+
+            <!-- Deals — accent -->
+            <a href="/deals" class="hp-bento-tile hp-bt-accent">
+                <div class="hp-bt-content">
+                    <span class="hp-bt-emoji">🔥</span>
+                    <h3>Hot Deals</h3>
+                    <p>Up to 60% off — today only</p>
+                    <span class="hp-bt-cta hp-bt-cta-dark">See All Deals <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                </div>
+            </a>
+
+            <!-- Books -->
+            <a href="/category/Books" class="hp-bento-tile hp-bt-dark">
+                <div class="hp-bt-bg" style="background-image:url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=700&q=85&fit=crop&crop=center')"></div>
+                <div class="hp-bt-glass"></div>
+                <div class="hp-bt-content">
+                    <span class="hp-bt-tag">Books</span>
+                    <h3>Bestsellers</h3>
+                    <span class="hp-bt-cta">Shop Now <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                </div>
+            </a>
+
+            <!-- Home -->
+            <a href="/category/Home" class="hp-bento-tile hp-bt-dark">
+                <div class="hp-bt-bg" style="background-image:url('https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=700&q=85&fit=crop&crop=center')"></div>
+                <div class="hp-bt-glass"></div>
+                <div class="hp-bt-content">
+                    <span class="hp-bt-tag">Home &amp; Living</span>
+                    <h3>Décor &amp; Kitchen</h3>
+                    <span class="hp-bt-cta">Shop Now <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                </div>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     STATS STRIP
+══════════════════════════════════════════ -->
+<section class="hp-stats-strip">
+    <div class="hp-container">
+        <div class="hp-stats-grid">
+            <div class="hp-stat-block" data-reveal="fade-up" style="--rv-delay:0s">
+                <span class="hp-stat-num" data-target="10000" data-suffix="+">0</span>
+                <span class="hp-stat-lbl">Products Listed</span>
+            </div>
+            <div class="hp-stat-div"></div>
+            <div class="hp-stat-block" data-reveal="fade-up" style="--rv-delay:0.08s">
+                <span class="hp-stat-num" data-target="4" data-suffix="">0</span>
+                <span class="hp-stat-lbl">Trusted Retailers</span>
+            </div>
+            <div class="hp-stat-div"></div>
+            <div class="hp-stat-block" data-reveal="fade-up" style="--rv-delay:0.16s">
+                <span class="hp-stat-num" data-target="60" data-suffix="%">0</span>
+                <span class="hp-stat-lbl">Max Savings</span>
+            </div>
+            <div class="hp-stat-div"></div>
+            <div class="hp-stat-block" data-reveal="fade-up" style="--rv-delay:0.24s">
+                <span class="hp-stat-num" data-target="2400" data-suffix="+">0</span>
+                <span class="hp-stat-lbl">Happy Shoppers</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     PRODUCTS SECTION
+══════════════════════════════════════════ -->
+<section class="hp-products-section" id="hp-products">
+    <div class="hp-container">
+        <div class="hp-products-head" data-reveal="fade-up">
+            <div>
+                <span class="hp-eyebrow">Live Catalog</span>
+                <h2 class="hp-section-title">Today's Picks</h2>
+            </div>
+            <a href="/deals" class="hp-see-all">View All Deals →</a>
+        </div>
+
+        <!-- Filter bar -->
+        <div class="hp-filter-bar" data-reveal="fade-up" style="--rv-delay:0.1s">
+            <div class="hp-filter-search">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="searchInput" placeholder="Search products…" autocomplete="off">
+            </div>
+            <select id="categoryFilter" class="hp-filter-select">
+                <option value="">All Categories</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Fashion">Fashion</option>
+                <option value="Books">Books</option>
+                <option value="Home">Home</option>
+            </select>
+            <select id="sortFilter" class="hp-filter-select">
+                <option value="newest">Newest</option>
+                <option value="price_asc">Price: Low–High</option>
+                <option value="price_desc">Price: High–Low</option>
+                <option value="rating">Top Rated</option>
+            </select>
+            <div class="hp-filter-chips">
+                <button class="quick-chip" data-filter-chip="deals">🔥 Deals only</button>
+                <button class="quick-chip" data-filter-chip="rating">★ 4+ Stars</button>
+            </div>
+            <div class="hp-price-range">
+                <input type="number" id="minPriceFilter" placeholder="Min $" min="0">
+                <span>–</span>
+                <input type="number" id="maxPriceFilter" placeholder="Max $" min="0">
+            </div>
+        </div>
+
+        <div id="activeFiltersBar"></div>
+        <div id="productsGrid" class="hp-products-grid"></div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     FEATURES — 3 icon cards
+══════════════════════════════════════════ -->
+<section class="hp-features-section">
+    <div class="hp-container">
+        <div class="hp-feat-grid" data-reveal="fade-up">
+            <div class="hp-feat-card" style="--fc-color:#7c3aed">
+                <div class="hp-feat-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                </div>
+                <h3>Real-Time Deals</h3>
+                <p>Price drops refreshed every hour from Amazon, Walmart, Target &amp; Best Buy. Never miss a flash sale.</p>
+            </div>
+            <div class="hp-feat-card" style="--fc-color:#db2777">
+                <div class="hp-feat-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <h3>Trusted &amp; Safe</h3>
+                <p>Every link goes directly to the official retailer. No middlemen, no hidden fees, no surprises.</p>
+            </div>
+            <div class="hp-feat-card" style="--fc-color:#0891b2">
+                <div class="hp-feat-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                </div>
+                <h3>Smart Discovery</h3>
+                <p>AI-curated picks tailored to your budget and preferences across all categories and retailers.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     TESTIMONIALS
+══════════════════════════════════════════ -->
+<section class="hp-testi-section">
+    <div class="hp-container">
+        <div class="hp-section-label" data-reveal="fade-up">
+            <span class="hp-eyebrow">Social Proof</span>
+            <h2 class="hp-section-title">Loved by Deal Hunters</h2>
+        </div>
+        <div class="hp-testi-grid">
+            <div class="hp-testi-card" data-reveal="fade-up" style="--rv-delay:0s">
+                <div class="hp-testi-stars">★★★★★</div>
+                <p>"Found a laptop $200 cheaper than on the retailer's own site. DealDrop is the first place I check now."</p>
+                <div class="hp-testi-author">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&q=80&fit=crop&crop=face" alt="Marcus T." loading="lazy">
+                    <div><strong>Marcus T.</strong><span>Electronics shopper</span></div>
+                </div>
+            </div>
+            <div class="hp-testi-card hp-testi-featured" data-reveal="fade-up" style="--rv-delay:0.12s">
+                <div class="hp-testi-stars">★★★★★</div>
+                <p>"The fashion section is incredible. I got brand-name clothes at 40% off — all with direct retailer links. Absolutely love it."</p>
+                <div class="hp-testi-author">
+                    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&q=80&fit=crop&crop=face" alt="Priya K." loading="lazy">
+                    <div><strong>Priya K.</strong><span>Fashion deals</span></div>
+                </div>
+            </div>
+            <div class="hp-testi-card" data-reveal="fade-up" style="--rv-delay:0.24s">
+                <div class="hp-testi-stars">★★★★☆</div>
+                <p>"Clean interface, real savings. I use the AI copilot to find gifts under $50 for family. Works every time."</p>
+                <div class="hp-testi-author">
+                    <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=80&q=80&fit=crop&crop=face" alt="Jordan W." loading="lazy">
+                    <div><strong>Jordan W.</strong><span>Gift finder</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     CTA / NEWSLETTER
+══════════════════════════════════════════ -->
+<section class="hp-cta-section" data-reveal="fade-up">
+    <div class="hp-container">
+        <div class="hp-cta-inner">
+            <div class="hp-cta-copy">
+                <h2>Never Miss a Deal Again</h2>
+                <p>Get the best discounts delivered to your inbox every week — zero spam, unsubscribe anytime.</p>
+            </div>
+            <form class="hp-cta-form" id="hpNewsletterForm">
+                <input type="email" id="hpNewsletterEmail" placeholder="Enter your email address" required>
+                <button type="submit">Subscribe Free</button>
+                <p class="hp-cta-note" id="hpNewsletterMsg"></p>
+            </form>
+        </div>
+    </div>
+</section>
 
 {% endblock %}
 
 {% block extra_scripts %}
 <script>
-/* ═══════════════════════════════════════════
-   PREMIUM HOME — Animation Engine
-   ═══════════════════════════════════════════ */
-
-/* ── 1. Scroll Reveal System ── */
-(function() {
+/* ═══════════════════
+   SCROLL REVEAL
+═══════════════════ */
+(function () {
     const obs = new IntersectionObserver((entries) => {
         entries.forEach(e => {
-            if (e.isIntersecting) {
-                e.target.classList.add('rv-in');
-                obs.unobserve(e.target);
-            }
+            if (e.isIntersecting) { e.target.classList.add('rv-in'); obs.unobserve(e.target); }
         });
     }, { threshold: 0.06, rootMargin: '0px 0px -30px 0px' });
 
-    // Observe all data-reveal elements across full page (including base.html sections)
     document.querySelectorAll('[data-reveal]').forEach(el => obs.observe(el));
 
-    // Auto-add stagger reveal to footer columns
     document.querySelectorAll('.mf-col, .mf-brand-col').forEach((el, i) => {
         el.setAttribute('data-reveal', 'fade-up');
         el.style.setProperty('--rv-delay', (i * 0.08) + 's');
         obs.observe(el);
     });
-
-    // Animate mega-footer top section as a whole
-    const mfTop = document.querySelector('.mf-top');
-    if (mfTop) { mfTop.setAttribute('data-reveal', 'fade-up'); obs.observe(mfTop); }
-
-    const mfBottom = document.querySelector('.mf-bottom');
-    if (mfBottom) { mfBottom.setAttribute('data-reveal', 'fade-up'); mfBottom.style.setProperty('--rv-delay', '0.2s'); obs.observe(mfBottom); }
+    ['mf-top', 'mf-bottom'].forEach(id => {
+        const el = document.querySelector('.' + id);
+        if (el) { el.setAttribute('data-reveal', 'fade-up'); obs.observe(el); }
+    });
 })();
 
-/* ── 2. Parallax Orbs ── */
-(function() {
-    const orbs = document.querySelectorAll('.ph-orb');
+/* ═══════════════════
+   PARALLAX ORBS
+═══════════════════ */
+(function () {
+    const orbs = document.querySelectorAll('.hp-orb');
     if (!orbs.length) return;
     let ticking = false;
     window.addEventListener('scroll', () => {
@@ -536,8 +417,10 @@
     }, { passive: true });
 })();
 
-/* ── 3. Navbar shrink on scroll ── */
-(function() {
+/* ═══════════════════
+   NAVBAR SHRINK
+═══════════════════ */
+(function () {
     const nav = document.querySelector('.navbar');
     if (!nav) return;
     window.addEventListener('scroll', () => {
@@ -545,8 +428,10 @@
     }, { passive: true });
 })();
 
-/* ── 4. Animated Counters ── */
-(function() {
+/* ═══════════════════
+   COUNTERS
+═══════════════════ */
+(function () {
     function runCounter(el) {
         const target = parseInt(el.dataset.target, 10);
         const suffix = el.dataset.suffix || '';
@@ -569,40 +454,44 @@
             }
         });
     }, { threshold: 0.5 });
-    document.querySelectorAll('.ph-counter-num').forEach(el => obs.observe(el));
+    document.querySelectorAll('.hp-stat-num').forEach(el => obs.observe(el));
 })();
 
-/* ── 5. Services Tabs ── */
-document.querySelectorAll('.stab').forEach(btn => {
-    btn.addEventListener('click', () => {
-        document.querySelectorAll('.stab').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.stab-panel').forEach(p => p.classList.remove('active'));
-        btn.classList.add('active');
-        const panel = document.getElementById('tab-' + btn.dataset.tab);
-        if (panel) panel.classList.add('active');
-    });
-});
-
-/* ── 6. Video Modal ── */
-const modal = document.getElementById('videoModal');
-const close = () => { modal?.classList.remove('open'); modal?.setAttribute('aria-hidden','true'); };
-document.getElementById('vmClose')?.addEventListener('click', close);
-document.getElementById('vmBackdrop')?.addEventListener('click', close);
-document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
-
-/* ── 7. Hero card tilt on mouse ── */
-(function() {
-    document.querySelectorAll('.ph-card').forEach(card => {
+/* ═══════════════════
+   HERO CARD 3D TILT
+═══════════════════ */
+(function () {
+    document.querySelectorAll('.hp-visual-card').forEach(card => {
         card.addEventListener('mousemove', e => {
             const r = card.getBoundingClientRect();
             const x = (e.clientX - r.left) / r.width  - 0.5;
             const y = (e.clientY - r.top)  / r.height - 0.5;
-            card.style.transform = `perspective(600px) rotateY(${x * 8}deg) rotateX(${-y * 6}deg) translateZ(8px)`;
+            card.style.transform = `perspective(700px) rotateY(${x * 10}deg) rotateX(${-y * 7}deg) translateZ(10px) scale(1.03)`;
         });
-        card.addEventListener('mouseleave', () => {
-            card.style.transform = '';
-        });
+        card.addEventListener('mouseleave', () => { card.style.transform = ''; });
     });
 })();
+
+/* ═══════════════════
+   NEWSLETTER FORM
+═══════════════════ */
+document.getElementById('hpNewsletterForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('hpNewsletterEmail')?.value.trim();
+    const msgEl = document.getElementById('hpNewsletterMsg');
+    const btn = e.target.querySelector('button');
+    if (!email) return;
+    btn.disabled = true; btn.textContent = 'Subscribing…';
+    try {
+        const r = await fetch('/api/newsletter/subscribe', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+        });
+        const d = await r.json().catch(() => ({}));
+        msgEl.style.color = r.ok ? '#86efac' : '#fca5a5';
+        msgEl.textContent = r.ok ? "🎉 You're subscribed!" : (d.error || 'Try again.');
+    } catch { msgEl.style.color = '#fca5a5'; msgEl.textContent = 'Something went wrong.'; }
+    finally { btn.disabled = false; btn.textContent = 'Subscribe Free'; }
+});
 </script>
 {% endblock %}
