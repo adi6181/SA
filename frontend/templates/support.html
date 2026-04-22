@@ -159,5 +159,87 @@ document.getElementById('openLookupBtn')?.addEventListener('click', () => {
     document.getElementById('lookupPanel')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     setTimeout(() => document.getElementById('lookupTicketNumber')?.focus(), 600);
 });
+
+/* ── Contact form → API ── */
+document.getElementById('contactSupportForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const msg = document.getElementById('supportFormMessage');
+    const btn = e.target.querySelector('button[type="submit"]');
+    const name    = document.getElementById('supportName')?.value.trim();
+    const email   = document.getElementById('supportEmail')?.value.trim();
+    const subject = document.getElementById('supportSubject')?.value.trim();
+    const message = document.getElementById('supportMessage')?.value.trim();
+    const cat     = document.getElementById('supportCategory')?.value;
+    const fullSubject = cat ? `[${cat}] ${subject}` : subject;
+
+    if (!name || !email || !subject || !message) {
+        msg.style.color = '#dc2626';
+        msg.textContent = 'Please fill in all required fields.';
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Submitting…';
+    msg.textContent = '';
+
+    try {
+        const r = await fetch('/api/support/contact', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, subject: fullSubject, message, channel: 'contact_form' })
+        });
+        const d = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(d.error || 'Submission failed. Please try again.');
+
+        msg.style.color = '#059669';
+        msg.textContent = `Ticket ${d.ticket?.ticket_number || ''} created! We'll reply to ${email} shortly.`;
+        e.target.reset();
+    } catch (err) {
+        msg.style.color = '#dc2626';
+        msg.textContent = err.message;
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Create Ticket';
+    }
+});
+
+/* ── Ticket lookup → API ── */
+document.getElementById('ticketLookupForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const msgEl  = document.getElementById('ticketLookupMessage');
+    const btn    = e.target.querySelector('button[type="submit"]');
+    const number = document.getElementById('lookupTicketNumber')?.value.trim();
+    const email  = document.getElementById('lookupEmail')?.value.trim();
+
+    if (!number || !email) {
+        msgEl.style.color = '#dc2626';
+        msgEl.textContent = 'Enter your ticket number and email.';
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Checking…';
+    msgEl.textContent = '';
+
+    try {
+        const r = await fetch(`/api/support/tickets/${encodeURIComponent(number)}?email=${encodeURIComponent(email)}`);
+        const d = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(d.error || 'Ticket not found.');
+
+        const t = d;
+        const statusMap = { open: 'Open', in_progress: 'In Progress', resolved: 'Resolved', closed: 'Closed' };
+        msgEl.style.color = '#059669';
+        msgEl.innerHTML = `
+            <strong>${t.ticket_number}</strong> — ${t.subject}<br>
+            Status: <strong>${statusMap[t.status] || t.status}</strong><br>
+            Submitted: ${new Date(t.created_at).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' })}`;
+    } catch (err) {
+        msgEl.style.color = '#dc2626';
+        msgEl.textContent = err.message;
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Check Status';
+    }
+});
 </script>
 {% endblock %}
