@@ -89,6 +89,12 @@ $('sidebarToggle')?.addEventListener('click', () => {
     shell.classList.toggle('collapsed');
 });
 
+const PAGE_TITLES = {
+    dashboard: 'Dashboard', clients: 'Clients', schedule: 'Schedule',
+    products: 'Products', reviews: 'Review Moderation',
+    tickets: 'Support Tickets', settings: 'Settings'
+};
+
 function showSection(name) {
     document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.asb-item').forEach(b => b.classList.remove('active'));
@@ -96,6 +102,8 @@ function showSection(name) {
     if (sec) sec.classList.add('active');
     const btn = document.querySelector(`.asb-item[data-section="${name}"]`);
     if (btn) btn.classList.add('active');
+    const titleEl = $('atbPageTitle');
+    if (titleEl) titleEl.textContent = PAGE_TITLES[name] || name.charAt(0).toUpperCase() + name.slice(1);
 
     // Lazy-load section data
     if (name === 'schedule') renderSchedule();
@@ -113,11 +121,25 @@ $('asbNav')?.addEventListener('click', (e) => {
 function unlockDashboard() {
     loginPanel?.classList.add('hidden');
     dashboardPanel?.classList.remove('hidden');
+    const topbar = $('adminTopbar');
+    if (topbar) topbar.style.display = '';
     showSection('dashboard');
     loadDashboard();
     loadProducts();
     loadPendingReviews();
     loadSupportTickets();
+    startTopbarClock();
+}
+
+function startTopbarClock() {
+    const el = $('atbClock');
+    if (!el) return;
+    const tick = () => {
+        const now = new Date();
+        el.textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    };
+    tick();
+    setInterval(tick, 1000);
 }
 
 async function init() {
@@ -631,14 +653,14 @@ productForm?.addEventListener('submit', async (e) => {
             setMsg(formMessage, 'Product created.', 'success');
             productForm.reset();
             productIdField.value = '';
-            formTitle.textContent = 'Create Product';
+            formTitle.textContent = 'New Product'; const _b = $('pfEditBadge'); if (_b) _b.style.display = 'none';
             loadProducts(); loadStats();
             showSection('dashboard');
             return;
         }
         productForm.reset();
         productIdField.value = '';
-        formTitle.textContent = 'Create Product';
+        formTitle.textContent = 'New Product'; const _b = $('pfEditBadge'); if (_b) _b.style.display = 'none';
         loadProducts(); loadStats();
     } catch (e) { setMsg(formMessage, e.message, 'error'); }
 });
@@ -646,8 +668,11 @@ productForm?.addEventListener('submit', async (e) => {
 $('resetBtn')?.addEventListener('click', () => {
     productForm.reset();
     productIdField.value = '';
-    formTitle.textContent = 'Create Product';
-    setMsg(formMessage, 'Form cleared.', 'info');
+    formTitle.textContent = 'New Product';
+    const badge = $('pfEditBadge');
+    if (badge) badge.style.display = 'none';
+    updateImagePreview('');
+    setMsg(formMessage, '', '');
 });
 
 $('refreshBtn')?.addEventListener('click', loadProducts);
@@ -670,7 +695,8 @@ function collectPayload() {
         deal_price:     fields.deal_price.value,
         original_price: fields.original_price.value
     };
-    const urls = fields.image_urls.value.split(',').map(v => v.trim()).filter(Boolean);
+    const imageUrlsEl = document.getElementById('image_urls');
+    const urls = (imageUrlsEl?.value || '').split(',').map(v => v.trim()).filter(Boolean);
     if (urls.length) p.image_urls = urls;
     return p;
 }
@@ -689,7 +715,9 @@ function buildReqBody(payload) {
 
 function populateForm(p) {
     productIdField.value         = p.id;
-    formTitle.textContent        = `Edit Product #${p.id}`;
+    formTitle.textContent        = `Edit Product`;
+    const badge = $('pfEditBadge');
+    if (badge) badge.style.display = '';
     fields.name.value            = p.name || '';
     fields.description.value     = p.description || '';
     fields.price.value           = p.price || '';
@@ -698,12 +726,16 @@ function populateForm(p) {
     fields.merchant.value        = p.merchant || '';
     fields.affiliate_url.value   = p.affiliate_url || '';
     fields.image_url.value       = p.image_url || '';
-    fields.image_urls.value      = Array.isArray(p.image_urls) ? p.image_urls.join(', ') : '';
+    const imageUrlsEl = document.getElementById('image_urls');
+    if (imageUrlsEl) imageUrlsEl.value = Array.isArray(p.image_urls) ? p.image_urls.join(', ') : '';
     fields.rating.value          = p.rating || '';
     fields.review_count.value    = p.review_count || '';
     fields.deal_price.value      = p.deal_price || '';
     fields.original_price.value  = p.original_price || '';
     fields.is_deal.checked       = Boolean(p.is_deal);
+    updateImagePreview(p.image_url || '');
+    showSection('products');
+    $('pf-card')?.scrollIntoView?.({ behavior: 'smooth', block: 'start' });
 }
 
 async function createProduct(payload) {
@@ -735,28 +767,101 @@ async function loadProducts() {
     } catch (_) { productsList.innerHTML = '<p class="admin-message">Failed to load.</p>'; }
 }
 
+let _allProducts = [];
+
 function renderProducts(list) {
+    _allProducts = list;
+    _renderProductList(list);
+    const countEl = $('plCount');
+    if (countEl) countEl.textContent = list.length;
+}
+
+function _renderProductList(list) {
     if (!productsList) return;
-    if (!list.length) { productsList.innerHTML = '<p class="admin-message">No products found.</p>'; return; }
+    if (!list.length) {
+        productsList.innerHTML = '<p style="padding:20px;color:#9ca3af;font-size:0.85rem;text-align:center">No products found.</p>';
+        return;
+    }
     productsList.innerHTML = '';
     list.forEach(p => {
-        const card = document.createElement('div');
-        card.className = 'admin-item';
-        card.innerHTML = `
-            <h3>${p.name}</h3>
-            <p>${p.category || 'Uncategorized'} · $${Number(p.price || 0).toFixed(2)}</p>
-            <p>${(p.description || '').slice(0, 90)}</p>
-            <div class="admin-item-actions">
-                <button data-action="edit">Edit</button>
-                <button class="secondary" data-action="delete">Delete</button>
+        const imgSrc = p.image_url || (Array.isArray(p.image_urls) && p.image_urls[0]) || '';
+        const item = document.createElement('div');
+        item.className = 'pl-item';
+        item.innerHTML = `
+            <div class="pl-thumb">
+                ${imgSrc
+                    ? `<img src="${imgSrc}" alt="" loading="lazy" onerror="this.parentElement.innerHTML='🛍️'">`
+                    : '🛍️'}
+            </div>
+            <div class="pl-info">
+                <div class="pl-name">${p.name || 'Unnamed'}</div>
+                <div class="pl-meta">
+                    ${p.category ? `<span class="pl-cat">${p.category}</span>` : ''}
+                    <span class="pl-price">$${Number(p.price || 0).toFixed(2)}</span>
+                    ${p.is_deal || p.deal_price ? '<span class="pl-deal-tag">Deal</span>' : ''}
+                </div>
+            </div>
+            <div class="pl-actions">
+                <button class="pl-btn-edit" data-action="edit">Edit</button>
+                <button class="pl-btn-delete" data-action="delete">✕</button>
             </div>`;
-        card.querySelector('[data-action="edit"]').addEventListener('click', () => {
-            populateForm(p); showSection('products');
+        item.querySelector('[data-action="edit"]').addEventListener('click', (e) => {
+            e.stopPropagation();
+            populateForm(p);
         });
-        card.querySelector('[data-action="delete"]').addEventListener('click', () => deleteProduct(p));
-        productsList.appendChild(card);
+        item.querySelector('[data-action="delete"]').addEventListener('click', (e) => {
+            e.stopPropagation();
+            deleteProduct(p);
+        });
+        productsList.appendChild(item);
     });
 }
+
+// Product list search
+document.getElementById('plSearch')?.addEventListener('input', (e) => {
+    const q = e.target.value.toLowerCase().trim();
+    _renderProductList(q ? _allProducts.filter(p =>
+        (p.name || '').toLowerCase().includes(q) ||
+        (p.category || '').toLowerCase().includes(q) ||
+        (p.merchant || '').toLowerCase().includes(q)
+    ) : _allProducts);
+});
+
+// Image preview on URL input
+function updateImagePreview(url) {
+    const preview = $('pfImagePreview');
+    const img = $('pfPreviewImg');
+    const noImg = $('pfNoImage');
+    if (!preview || !img || !noImg) return;
+    if (url && url.startsWith('http')) {
+        img.src = url;
+        img.style.display = 'block';
+        noImg.style.display = 'none';
+        preview.classList.add('has-image');
+        img.onerror = () => {
+            img.style.display = 'none';
+            noImg.style.display = '';
+            preview.classList.remove('has-image');
+        };
+    } else {
+        img.style.display = 'none';
+        img.src = '';
+        noImg.style.display = '';
+        preview.classList.remove('has-image');
+    }
+}
+
+document.getElementById('image_url')?.addEventListener('input', (e) => {
+    updateImagePreview(e.target.value.trim());
+});
+
+document.getElementById('image_file')?.addEventListener('change', (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => updateImagePreview(ev.target.result);
+    reader.readAsDataURL(file);
+});
 
 // ════════════════════════
 // REVIEWS
