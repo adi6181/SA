@@ -680,7 +680,8 @@ function displayProducts(products) {
 
 function createProductCard(product, index) {
     const card = document.createElement('div');
-    card.className = 'product-card';
+    const animVariant = index % 6;
+    card.className = `product-card img-anim-${animVariant}`;
     card.style.setProperty('--reveal-delay', `${index * 0.05}s`);
     card.dataset.productId = String(product.id);
     card.dataset.productName = product.name || '';

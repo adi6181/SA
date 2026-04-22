@@ -1022,8 +1022,7 @@ body::before {
     overflow: hidden;
     transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
     cursor: pointer;
-    animation: cardReveal 0.4s ease both;
-    animation-delay: var(--reveal-delay, 0s);
+    /* entrance & image animations handled per-variant via .img-anim-N */
     display: flex;
     flex-direction: column;
 }
@@ -8950,3 +8949,111 @@ img.ph-testi-av {
     color: var(--purple);
     padding: 0 10px 10px;
 }
+
+/* ════════════════════════════════════════════════════
+   IMAGE ANIMATIONS — 6 distinct styles cycling across cards
+════════════════════════════════════════════════════ */
+
+/* 1. Float — gentle up/down bob */
+@keyframes imgFloat {
+    0%,100% { transform: translateY(0) scale(1); }
+    50%      { transform: translateY(-8px) scale(1.03); }
+}
+/* 2. Drift — slow diagonal drift */
+@keyframes imgDrift {
+    0%,100% { transform: translate(0,0) scale(1); }
+    33%     { transform: translate(6px,-5px) scale(1.04); }
+    66%     { transform: translate(-4px,4px) scale(1.02); }
+}
+/* 3. Breathe — soft scale pulse */
+@keyframes imgBreathe {
+    0%,100% { transform: scale(1); filter: brightness(1); }
+    50%      { transform: scale(1.06); filter: brightness(1.06); }
+}
+/* 4. Swing — pendulum rotate */
+@keyframes imgSwing {
+    0%,100% { transform: rotate(0deg) scale(1); }
+    25%     { transform: rotate(1.5deg) scale(1.02); }
+    75%     { transform: rotate(-1.5deg) scale(1.02); }
+}
+/* 5. Shimmer — brightness wave */
+@keyframes imgShimmer {
+    0%,100% { filter: brightness(1) saturate(1); transform: scale(1); }
+    40%     { filter: brightness(1.12) saturate(1.15); transform: scale(1.04); }
+    80%     { filter: brightness(0.96) saturate(0.95); transform: scale(1.01); }
+}
+/* 6. Zoom-pan — slow ken-burns style */
+@keyframes imgZoomPan {
+    0%   { transform: scale(1)    translateX(0); }
+    50%  { transform: scale(1.08) translateX(-4px); }
+    100% { transform: scale(1)    translateX(0); }
+}
+
+/* Apply to product-image inside each card variant */
+.img-anim-0 .product-image { animation: imgFloat   7s ease-in-out infinite; }
+.img-anim-1 .product-image { animation: imgDrift   9s ease-in-out infinite; }
+.img-anim-2 .product-image { animation: imgBreathe 5s ease-in-out infinite; }
+.img-anim-3 .product-image { animation: imgSwing   6s ease-in-out infinite; }
+.img-anim-4 .product-image { animation: imgShimmer 8s ease-in-out infinite; }
+.img-anim-5 .product-image { animation: imgZoomPan 11s ease-in-out infinite; }
+
+/* On hover pause the ambient and do a distinct pop */
+.img-anim-0:hover .product-image { animation-play-state: paused; transform: scale(1.08) translateY(-4px); }
+.img-anim-1:hover .product-image { animation-play-state: paused; transform: scale(1.09) rotate(1deg); }
+.img-anim-2:hover .product-image { animation-play-state: paused; transform: scale(1.11); filter: brightness(1.1); }
+.img-anim-3:hover .product-image { animation-play-state: paused; transform: scale(1.08) rotate(-2deg); }
+.img-anim-4:hover .product-image { animation-play-state: paused; transform: scale(1.1); filter: brightness(1.15) saturate(1.2); }
+.img-anim-5:hover .product-image { animation-play-state: paused; transform: scale(1.12) translateX(-3px); }
+
+/* Card entrance — 6 different directions */
+@keyframes cardFromLeft   { from { opacity:0; transform: translateX(-28px); } to { opacity:1; transform: translateX(0); } }
+@keyframes cardFromRight  { from { opacity:0; transform: translateX(28px);  } to { opacity:1; transform: translateX(0); } }
+@keyframes cardFromBottom { from { opacity:0; transform: translateY(28px);  } to { opacity:1; transform: translateY(0); } }
+@keyframes cardZoomIn     { from { opacity:0; transform: scale(0.88);       } to { opacity:1; transform: scale(1);    } }
+@keyframes cardTiltIn     { from { opacity:0; transform: rotate(-3deg) scale(0.92); } to { opacity:1; transform: rotate(0) scale(1); } }
+@keyframes cardDropIn     { from { opacity:0; transform: translateY(-24px); } to { opacity:1; transform: translateY(0); } }
+
+.img-anim-0 { animation: cardFromLeft   0.45s ease both; animation-delay: var(--reveal-delay,0s); }
+.img-anim-1 { animation: cardFromBottom 0.45s ease both; animation-delay: var(--reveal-delay,0s); }
+.img-anim-2 { animation: cardFromRight  0.45s ease both; animation-delay: var(--reveal-delay,0s); }
+.img-anim-3 { animation: cardZoomIn     0.45s ease both; animation-delay: var(--reveal-delay,0s); }
+.img-anim-4 { animation: cardTiltIn     0.45s ease both; animation-delay: var(--reveal-delay,0s); }
+.img-anim-5 { animation: cardDropIn     0.45s ease both; animation-delay: var(--reveal-delay,0s); }
+
+/* ── Department tile ken-burns (each tile unique direction) ── */
+.ph-dept-bg { transition: transform 0.6s ease; }
+
+@keyframes kbZoomIn       { from { transform: scale(1);    } to { transform: scale(1.12); } }
+@keyframes kbZoomPanRight { from { transform: scale(1.08) translateX(-4%); } to { transform: scale(1.14) translateX(2%); } }
+@keyframes kbZoomPanUp    { from { transform: scale(1.06) translateY(3%);  } to { transform: scale(1.13) translateY(-3%); } }
+@keyframes kbZoomPanLeft  { from { transform: scale(1.08) translateX(4%);  } to { transform: scale(1.14) translateX(-2%); } }
+@keyframes kbZoomPanDown  { from { transform: scale(1.06) translateY(-3%); } to { transform: scale(1.13) translateY(3%); } }
+
+.ph-dept-tile:nth-child(1) .ph-dept-bg { animation: kbZoomIn       12s ease-in-out infinite alternate; }
+.ph-dept-tile:nth-child(2) .ph-dept-bg { animation: kbZoomPanRight  14s ease-in-out infinite alternate; }
+.ph-dept-tile:nth-child(3) .ph-dept-bg { animation: kbZoomPanUp     13s ease-in-out infinite alternate; }
+.ph-dept-tile:nth-child(4) .ph-dept-bg { animation: kbZoomPanLeft   15s ease-in-out infinite alternate; }
+.ph-dept-tile:nth-child(5) .ph-dept-bg { animation: kbZoomPanDown   11s ease-in-out infinite alternate; }
+
+/* Stop ken-burns and zoom more on hover */
+.ph-dept-tile:hover .ph-dept-bg { animation-play-state: paused; transform: scale(1.18); transition: transform 0.5s ease; }
+
+/* ── Hero product cards — different float timings & transforms ── */
+@keyframes heroCardFloat1 {
+    0%,100% { transform: translateY(0) rotate(0deg); }
+    50%     { transform: translateY(-12px) rotate(1deg); }
+}
+@keyframes heroCardFloat2 {
+    0%,100% { transform: translateY(0) rotate(0deg); }
+    40%     { transform: translateY(-8px) rotate(-1.5deg); }
+    70%     { transform: translateY(-14px) rotate(0.5deg); }
+}
+.ph-card-1 { animation: heroCardFloat1 5.5s ease-in-out infinite; }
+.ph-card-2 { animation: heroCardFloat2 7s   ease-in-out infinite 0.8s; }
+
+/* ── Hero card image — zoom on hover ── */
+.ph-card-img img {
+    transition: transform 0.5s ease, filter 0.5s ease;
+}
+.ph-card-1:hover .ph-card-img img { transform: scale(1.1) rotate(-1deg); filter: brightness(1.08); }
+.ph-card-2:hover .ph-card-img img { transform: scale(1.1) rotate(1deg);  filter: brightness(1.08); }
