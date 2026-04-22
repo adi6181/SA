@@ -16,6 +16,7 @@ except ImportError:
     BS4_AVAILABLE = False
 from app import db
 from app.models import Product, ProductImage, Review, ReviewHelpfulVote, Order, OrderItem, SupportTicket
+from app.services import send_ticket_status_update_email
 
 # Blueprint for products
 products_bp = Blueprint('products', __name__)
@@ -820,9 +821,12 @@ def admin_update_ticket_status(ticket_id):
     if next_status not in {'open', 'in_progress', 'resolved', 'closed'}:
         return jsonify({'error': 'Invalid status'}), 400
 
+    admin_note = (data.get('admin_note') or '').strip()
     ticket.status = next_status
     db.session.commit()
-    return jsonify({'ok': True, 'ticket': ticket.to_dict()}), 200
+
+    email_sent = send_ticket_status_update_email(ticket, next_status, admin_note or None)
+    return jsonify({'ok': True, 'ticket': ticket.to_dict(), 'email_sent': email_sent}), 200
 
 
 @admin_bp.route('/import-url', methods=['POST'])

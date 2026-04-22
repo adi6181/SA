@@ -1031,16 +1031,30 @@ function _openTicketPanel(t) {
         aiEl.textContent = '';
     }
 
+    // Clear reply note
+    const noteEl = $('tkAdminNote');
+    if (noteEl) noteEl.value = '';
+
     $('tkPanelActions').innerHTML = `
         <button class="tk-btn-open"     data-status="open">Mark Open</button>
         <button class="tk-btn-progress" data-status="in_progress">In Progress</button>
         <button class="tk-btn-resolve"  data-status="resolved">Resolve</button>
-        <button class="tk-btn-close-t"  data-status="closed">Close</button>`;
+        <button class="tk-btn-close-t"  data-status="closed">Close</button>
+        <p id="tkPanelFeedback" style="width:100%;margin:4px 0 0;font-size:0.78rem;min-height:18px;"></p>`;
     $('tkPanelActions').querySelectorAll('[data-status]').forEach(b => {
-        if (b.dataset.status === t.status) b.style.fontWeight = '900';
+        if (b.dataset.status === t.status) { b.style.fontWeight = '900'; b.style.outline = '2px solid currentColor'; }
         b.addEventListener('click', async () => {
-            await updateTicketStatus(t.id, b.dataset.status);
-            _closeTicketPanel();
+            const note = ($('tkAdminNote')?.value || '').trim();
+            b.disabled = true;
+            b.textContent = 'Updating…';
+            const result = await updateTicketStatus(t.id, b.dataset.status, note);
+            if (result && result.email_sent) {
+                const fb = $('tkPanelFeedback');
+                if (fb) { fb.style.color = '#059669'; fb.textContent = `Status updated · Notification sent to ${t.customer_email}`; }
+                setTimeout(_closeTicketPanel, 1800);
+            } else {
+                _closeTicketPanel();
+            }
         });
     });
 
@@ -1077,16 +1091,19 @@ document.addEventListener('DOMContentLoaded', () => {
     $('tkPanelOverlay')?.addEventListener('click', _closeTicketPanel);
 });
 
-async function updateTicketStatus(id, status) {
+async function updateTicketStatus(id, status, admin_note = '') {
     try {
         const r = await fetch(`${API_BASE_URL}/admin/support/tickets/${id}/status`, {
-            method: 'POST', headers: buildAdminHeaders(), body: JSON.stringify({ status })
+            method: 'POST',
+            headers: buildAdminHeaders(),
+            body: JSON.stringify({ status, admin_note })
         });
         const d = await r.json().catch(() => ({}));
         if (!r.ok) throw new Error(d.error || 'Failed');
         await loadSupportTickets();
         loadStats();
-    } catch (e) { alert(e.message); }
+        return d;
+    } catch (e) { alert(e.message); return null; }
 }
 
 // ════════════════════════
