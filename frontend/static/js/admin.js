@@ -108,6 +108,7 @@ function showSection(name) {
     // Lazy-load section data
     if (name === 'schedule') renderSchedule();
     if (name === 'clients')  loadClients();
+    if (name === 'tickets')  loadSupportTickets();
 }
 
 $('asbNav')?.addEventListener('click', (e) => {
@@ -914,40 +915,167 @@ async function moderateReview(id, status) {
 // ════════════════════════
 // TICKETS
 // ════════════════════════
+let _allTickets = [];
+let _tkFilter   = 'all';
+let _tkSearch   = '';
+let _tkPanelTicket = null;
+
 async function loadSupportTickets() {
     if (!supportTicketsList) return;
-    supportTicketsList.innerHTML = '<p class="admin-message">Loading tickets...</p>';
+    supportTicketsList.innerHTML = '<p class="admin-message" style="padding:24px 0;text-align:center">Loading tickets…</p>';
     try {
         const r = await fetch(`${API_BASE_URL}/admin/support/tickets`, { headers: buildAdminHeaders() });
         const data = await r.json();
-        if (!r.ok) throw new Error(data.error || 'Failed');
-        renderSupportTickets(data || []);
-    } catch (e) { supportTicketsList.innerHTML = `<p class="admin-message">${e.message}</p>`; }
+        if (!r.ok) throw new Error(data.error || 'Failed to load tickets');
+        _allTickets = Array.isArray(data) ? data : [];
+        _updateTicketCounts();
+        _renderTicketGrid();
+    } catch (e) {
+        supportTicketsList.innerHTML = `<p class="admin-message" style="padding:24px 0;text-align:center;color:#dc2626">${e.message}</p>`;
+    }
 }
 
-function renderSupportTickets(list) {
+function _updateTicketCounts() {
+    const counts = { all: _allTickets.length, open: 0, in_progress: 0, resolved: 0 };
+    _allTickets.forEach(t => { if (counts[t.status] !== undefined) counts[t.status]++; });
+    const set = (id, v) => { const el = $(id); if (el) el.textContent = v; };
+    set('tkCountAll', counts.all);
+    set('tkCountOpen', counts.open);
+    set('tkCountInProgress', counts.in_progress);
+    set('tkCountResolved', counts.resolved);
+    // Sidebar badge: open + in_progress
+    const badge = $('sidebarTicketBadge');
+    const urgent = counts.open + counts.in_progress;
+    if (badge) { badge.textContent = urgent; badge.style.display = urgent ? '' : 'none'; }
+}
+
+function _renderTicketGrid() {
     if (!supportTicketsList) return;
-    if (!list.length) { supportTicketsList.innerHTML = '<p class="admin-message">No support tickets.</p>'; return; }
+    let list = _allTickets;
+    if (_tkFilter !== 'all') list = list.filter(t => t.status === _tkFilter);
+    if (_tkSearch) {
+        const q = _tkSearch.toLowerCase();
+        list = list.filter(t =>
+            (t.subject || '').toLowerCase().includes(q) ||
+            (t.customer_name || '').toLowerCase().includes(q) ||
+            (t.customer_email || '').toLowerCase().includes(q) ||
+            (t.ticket_number || '').toLowerCase().includes(q)
+        );
+    }
+    if (!list.length) {
+        supportTicketsList.innerHTML = '<p class="admin-message" style="padding:40px 0;text-align:center">No tickets match your filter.</p>';
+        return;
+    }
     supportTicketsList.innerHTML = '';
     list.forEach(t => {
         const card = document.createElement('div');
-        card.className = 'admin-item';
+        card.className = 'tk-card';
+        const channelLabel = { contact_form: 'Contact Form', chatbot: 'Chatbot', faq: 'FAQ' }[t.channel] || t.channel;
+        const dateStr = t.created_at ? new Date(t.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
         card.innerHTML = `
-            <h3>${t.ticket_number} · ${t.subject}</h3>
-            <p>${t.customer_name} (${t.customer_email}) · ${t.channel}</p>
-            <p>Status: ${t.status}</p>
-            <p>${(t.message || '').slice(0, 180)}</p>
-            <div class="admin-item-actions">
-                <button data-status="open">Open</button>
-                <button data-status="in_progress">In Progress</button>
-                <button data-status="resolved">Resolve</button>
+            <div class="tk-card-head">
+                <span class="tk-card-num">${_esc(t.ticket_number)}</span>
+                <span class="tk-status-pill tk-status-${t.status}">${_statusLabel(t.status)}</span>
+            </div>
+            <div class="tk-card-subject">${_esc(t.subject)}</div>
+            <div class="tk-card-customer">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                ${_esc(t.customer_name)} &mdash; ${_esc(t.customer_email)}
+            </div>
+            <div class="tk-card-preview">${_esc(t.message || '')}</div>
+            <div class="tk-card-foot">
+                <span class="tk-card-channel">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    ${_esc(channelLabel)}
+                </span>
+                <span>${dateStr}</span>
             </div>`;
-        card.querySelectorAll('[data-status]').forEach(b => {
-            b.addEventListener('click', () => updateTicketStatus(t.id, b.dataset.status));
-        });
+        card.addEventListener('click', () => _openTicketPanel(t));
         supportTicketsList.appendChild(card);
     });
 }
+
+function _statusLabel(s) {
+    return { open: 'Open', in_progress: 'In Progress', resolved: 'Resolved', closed: 'Closed' }[s] || s;
+}
+
+function _esc(str) {
+    return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function _openTicketPanel(t) {
+    _tkPanelTicket = t;
+    const panel   = $('tkPanel');
+    const overlay = $('tkPanelOverlay');
+    if (!panel) return;
+
+    $('tkPanelNum').textContent     = t.ticket_number;
+    $('tkPanelSubject').textContent = t.subject;
+
+    const dateStr = t.created_at ? new Date(t.created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+    $('tkPanelMeta').innerHTML = `
+        <div class="tk-panel-meta-item"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><strong>${_esc(t.customer_name)}</strong></div>
+        <div class="tk-panel-meta-item"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>${_esc(t.customer_email)}</div>
+        <div class="tk-panel-meta-item tk-panel-meta-status"><span class="tk-status-pill tk-status-${t.status}">${_statusLabel(t.status)}</span></div>
+        ${dateStr ? `<div class="tk-panel-meta-item" style="width:100%"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${dateStr}</div>` : ''}`;
+
+    $('tkPanelMessage').textContent = t.message || '';
+
+    const aiTitle = $('tkPanelAiTitle');
+    const aiEl    = $('tkPanelAi');
+    if (t.assistant_suggestion) {
+        aiTitle.style.display = '';
+        aiEl.textContent = t.assistant_suggestion;
+    } else {
+        aiTitle.style.display = 'none';
+        aiEl.textContent = '';
+    }
+
+    $('tkPanelActions').innerHTML = `
+        <button class="tk-btn-open"     data-status="open">Mark Open</button>
+        <button class="tk-btn-progress" data-status="in_progress">In Progress</button>
+        <button class="tk-btn-resolve"  data-status="resolved">Resolve</button>
+        <button class="tk-btn-close-t"  data-status="closed">Close</button>`;
+    $('tkPanelActions').querySelectorAll('[data-status]').forEach(b => {
+        if (b.dataset.status === t.status) b.style.fontWeight = '900';
+        b.addEventListener('click', async () => {
+            await updateTicketStatus(t.id, b.dataset.status);
+            _closeTicketPanel();
+        });
+    });
+
+    overlay.classList.add('open');
+    panel.classList.add('open');
+}
+
+function _closeTicketPanel() {
+    $('tkPanel')?.classList.remove('open');
+    $('tkPanelOverlay')?.classList.remove('open');
+    _tkPanelTicket = null;
+}
+
+// Filter buttons
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.tk-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.tk-filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            _tkFilter = btn.dataset.filter || 'all';
+            _renderTicketGrid();
+        });
+    });
+
+    const tkSearch = $('tkSearchInput');
+    if (tkSearch) {
+        tkSearch.addEventListener('input', () => {
+            _tkSearch = tkSearch.value.trim();
+            _renderTicketGrid();
+        });
+    }
+
+    $('tkPanelClose')?.addEventListener('click', _closeTicketPanel);
+    $('tkPanelOverlay')?.addEventListener('click', _closeTicketPanel);
+});
 
 async function updateTicketStatus(id, status) {
     try {
@@ -956,7 +1084,8 @@ async function updateTicketStatus(id, status) {
         });
         const d = await r.json().catch(() => ({}));
         if (!r.ok) throw new Error(d.error || 'Failed');
-        loadSupportTickets(); loadStats();
+        await loadSupportTickets();
+        loadStats();
     } catch (e) { alert(e.message); }
 }
 
