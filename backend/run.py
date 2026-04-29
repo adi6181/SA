@@ -166,9 +166,22 @@ def product_detail(product_id):
     product = Product.query.get(product_id)
     if not product:
         abort(404)
+    d = product.to_dict()
+    imgs = d.get('image_urls') or []
+    primary_image = imgs[0] if imgs else (d.get('image_url') or '')
     popup = request.args.get('popup') in {'1', 'true', 'yes'}
     template_name = 'product_popup.html' if popup else 'product.html'
-    return render_template(template_name, product=product.to_dict())
+    return render_template(template_name, product=d, primary_image=primary_image)
+
+
+@app.route('/cart', methods=['GET'])
+def cart_page():
+    return render_template('cart.html')
+
+
+@app.route('/wishlist', methods=['GET'])
+def wishlist_page():
+    return render_template('wishlist.html')
 
 
 @app.route('/reviews', methods=['GET'])

@@ -1,5 +1,6 @@
 from datetime import datetime
 import uuid
+import html as _html
 from app import db
 
 class User(db.Model):
@@ -105,8 +106,8 @@ class Product(db.Model):
 
         return {
             'id': self.id,
-            'name': self.name,
-            'description': self.description,
+            'name': _html.unescape(self.name or ''),
+            'description': _html.unescape(self.description or ''),
             'price': self.price,
             'image_url': self.image_url,
             'image_urls': image_urls,

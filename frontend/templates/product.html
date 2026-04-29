@@ -13,14 +13,14 @@
   "name": {{ product.name | tojson }},
   "description": {{ (product.description or '') | tojson }},
   "image": {{ primary_image | tojson }},
-  "brand": { "@type": "Brand", "name": {{ (product.retailer or product.merchant or 'DealDrop') | tojson }} },
+  "brand": { "@type": "Brand", "name": {{ (product.merchant or product.merchant or 'DealDrop') | tojson }} },
   "offers": {
     "@type": "Offer",
     "url": {{ (product.affiliate_url or request.url) | tojson }},
     "priceCurrency": "USD",
     "price": "{{ '%.2f'|format(product.price) }}",
     "availability": "https://schema.org/InStock",
-    "seller": { "@type": "Organization", "name": {{ (product.retailer or product.merchant or 'DealDrop') | tojson }} }
+    "seller": { "@type": "Organization", "name": {{ (product.merchant or product.merchant or 'DealDrop') | tojson }} }
   }{% if product.rating %},
   "aggregateRating": {
     "@type": "AggregateRating",
@@ -87,8 +87,8 @@
             <!-- Category + retailer badges -->
             <div class="pd-badges">
                 <span class="pd-badge pd-badge-cat">{{ cat }}</span>
-                {% if product.retailer %}
-                <span class="pd-badge pd-badge-retailer">{{ product.retailer }}</span>
+                {% if product.merchant %}
+                <span class="pd-badge pd-badge-retailer">{{ product.merchant }}</span>
                 {% endif %}
                 {% if discount > 0 %}
                 <span class="pd-badge pd-badge-deal">🔥 Hot Deal</span>
@@ -167,7 +167,7 @@
             <!-- CTA -->
             <div class="pd-actions">
                 <a class="pd-btn-buy" href="{{ product.affiliate_url or '#' }}" target="_blank" rel="noopener">
-                    Shop Now on {{ product.retailer or product.merchant or 'Retailer' }}
+                    Shop Now on {{ product.merchant or product.merchant or 'Retailer' }}
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                 </a>
                 <a class="pd-btn-back" href="/category/{{ cat }}">← Back to {{ cat }}</a>
@@ -216,8 +216,8 @@
                 <div class="pd-overview-meta" data-reveal="fade-up" style="--rv-delay:0.1s">
                     <h3>Product Details</h3>
                     <ul class="pd-meta-list">
-                        {% if product.retailer %}
-                        <li><span>Retailer</span><strong>{{ product.retailer }}</strong></li>
+                        {% if product.merchant %}
+                        <li><span>Retailer</span><strong>{{ product.merchant }}</strong></li>
                         {% endif %}
                         {% if product.category %}
                         <li><span>Category</span><strong>{{ product.category }}</strong></li>

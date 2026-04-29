@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Your Wishlist | DealDrop{% endblock %}
+{% block content %}
+<section class="simple-page-section">
+    <div class="container">
+        <div class="simple-page-header">
+            <h1>Your Wishlist</h1>
+            <p>Products you've saved. Click the heart on any product to add it here.</p>
+        </div>
+        <div id="wishlistPageGrid" class="hp-products-grid"></div>
+        <div class="cart-page-empty" id="wishlistPageEmpty" style="display:none">
+            <div class="empty-state-icon">❤️</div>
+            <h2>Your wishlist is empty</h2>
+            <p>Tap the heart icon on any product to save it for later.</p>
+            <a href="/" class="btn btn-primary">Discover Products</a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+{% block extra_scripts %}
+<script>
+(function () {
+    const WL_KEY  = 'dealdrop_wishlist';
+    const grid    = document.getElementById('wishlistPageGrid');
+    const empty   = document.getElementById('wishlistPageEmpty');
+    const ids     = JSON.parse(localStorage.getItem(WL_KEY) || '[]');
+
+    if (!ids.length) { grid.style.display = 'none'; empty.style.display = 'block'; return; }
+
+    fetch('/api/products/')
+        .then(r => r.json())
+        .then(products => {
+            const saved = products.filter(p => ids.includes(String(p.id)));
+            if (!saved.length) { grid.style.display = 'none'; empty.style.display = 'block'; return; }
+            saved.forEach((p, i) => {
+                const img  = (p.image_urls && p.image_urls[0]) || p.image_url || '/static/favicon.svg';
+                const card = document.createElement('div');
+                card.className = `product-card img-anim-${i % 6}`;
+                card.style.cursor = 'pointer';
+                card.innerHTML = `
+                    <div class="product-media">
+                        <span class="product-tag">${p.category || ''}</span>
+                        <img src="${img}" alt="${p.name}" class="product-image" onerror="this.src='/static/favicon.svg'">
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">${p.name}</h3>
+                        <div class="product-price-row">
+                            <span class="product-price">$${(p.deal_price || p.price || 0).toFixed(2)}</span>
+                            ${p.original_price ? `<span class="product-original">$${p.original_price.toFixed(2)}</span>` : ''}
+                        </div>
+                        <a href="/product/${p.id}" class="btn btn-primary btn-sm" style="margin-top:10px;display:block;text-align:center">View Product</a>
+                    </div>`;
+                grid.appendChild(card);
+            });
+        })
+        .catch(() => { empty.style.display = 'block'; });
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Your Cart | DealDrop{% endblock %}
+{% block content %}
+<section class="simple-page-section">
+    <div class="container">
+        <div class="simple-page-header">
+            <h1>Your Cart</h1>
+            <p>Review items you've added, then head to the retailer to complete your purchase.</p>
+        </div>
+        <div id="cartPageItems" class="cart-page-grid"></div>
+        <div class="cart-page-empty" id="cartPageEmpty" style="display:none">
+            <div class="empty-state-icon">🛒</div>
+            <h2>Your cart is empty</h2>
+            <p>Browse our deals and add products you love.</p>
+            <a href="/deals" class="btn btn-primary">Browse Deals</a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+{% block extra_scripts %}
+<script>
+(function () {
+    const CART_KEY = 'dealdrop_cart';
+    function getCart() { try { return JSON.parse(localStorage.getItem(CART_KEY)) || []; } catch { return []; } }
+
+    const grid = document.getElementById('cartPageItems');
+    const empty = document.getElementById('cartPageEmpty');
+    const cart  = getCart();
+
+    if (!cart.length) { grid.style.display = 'none'; empty.style.display = 'block'; return; }
+
+    cart.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'cart-page-card';
+        card.innerHTML = `
+            <img src="${item.image || '/static/favicon.svg'}" alt="${item.name}" onerror="this.src='/static/favicon.svg'">
+            <div class="cpc-info">
+                <h3>${item.name}</h3>
+                <p class="cpc-cat">${item.category || ''}</p>
+                <div class="cpc-price">$${(item.price || 0).toFixed(2)} × ${item.quantity}</div>
+            </div>
+            <div class="cpc-actions">
+                <a href="/product/${item.id}" class="btn btn-outline btn-sm">View</a>
+                ${item.affiliate_url ? `<a href="${item.affiliate_url}" target="_blank" rel="noopener" class="btn btn-primary btn-sm">Buy Now</a>` : ''}
+            </div>`;
+        grid.appendChild(card);
+    });
+})();
+</script>
+{% endblock %}

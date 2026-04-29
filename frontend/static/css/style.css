@@ -9815,3 +9815,50 @@ img.ph-testi-av {
 
     .hp-headline { font-size: 2.8rem; }
 }
+
+/* ════════════════════════
+   CART PAGE & WISHLIST PAGE
+════════════════════════ */
+.simple-page-section { padding: 60px 0 80px; }
+.simple-page-header { margin-bottom: 36px; }
+.simple-page-header h1 { font-size: 2rem; font-weight: 800; color: var(--ink); margin: 0 0 8px; }
+.simple-page-header p  { font-size: 0.95rem; color: var(--muted); }
+
+.cart-page-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.cart-page-card {
+    display: grid;
+    grid-template-columns: 80px 1fr auto;
+    align-items: center;
+    gap: 18px;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 20px;
+    transition: box-shadow 0.2s;
+}
+.cart-page-card:hover { box-shadow: 0 4px 20px rgba(124,58,237,0.1); }
+.cart-page-card img {
+    width: 80px; height: 80px;
+    object-fit: contain;
+    border-radius: 10px;
+    background: var(--bg);
+    padding: 8px;
+}
+.cpc-info h3   { font-size: 0.95rem; font-weight: 700; color: var(--ink); margin: 0 0 4px; }
+.cpc-cat       { font-size: 0.75rem; color: var(--muted); margin: 0 0 6px; }
+.cpc-price     { font-size: 0.9rem; font-weight: 800; color: var(--primary); }
+.cpc-actions   { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+
+.cart-page-empty, .empty-state-icon {
+    text-align: center;
+    padding: 60px 0;
+}
+.empty-state-icon { font-size: 3.5rem; display: block; margin-bottom: 16px; }
+.cart-page-empty h2 { font-size: 1.4rem; font-weight: 700; margin: 0 0 10px; }
+.cart-page-empty p  { font-size: 0.9rem; color: var(--muted); margin: 0 0 24px; }
+
+.btn-sm { padding: 7px 14px; font-size: 0.8rem; }
