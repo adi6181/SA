@@ -55,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
     applyProductImageFallbacks();
     setupScrollAnimations();
     updateCartBadge();
+    updateWishlistBadge();
 });
 
 /* ============================================================
@@ -1487,6 +1488,11 @@ function updateWishlistBadge() {
         el.textContent = count;
         el.style.display = count > 0 ? 'inline' : 'none';
     });
+    const badge = document.getElementById('wishlistBadge');
+    if (badge) {
+        badge.textContent = count;
+        badge.style.display = count > 0 ? 'flex' : 'none';
+    }
 }
 
 /* ============================================================

@@ -7612,6 +7612,42 @@ img.ph-testi-av {
     transition: background 0.2s, border-color 0.2s;
 }
 .pd-btn-back:hover { background: #faf5ff; border-color: #c4b5fd; }
+.pd-btn-cart {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1.5rem;
+    background: #f3f0ff;
+    color: #7c3aed;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border-radius: 14px;
+    border: 2px solid #ede9fe;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, transform 0.15s;
+}
+.pd-btn-cart:hover { background: #ede9fe; border-color: #c4b5fd; transform: translateY(-1px); }
+.pd-btn-wishlist {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1.5rem;
+    background: transparent;
+    color: #9ca3af;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border-radius: 14px;
+    border: 2px solid #e5e7eb;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+.pd-btn-wishlist:hover, .pd-btn-wishlist.wishlisted {
+    color: #ef4444;
+    border-color: #fca5a5;
+    background: #fff1f1;
+}
 
 /* Trust signals */
 .pd-trust {

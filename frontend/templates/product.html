@@ -167,9 +167,17 @@
             <!-- CTA -->
             <div class="pd-actions">
                 <a class="pd-btn-buy" href="{{ product.affiliate_url or '#' }}" target="_blank" rel="noopener">
-                    Shop Now on {{ product.merchant or product.merchant or 'Retailer' }}
+                    Shop Now on {{ product.merchant or 'Retailer' }}
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                 </a>
+                <button class="pd-btn-cart" id="pdAddToCart">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                    Add to Cart
+                </button>
+                <button class="pd-btn-wishlist wishlist-btn" id="pdAddToWishlist" data-product-id="{{ product.id }}">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    Save to Wishlist
+                </button>
                 <a class="pd-btn-back" href="/category/{{ cat }}">← Back to {{ cat }}</a>
                 <button class="share-deal-btn" data-title="{{ product.name }} | DealDrop" data-url="{{ request.url }}">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
@@ -392,6 +400,32 @@ document.querySelectorAll('[data-reveal]').forEach(el => obs.observe(el));
         list.unshift(product);
         localStorage.setItem(key, JSON.stringify(list.slice(0, 10)));
     } catch {}
+})();
+
+/* ── Add to Cart / Wishlist buttons on product detail page ── */
+(function () {
+    const cartBtn = document.getElementById('pdAddToCart');
+    const wlBtn   = document.getElementById('pdAddToWishlist');
+    if (!cartBtn || !wlBtn) return;
+
+    const p = {{ product | tojson }};
+
+    cartBtn.addEventListener('click', () => {
+        if (typeof addToCart === 'function') addToCart(p);
+    });
+
+    function syncWlBtn() {
+        const saved = typeof isWishlisted === 'function' && isWishlisted(p.id);
+        wlBtn.classList.toggle('wishlisted', saved);
+        wlBtn.querySelector('svg').setAttribute('fill', saved ? 'currentColor' : 'none');
+        wlBtn.innerHTML = wlBtn.innerHTML.replace(/Save to Wishlist|Saved/, saved ? 'Saved' : 'Save to Wishlist');
+    }
+
+    wlBtn.addEventListener('click', () => {
+        if (typeof toggleWishlist === 'function') { toggleWishlist(p); syncWlBtn(); }
+    });
+
+    syncWlBtn();
 })();
 </script>
 <script src="{{ url_for('static', filename='js/product_reviews.js') }}"></script>
