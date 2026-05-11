@@ -11102,3 +11102,183 @@ img.ph-testi-av {
     border-color: #FF3B5C;
     box-shadow: 0 4px 16px rgba(255,59,92,0.35);
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   NAVBAR v2 — Pinterest-inspired clean bar
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Override old navbar with clean white */
+.navbar {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 200 !important;
+    background: rgba(255,255,255,0.97) !important;
+    backdrop-filter: blur(20px) !important;
+    border-bottom: 1px solid rgba(0,0,0,0.07) !important;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06) !important;
+}
+.dark-mode .navbar {
+    background: rgba(10,8,20,0.97) !important;
+    border-bottom-color: rgba(255,255,255,0.07) !important;
+}
+
+.navbar-inner {
+    min-height: 64px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0 !important;
+    padding: 0 1.5rem !important;
+    max-width: 1440px !important;
+    margin: 0 auto !important;
+}
+
+/* Active nav link — lavender pill */
+.nav-link.nav-active {
+    background: #ede9fe !important;
+    color: #7c3aed !important;
+    font-weight: 600 !important;
+}
+.dark-mode .nav-link.nav-active {
+    background: rgba(139,92,246,0.2) !important;
+    color: #a78bfa !important;
+}
+
+/* Centre tabs spacing */
+.main-tabs {
+    margin-left: 24px !important;
+    flex: 1 !important;
+    flex-wrap: nowrap !important;
+    gap: 2px !important;
+}
+
+/* Right group */
+.nav-right-group {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    flex-shrink: 0 !important;
+}
+
+/* Small nav text link */
+.nav-link-sm {
+    font-size: 0.86rem !important;
+    padding: 6px 10px !important;
+    white-space: nowrap !important;
+}
+
+/* Login button — clean outlined pill */
+.nb-login {
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 18px;
+    border-radius: 999px;
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: #374151;
+    border: 1.5px solid #d1d5db;
+    text-decoration: none;
+    transition: border-color 0.2s, color 0.2s;
+    white-space: nowrap;
+}
+.nb-login:hover { border-color: #7c3aed; color: #7c3aed; }
+.dark-mode .nb-login { color: rgba(255,255,255,0.8); border-color: rgba(255,255,255,0.2); }
+.dark-mode .nb-login:hover { border-color: #a78bfa; color: #a78bfa; }
+
+/* Sign Up button — solid purple pill */
+.nb-signup {
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 18px;
+    border-radius: 999px;
+    font-size: 0.86rem;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+    text-decoration: none;
+    box-shadow: 0 2px 12px rgba(124,58,237,0.35);
+    transition: box-shadow 0.2s, transform 0.2s;
+    white-space: nowrap;
+}
+.nb-signup:hover { box-shadow: 0 4px 20px rgba(124,58,237,0.5); transform: translateY(-1px); color: #fff; }
+
+/* Plain heart icon (no circle) */
+.nb-icon-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    color: #6b7280;
+    text-decoration: none;
+    transition: color 0.2s;
+    flex-shrink: 0;
+}
+.nb-icon-btn:hover { color: #FF3B5C; }
+.dark-mode .nb-icon-btn { color: rgba(255,255,255,0.6); }
+.dark-mode .nb-icon-btn:hover { color: #FF3B5C; }
+
+/* Stacked search + cart circles cluster */
+.nb-icon-stack {
+    position: relative;
+    width: 44px;
+    height: 52px;
+    flex-shrink: 0;
+}
+
+/* Circle button base */
+.nb-circle {
+    position: absolute;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #f3f4f6;
+    border: 1.5px solid #e5e7eb;
+    color: #374151;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+.nb-circle:hover {
+    background: #ede9fe;
+    border-color: #7c3aed;
+    color: #7c3aed;
+    box-shadow: 0 2px 12px rgba(124,58,237,0.2);
+}
+.dark-mode .nb-circle {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.75);
+}
+.dark-mode .nb-circle:hover {
+    background: rgba(139,92,246,0.2);
+    border-color: rgba(139,92,246,0.5);
+    color: #a78bfa;
+}
+
+/* Top circle (search) — slightly right */
+.nb-circle-top {
+    top: 0;
+    right: 0;
+    z-index: 2;
+}
+/* Bottom circle (cart) — slightly left & down, overlapping */
+.nb-circle-bottom {
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+}
+
+/* Dark mode circle */
+.nb-dm {
+    position: relative;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+}
+
+/* Hide old cart-btn / dark-mode-toggle styling conflicts */
+.nav-right-group .cart-btn { display: none !important; }
+.nav-right-group .dark-mode-toggle { display: none !important; }
