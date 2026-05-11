@@ -300,47 +300,53 @@
 </section>
 
 <!-- ╔══════════════════════════════════════════════════╗
-     ║  PRODUCTS                                       ║
+     ║  PRODUCTS — Pinterest masonry discovery feed    ║
      ╚══════════════════════════════════════════════════╝ -->
 <section class="v2-products" id="v2-products">
     <div class="v2-container">
         <div class="v2-products-hd" data-reveal="fade-up">
             <div>
                 <span class="v2-eyebrow">Live Catalog</span>
-                <h2 class="v2-section-title">Today's Picks</h2>
+                <h2 class="v2-section-title">Discover Deals</h2>
             </div>
-            <a href="/deals" class="v2-see-all">View All Deals →</a>
-        </div>
-
-        <div class="v2-filter-bar" data-reveal="fade-up" style="--rv-delay:.1s">
-            <div class="v2-fsearch">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                <input type="text" id="searchInput" placeholder="Search products…" autocomplete="off">
-            </div>
-            <select id="categoryFilter" class="v2-fsel">
-                <option value="">All Categories</option>
-                <option value="Electronics">Electronics</option>
-                <option value="Fashion">Fashion</option>
-                <option value="Books">Books</option>
-                <option value="Home">Home</option>
-            </select>
-            <select id="sortFilter" class="v2-fsel">
-                <option value="newest">Newest</option>
-                <option value="price_asc">Price: Low–High</option>
-                <option value="price_desc">Price: High–Low</option>
-                <option value="rating">Top Rated</option>
-            </select>
-            <div class="v2-fchips">
-                <button class="quick-chip" data-filter-chip="deals">🔥 Deals only</button>
-                <button class="quick-chip" data-filter-chip="rating">★ 4+ Stars</button>
-            </div>
-            <div class="v2-fprice">
-                <input type="number" id="minPriceFilter" placeholder="Min $" min="0">
-                <span>–</span>
-                <input type="number" id="maxPriceFilter" placeholder="Max $" min="0">
+            <div style="display:flex;gap:.8rem;align-items:center">
+                <select id="sortFilter" class="v2-fsel" style="font-size:.82rem">
+                    <option value="newest">Newest</option>
+                    <option value="price_asc">Price ↑</option>
+                    <option value="price_desc">Price ↓</option>
+                    <option value="rating">Top Rated</option>
+                </select>
+                <a href="/deals" class="v2-see-all">View All →</a>
             </div>
         </div>
+    </div>
 
+    <!-- Pinterest-style category chip strip -->
+    <div class="pin-cat-strip">
+        <button class="pin-cat-chip active" data-filter-chip="all" onclick="setPinCategory('',this)">✦ All</button>
+        <button class="pin-cat-chip" onclick="setPinCategory('Electronics',this)">⚡ Electronics</button>
+        <button class="pin-cat-chip" onclick="setPinCategory('Fashion',this)">👗 Fashion</button>
+        <button class="pin-cat-chip" onclick="setPinCategory('Books',this)">📚 Books</button>
+        <button class="pin-cat-chip" onclick="setPinCategory('Home',this)">🏠 Home</button>
+        <button class="pin-cat-chip" data-filter-chip="deals" onclick="setPinChip('deals',this)">🔥 Deals only</button>
+        <button class="pin-cat-chip" data-filter-chip="rating" onclick="setPinChip('rating',this)">★ 4+ Stars</button>
+    </div>
+
+    <!-- Hidden inputs wired to app.js filter logic -->
+    <div style="display:none">
+        <input type="text" id="searchInput" autocomplete="off">
+        <select id="categoryFilter">
+            <option value="">All</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Fashion">Fashion</option>
+            <option value="Books">Books</option>
+            <option value="Home">Home</option>
+        </select>
+        <input type="number" id="minPriceFilter" min="0">
+        <input type="number" id="maxPriceFilter" min="0">
+    </div>
+
+    <div class="v2-container">
         <div id="activeFiltersBar"></div>
         <div id="productsGrid" class="hp-products-grid"></div>
     </div>
@@ -576,6 +582,27 @@
     }
     tick();
 })();
+
+/* ── Pinterest category chip helpers ── */
+function setPinCategory(cat, btn) {
+    document.querySelectorAll('.pin-cat-chip').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    const sel = document.getElementById('categoryFilter');
+    if (sel) { sel.value = cat; sel.dispatchEvent(new Event('change')); }
+}
+function setPinChip(chip, btn) {
+    const wasActive = btn.classList.contains('active');
+    document.querySelectorAll('.pin-cat-chip').forEach(c => c.classList.remove('active'));
+    if (!wasActive) {
+        btn.classList.add('active');
+        const el = document.querySelector(`.quick-chip[data-filter-chip="${chip}"]`);
+        if (el && !el.classList.contains('active')) el.click();
+    } else {
+        document.querySelector('.pin-cat-chip[data-filter-chip="all"]')?.classList.add('active');
+        const el = document.querySelector(`.quick-chip[data-filter-chip="${chip}"].active`);
+        if (el) el.click();
+    }
+}
 
 /* ── Newsletter ── */
 document.getElementById('hpNewsletterForm')?.addEventListener('submit', async (e) => {

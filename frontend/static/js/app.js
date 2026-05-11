@@ -679,170 +679,75 @@ function displayProducts(products) {
     syncCompareCheckboxes();
 }
 
-function createProductCard(product, index) {
+function createProductCard(product, _index) {
     const card = document.createElement('div');
-    const animVariant = index % 6;
-    card.className = `product-card img-anim-${animVariant}`;
-    card.style.setProperty('--reveal-delay', `${index * 0.05}s`);
-    card.dataset.productId = String(product.id);
-    card.dataset.productName = product.name || '';
+    card.className = 'pin-card';
+    card.dataset.productId    = String(product.id);
+    card.dataset.productName  = product.name || '';
     card.dataset.productCategory = product.category || '';
-
-    const images = getProductImages(product);
-    const mainImage = images[0];
-    const description = product.description
-        ? product.description.substring(0, 100)
-        : 'Product details coming soon.';
-
-    const media = document.createElement('div');
-    media.className = 'product-media';
-
-    if (product.is_deal || product.deal_price) {
-        const dealBadge = document.createElement('span');
-        dealBadge.className = 'deal-badge';
-        dealBadge.textContent = 'DEAL';
-        media.appendChild(dealBadge);
-        card.dataset.isDeal = 'true';
-        // Countdown timer
-        const deadline = getDealDeadline(product.id);
-        const countdown = document.createElement('div');
-        countdown.className = 'deal-countdown';
-        countdown.dataset.deadline = String(deadline);
-        countdown.innerHTML = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span class="cd-time">--:--:--</span>`;
-        media.appendChild(countdown);
-    }
-
-    // Wishlist heart button
-    const heartBtn = document.createElement('button');
-    heartBtn.className = `wishlist-btn${isWishlisted(product.id) ? ' wishlisted' : ''}`;
-    heartBtn.dataset.action = 'toggle-wishlist';
-    heartBtn.dataset.productId = String(product.id);
-    heartBtn.setAttribute('aria-label', 'Save to wishlist');
-    heartBtn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
-    media.appendChild(heartBtn);
-
-    const tag = document.createElement('span');
-    tag.className = 'product-tag';
-    tag.textContent = product.category || 'General';
-    media.appendChild(tag);
-
-    const compareLabel = document.createElement('label');
-    compareLabel.className = 'compare-toggle';
-    compareLabel.innerHTML = `
-        <input type="checkbox" class="compare-checkbox" data-product-id="${product.id}">
-        Compare
-    `;
-    media.appendChild(compareLabel);
-
-    if (isAdminMode()) {
-        const uploadButton = document.createElement('button');
-        uploadButton.className = 'upload-images-btn';
-        uploadButton.dataset.action = 'open-upload';
-        uploadButton.dataset.productId = String(product.id);
-        uploadButton.title = 'Upload product images';
-        uploadButton.textContent = '📷';
-        media.appendChild(uploadButton);
-
-        const uploadInput = document.createElement('input');
-        uploadInput.type = 'file';
-        uploadInput.multiple = true;
-        uploadInput.hidden = true;
-        uploadInput.className = 'upload-images-input';
-        uploadInput.dataset.productId = String(product.id);
-        media.appendChild(uploadInput);
-    }
-
-    if (images.length > 1) {
-        const prevButton = document.createElement('button');
-        prevButton.className = 'gallery-nav gallery-prev';
-        prevButton.dataset.action = 'prev-image';
-        prevButton.dataset.productId = String(product.id);
-        prevButton.textContent = '‹';
-        media.appendChild(prevButton);
-
-        const nextButton = document.createElement('button');
-        nextButton.className = 'gallery-nav gallery-next';
-        nextButton.dataset.action = 'next-image';
-        nextButton.dataset.productId = String(product.id);
-        nextButton.textContent = '›';
-        media.appendChild(nextButton);
-    }
-
-    const imageEl = document.createElement('img');
-    imageEl.src = mainImage;
-    imageEl.alt = product.name || 'Product image';
-    imageEl.className = 'product-image';
-    imageEl.dataset.imageIndex = '0';
-    media.appendChild(imageEl);
-
-    if (images.length > 1) {
-        const dotsWrap = document.createElement('div');
-        dotsWrap.className = 'gallery-dots';
-        images.forEach((_, imgIndex) => {
-            const dot = document.createElement('button');
-            dot.className = `gallery-dot ${imgIndex === 0 ? 'active' : ''}`;
-            dot.dataset.action = 'set-image';
-            dot.dataset.productId = String(product.id);
-            dot.dataset.imageIndex = String(imgIndex);
-            dotsWrap.appendChild(dot);
-        });
-        media.appendChild(dotsWrap);
-    }
-
-    // Store data on card for fallback add-to-cart
-    card.dataset.productPrice    = String(product.deal_price || product.price || 0);
-    card.dataset.productMerchant = product.merchant || '';
+    card.dataset.productPrice = String(product.deal_price || product.price || 0);
     card.dataset.productAffiliate = product.affiliate_url || '#';
 
-    const info = document.createElement('div');
-    info.className = 'product-info';
+    const images   = getProductImages(product);
+    const mainImg  = images[0];
+    const price    = product.deal_price || product.price || 0;
+    const origPrice = product.original_price;
+    const savings  = origPrice && origPrice > price ? Math.round((1 - price / origPrice) * 100) : 0;
+    const merchant = product.merchant || '';
+    const rating   = Number(product.rating || 0);
+    const ratingCount = Number(product.review_count || 0);
+    const wishlisted  = isWishlisted(product.id);
 
-    const priceLabel   = product.deal_price || product.price;
-    const merchant     = product.merchant || '';
-    const merchantSlug = merchant.toLowerCase().replace(/\s+/g, '-');
-    const reasons      = product.why_this_product?.reasons || [];
-    const confidence   = product.why_this_product?.confidence || 'medium';
-    const rating       = Number(product.rating || 0);
-    const reviewCount  = Number(product.review_count || 0);
+    if (product.is_deal || product.deal_price) card.dataset.isDeal = 'true';
 
-    const reasonsHtml = reasons.length
-        ? `<div class="why-card"><p class="why-title">Why this product (${confidence})</p><ul>${reasons.map(r => `<li>${r}</li>`).join('')}</ul></div>`
-        : '';
-
-    const ratingHtml = rating
-        ? `<span class="product-rating">
-               <svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24" stroke="#fbbf24" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-               ${rating.toFixed(1)}
-               <span class="rating-count">(${reviewCount.toLocaleString()})</span>
-           </span>`
-        : '';
-
-    const originalPriceHtml = product.original_price && product.original_price > priceLabel
-        ? `<span class="product-price-original">$${Number(product.original_price).toFixed(2)}</span>`
-        : '';
-
-    info.innerHTML = `
-        <div class="product-merchant-row">
-            <span class="vendor-badge vendor-${merchantSlug}">${merchant || 'Shop'}</span>
-            ${ratingHtml}
-        </div>
-        <h3 class="product-name">${product.name}</h3>
-        <p class="product-description">${description}${product.description && product.description.length > 100 ? '...' : ''}</p>
-        ${reasonsHtml}
-        <div class="product-footer">
-            <div class="product-price-block">
-                <span class="product-price">$${Number(priceLabel || 0).toFixed(2)}</span>
-                ${originalPriceHtml}
+    card.innerHTML = `
+        <div class="pin-img-wrap">
+            <img src="${mainImg}" alt="${product.name || ''}" class="pin-img" loading="lazy"
+                 onerror="this.src='/static/favicon.svg'">
+            ${savings ? `<span class="pin-save-badge">−${savings}%</span>` : ''}
+            <div class="pin-actions-overlay">
+                <button class="pin-heart-btn${wishlisted ? ' wishlisted' : ''}"
+                    data-action="toggle-wishlist"
+                    data-product-id="${product.id}"
+                    aria-label="Save to wishlist">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="${wishlisted ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2.2">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                    </svg>
+                </button>
+                <div class="pin-bottom-actions">
+                    <button class="pin-cart-btn" data-action="add-to-cart" data-product-id="${product.id}">
+                        + Cart
+                    </button>
+                    ${product.affiliate_url
+                        ? `<a class="pin-shop-btn" href="${product.affiliate_url}" target="_blank" rel="noopener">Shop Now</a>`
+                        : `<a class="pin-shop-btn" href="/product/${product.id}">View Deal</a>`
+                    }
+                </div>
             </div>
-            <div class="product-actions">
-                <button class="btn-add-cart" data-action="add-to-cart" data-product-id="${product.id}">+ Cart</button>
-                <a class="btn-buy-vendor vendor-btn-${merchantSlug}" href="${product.affiliate_url || '#'}" target="_blank" rel="noopener">${merchant || 'Shop'} →</a>
+            ${isAdminMode() ? `
+                <button class="pin-admin-upload upload-images-btn" data-action="open-upload" data-product-id="${product.id}" title="Upload images">📷</button>
+                <input type="file" multiple hidden class="upload-images-input" data-product-id="${product.id}">
+            ` : ''}
+        </div>
+        <div class="pin-info">
+            <p class="pin-name">${product.name || ''}</p>
+            <div class="pin-price-row">
+                <span class="pin-price">$${Number(price).toFixed(2)}</span>
+                ${origPrice ? `<del class="pin-orig">$${Number(origPrice).toFixed(2)}</del>` : ''}
+            </div>
+            <div class="pin-meta-row">
+                ${rating ? `<span class="pin-rating">★ ${rating.toFixed(1)}${ratingCount ? ` <em>(${ratingCount.toLocaleString()})</em>` : ''}</span>` : ''}
+                ${merchant ? `<span class="pin-merchant">via ${merchant}</span>` : ''}
             </div>
         </div>
     `;
 
-    card.appendChild(media);
-    card.appendChild(info);
+    card.addEventListener('click', e => {
+        if (!e.target.closest('.pin-heart-btn') && !e.target.closest('.pin-shop-btn') && !e.target.closest('.pin-cart-btn') && !e.target.closest('.pin-admin-upload')) {
+            window.location.href = `/product/${product.id}`;
+        }
+    });
+
     return card;
 }
 
